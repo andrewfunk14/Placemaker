@@ -15,9 +15,9 @@ import {
   ScrollView,
   Platform,
   Pressable,
-  Dimensions,
 } from "react-native";
 import { useUser } from "../userContext";
+import { LinearGradient } from 'expo-linear-gradient';
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -26,7 +26,7 @@ const Login = () => {
   const [isLoading, setIsLoading] = useState(false);
 
   const router = useRouter();
-  const { setUserId, setRoles } = useUser(); // ✅ context setters
+  const { setUserId, setRoles } = useUser();
 
   const passwordRef = useRef<TextInput>(null);
 
@@ -35,7 +35,6 @@ const Login = () => {
     setErrorMessage("");
 
     try {
-      // 1. Sign in via Supabase Auth
       const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password,
@@ -45,10 +44,8 @@ const Login = () => {
 
       const user = data?.user;
       if (user) {
-        // 2. Save user ID in context
         await setUserId(user.id);
 
-        // 3. Fetch role from `users` table
         const { data: profileData, error: profileError } = await supabase
           .from("users")
           .select("role")
@@ -61,7 +58,6 @@ const Login = () => {
           await setRoles(profileData.role);
         }
 
-        // 4. Redirect (all roles → same home for now)
         router.push('/(placemaker)/home');
     }
     } catch (error: any) {
@@ -73,7 +69,12 @@ const Login = () => {
 
   return (
     <View style={styles.container}>
-      <View style={styles.gradientBackground} />
+      <LinearGradient
+        colors={['#2c2c2c', '#000000']}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 0, y: 1 }}
+        style={StyleSheet.absoluteFillObject}
+      />
       <Pressable
         onPress={Platform.OS !== "web" ? Keyboard.dismiss : undefined}
         style={{ flex: 1 }}
@@ -87,13 +88,12 @@ const Login = () => {
             keyboardShouldPersistTaps="handled"
           >
             <View style={styles.box}>
-              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                  <Image
-                    source={require('../../assets/wordmark.png')}
-                    style={styles.wordmark}
-                  />
-                  <Text style={styles.title}> Login</Text>
-                </View>
+              <View style={styles.wordmarkContainer}>
+                <Image
+                  source={require('../../assets/dark-wordmark.png')}
+                  style={styles.wordmark}
+                />
+              </View>
               <TextInput
                 style={styles.input}
                 placeholder="Email"
@@ -118,13 +118,12 @@ const Login = () => {
                 onSubmitEditing={Keyboard.dismiss}
               />
 
-              {/* Forgot Password Link */}
               <Link href="/forgotpassword" asChild>
                 <Text style={styles.forgotPasswordText}>Forgot Password?</Text>
               </Link>
 
               {isLoading ? (
-                <ActivityIndicator size="large" color="#000" />
+                <ActivityIndicator size="large" color="white" />
               ) : (
                 <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
                   <Text style={styles.loginButtonText}>Login</Text>
@@ -136,7 +135,7 @@ const Login = () => {
               ) : null}
 
               <View style={styles.signupLinksContainer}>
-                <Text style={styles.signupLink}>Don't have an account? Sign up as:</Text>
+                <Text style={styles.whiteText}>Don't have an account?</Text>
                   <Link href="/signup" asChild>
                     <Text style={styles.signupLinkText}>Sign Up</Text>
                   </Link>
@@ -154,20 +153,6 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "transparent",
   },
-  gradientBackground: {
-    position: "absolute",
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    backgroundColor: "#f0f7ff",
-    borderTopWidth: Dimensions.get("window").height,
-    borderTopColor: "#e6f3ff",
-    borderLeftWidth: Dimensions.get("window").width,
-    borderLeftColor: "#dceeff",
-    transform: Platform.OS === "web" ? [{ rotate: "-10deg" }] : [],
-    opacity: 0.95,
-  },
   scrollContainer: {
     flexGrow: 1,
     justifyContent: "center",
@@ -177,27 +162,26 @@ const styles = StyleSheet.create({
     width: "90%",
     maxWidth: 400,
     padding: 20,
-    backgroundColor: "rgba(255, 255, 255, 0.95)",
+    backgroundColor: "transparent",
     borderRadius: 10,
+    borderColor: "#ffd21f",
+    borderWidth: 2,
     elevation: 5,
     shadowColor: "#000",
     shadowOpacity: 0.1,
     shadowOffset: { width: 0, height: 4 },
     shadowRadius: 8,
   },
+  wordmarkContainer: {
+    alignItems: "center",
+    justifyContent: "center",
+    marginBottom: 24, 
+  },  
   wordmark: {
-    width: 200,    // increase until it matches text height/width
-    height: 60,    // tweak to match line height of your font
-    resizeMode: 'cover',
-    marginRight: 8, // spacing between logo and "Login"
-  },
-  title: {
-    fontSize: 26,
-    fontWeight: "bold",
-    marginBottom: 10,
-    textAlign: "center",
-    color: "#333",
-  },
+    width: 350,      
+    height: 50,         
+    resizeMode: "cover",
+  },    
   input: {
     height: 48,
     borderColor: "gray",
@@ -209,44 +193,47 @@ const styles = StyleSheet.create({
   },
   forgotPasswordText: {
     color: '#2e78b7',
-    fontSize: 22,
-    fontWeight: '500',
+    fontSize: 24,
+    fontWeight: 'bold',
     textAlign: 'center',
-    marginBottom: 8,
+    marginTop: 4,
+    marginBottom: 12,
   },
   error: {
     color: "red",
     marginTop: 8,
     textAlign: "center",
-    fontSize: 16,
+    fontSize: 24,
   },
   signupLinksContainer: {
     marginTop: 12,
     alignItems: 'center',
   },
-  signupLink: {
-    fontSize: 20,
+  whiteText: {
+    fontSize: 24,
+    color: 'white',
     textAlign: 'center',
-    marginBottom: 10,
+    marginBottom: 8,
   },
   signupLinkText: {
     textAlign: 'center',
     color: '#2e78b7',
-    fontSize: 22,
-    fontWeight: '500',
-    marginVertical: 5,
+    fontSize: 24,
+    fontWeight: 'bold',
+    marginVertical: 4,
   },
   loginButton: {
-    backgroundColor: "#000000",
+    backgroundColor: "#ffd21f",
     paddingVertical: 12,
     borderRadius: 8,
     alignItems: "center",
     marginTop: 8,
+    marginBottom: 4,
   },
   loginButtonText: {
-    color: "#ffffff",
-    fontWeight: "bold",
-    fontSize: 18,
+    color: "black",
+    fontWeight: 'bold',
+    fontSize: 24,
   },
 });
 

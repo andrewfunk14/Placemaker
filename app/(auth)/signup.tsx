@@ -5,6 +5,7 @@ import { useRouter, Link } from "expo-router";
 import {
   View,
   Text,
+  Image,
   TextInput,
   TouchableOpacity,
   StyleSheet,
@@ -14,21 +15,20 @@ import {
   Pressable,
   Keyboard,
 } from "react-native";
-import { Dimensions } from 'react-native';
-import { Picker } from "@react-native-picker/picker";
 import { useUser, UserRole } from "../userContext";
+import { LinearGradient } from 'expo-linear-gradient';
 
 const Signup = () => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [selectedRoles, setSelectedRoles] = useState<UserRole[]>(["placemaker"]); // default
+  const [selectedRoles, setSelectedRoles] = useState<UserRole[]>(["placemaker"]);
   const [errorMessage, setErrorMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
   const router = useRouter();
-  const { setUserId, setRoles } = useUser(); // updated hook
+  const { setUserId, setRoles } = useUser();
 
   const emailRef = useRef<TextInput>(null);
   const passwordRef = useRef<TextInput>(null);
@@ -39,7 +39,6 @@ const Signup = () => {
     setErrorMessage("");
 
     try {
-      // 1. Create user in Supabase Auth
       const { data, error } = await supabase.auth.signUp({
         email,
         password,
@@ -51,7 +50,6 @@ const Signup = () => {
       if (user) {
         await setUserId(user.id);
 
-        // 2. Insert into users table with role
         const { error: insertError } = await supabase.from("users").insert([
           {
             id: user.id,
@@ -65,7 +63,6 @@ const Signup = () => {
 
         await setRoles(selectedRoles);
 
-        // 3. Redirect everyone to same home page
         router.push('/(placemaker)/home');
       }
     } catch (error: any) {
@@ -77,7 +74,12 @@ const Signup = () => {
 
   return (
     <View style={styles.container}>
-      <View style={styles.gradientBackground} />
+      <LinearGradient
+        colors={['#2c2c2c', '#000000']}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 0, y: 1 }}
+        style={StyleSheet.absoluteFillObject}
+      />
         <Pressable
         onPress={Platform.OS !== "web" ? Keyboard.dismiss : undefined}
         style={{ flex: 1 }}
@@ -91,9 +93,13 @@ const Signup = () => {
             keyboardShouldPersistTaps="handled"
             >
             <View style={styles.box}>
-                <Text style={styles.title}>Join Placemakers</Text>
-
-                <TextInput
+              <View style={styles.wordmarkContainer}>
+                <Image
+                  source={require('../../assets/dark-wordmark.png')}
+                  style={styles.wordmark}
+                />
+              </View>
+              <TextInput
                 style={styles.input}
                 placeholder="Your Name"
                 placeholderTextColor="#a0a0a0"
@@ -101,9 +107,8 @@ const Signup = () => {
                 onChangeText={setName}
                 returnKeyType="next"
                 onSubmitEditing={() => emailRef.current?.focus()}
-                />
-
-                <TextInput
+              />
+              <TextInput
                 ref={emailRef}
                 style={styles.input}
                 placeholder="Email"
@@ -114,9 +119,8 @@ const Signup = () => {
                 keyboardType="email-address"
                 autoCapitalize="none"
                 onSubmitEditing={() => passwordRef.current?.focus()}
-                />
-
-                <TextInput
+              />
+              <TextInput
                 ref={passwordRef}
                 style={styles.input}
                 placeholder="Password"
@@ -125,9 +129,8 @@ const Signup = () => {
                 value={password}
                 onChangeText={setPassword}
                 returnKeyType="done"
-                />
-
-                <TextInput
+              />
+              <TextInput
                 ref={confirmPasswordRef}
                 style={styles.input}
                 placeholder="Confirm Password"
@@ -137,46 +140,35 @@ const Signup = () => {
                 onChangeText={setConfirmPassword}
                 returnKeyType="done"
                 onSubmitEditing={Keyboard.dismiss}
-                />
-
-                {/* <Text style={styles.label}>Choose your role</Text>
-                <View style={styles.pickerContainer}>
-                <Picker
-                    selectedValue={role}
-                    onValueChange={(itemValue) => setRole(itemValue as UserRole)} // ✅ cast to UserRole
-                >
-                    <Picker.Item label="Placemaker" value="placemaker" />
-                    <Picker.Item label="Policymaker" value="policymaker" />
-                    <Picker.Item label="Dealmaker" value="dealmaker" />
-                    <Picker.Item label="Changemaker" value="changemaker" />
-                </Picker>
-                </View> */}
-
-                <TouchableOpacity
+              />
+              <TouchableOpacity
                 style={[styles.signUpButton, isLoading && { opacity: 0.7 }]}
                 onPress={handleSignup}
                 disabled={isLoading}
-                >
-                <Text style={styles.buttonText}>
+              >
+                <Text style={styles.signUpButtonText}>
                     {isLoading ? "Signing up..." : "Sign Up"}
                 </Text>
-                </TouchableOpacity>
+              </TouchableOpacity>
 
                 {errorMessage ? (
                 <Text style={styles.error}>{errorMessage}</Text>
                 ) : null}
 
-                <Link href="/login" asChild>
-                  <TouchableOpacity>
-                    <Text style={styles.loginLink}>
-                        Already have an account? <Text style={styles.boldLink}>Login</Text>
-                    </Text>
-                  </TouchableOpacity>
-                </Link>
-            </View>
+                <View style={styles.loginLinksContainer}>
+                  <Text style={styles.whiteText}>Already have an account?</Text>
+                    <Link href="/login" asChild>
+                      <TouchableOpacity>
+                        <Text style={styles.loginLink}>
+                          Back to <Text style={[styles.loginLink, styles.boldLink]}>Login</Text>
+                        </Text>
+                      </TouchableOpacity>
+                    </Link>
+                </View>
+              </View>
             </ScrollView>
         </KeyboardAvoidingView>
-        </Pressable>
+      </Pressable>
     </View> 
   );
 };
@@ -186,41 +178,35 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: 'transparent',
   },
-  gradientBackground: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    backgroundColor: '#e6f3ff', 
-    borderTopWidth: Dimensions.get('window').height,
-    borderTopColor: '#f0f7ff', 
-    borderLeftWidth: Dimensions.get('window').width,
-    borderLeftColor: '#dceeff',
-    transform: Platform.OS === 'web' ? [{ rotate: '-10deg' }] : [],
-    opacity: 0.95,
-  },  
   scrollContainer: {
     flexGrow: 1,
     justifyContent: 'center',
     alignItems: 'center',
   },
   box: {
-    width: '90%',
+    width: "90%",
     maxWidth: 400,
     padding: 20,
-    backgroundColor: 'rgba(255, 255, 255, 0.95)',
+    backgroundColor: "transparent",
     borderRadius: 10,
+    borderColor: "#ffd21f",
+    borderWidth: 2,
     elevation: 5,
-    boxShadow: '0px 4px 16px rgba(0, 0, 0, 0.1)',
-},
-  title: {
-    fontSize: 26,
-    fontWeight: 'bold',
-    marginBottom: 20,
-    textAlign: 'center',
-    color: '#333',
+    shadowColor: "#000",
+    shadowOpacity: 0.1,
+    shadowOffset: { width: 0, height: 4 },
+    shadowRadius: 8,
   },
+  wordmarkContainer: {
+    alignItems: "center",
+    justifyContent: "center",
+    marginBottom: 24, 
+  },  
+  wordmark: {
+    width: 350,      
+    height: 50,         
+    resizeMode: "cover",
+  },    
   input: {
     height: 48,
     borderColor: 'gray',
@@ -234,47 +220,47 @@ const styles = StyleSheet.create({
     color: 'red',
     marginTop: 8,
     textAlign: 'center',
-    fontSize: 20,
+    fontSize: 24,
   },
-  infoText: {
-    fontSize: 18,
+  loginLinksContainer: {
+    marginTop: 12,
+    alignItems: 'center',
+  },
+  whiteText: {
+    fontSize: 24,
+    color: 'white',
     textAlign: 'center',
-    marginVertical: 10,
+    marginTop: 4,
   },
   loginLink: {
     marginTop: 12,
     textAlign: 'center',
     color: '#2e78b7',
-    fontSize: 22,
-  },
-  signupLink: {
-    marginTop: 10,
-    textAlign: 'center',
-    color: '#2e78b7',
-    fontSize: 22,
+    fontSize: 24,
   },
   boldLink: {
     fontWeight: 'bold',
   },
-  signUpButton: {
-    backgroundColor: '#000000',
-    paddingVertical: 12,
-    borderRadius: 8,
-    alignItems: 'center',
-  },
-  proceedButton: {
-    backgroundColor: '#000000',
-    paddingVertical: 12,
-    borderRadius: 8,
-    alignSelf: 'center',
-    width: '80%',
-    marginTop: 20,
-  },
-  buttonText: {
-    color: '#ffffff',
-    fontWeight: 'bold',
-    fontSize: 22,
+  loginLinkText: {
     textAlign: 'center',
+    color: '#2e78b7',
+    fontSize: 24,
+    fontWeight: 'bold',
+    marginTop: 8,
+    marginBottom: 4,
+  },
+  signUpButton: {
+    backgroundColor: "#ffd21f",
+    paddingVertical: 12,
+    borderRadius: 8,
+    alignItems: "center",
+    marginTop: 8,
+    marginBottom: 4,
+  },
+  signUpButtonText: {
+    color: 'black',
+    fontWeight: 'bold',
+    fontSize: 24,
   },
 });
 

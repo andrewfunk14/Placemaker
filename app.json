@@ -1,8 +1,8 @@
 {
   "expo": {
-    "name": "placemakers",
-    "slug": "placemakers",
-    "scheme": "placemakers",
+    "name": "placemaker",
+    "slug": "placemaker",
+    "scheme": "placemaker",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",

@@ -4,6 +4,7 @@ import { supabase } from '../../lib/supabaseClient';
 import {
   View,
   Text,
+  Image,
   TextInput,
   TouchableOpacity,
   ActivityIndicator,
@@ -15,7 +16,7 @@ import {
   Pressable,
 } from 'react-native';
 import { useRouter, Link } from 'expo-router';
-import { Dimensions } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 
 const ForgotPassword = () => {
   const [email, setEmail] = useState('');
@@ -58,13 +59,22 @@ const ForgotPassword = () => {
 
   return (
     <View style={styles.container}>
-      <View style={styles.gradientBackground} />
-        <Pressable onPress={Platform.OS !== 'web' ? Keyboard.dismiss : undefined} style={{ flex: 1 }}>
-          <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} style={styles.container}>
-            <ScrollView contentContainerStyle={styles.contentContainer} keyboardShouldPersistTaps="handled">
-              <View style={styles.box}>
-                <Text style={styles.title}>Sanctum Forgot Password</Text>
-
+      <LinearGradient
+        colors={['#2c2c2c', '#000000']}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 0, y: 1 }}
+        style={StyleSheet.absoluteFillObject}
+      />
+      <Pressable onPress={Platform.OS !== 'web' ? Keyboard.dismiss : undefined} style={{ flex: 1 }}>
+        <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} style={styles.container}>
+          <ScrollView contentContainerStyle={styles.contentContainer} keyboardShouldPersistTaps="handled">
+            <View style={styles.box}>
+              <View style={styles.wordmarkContainer}>
+                <Image
+                  source={require('../../assets/dark-wordmark.png')}
+                  style={styles.wordmark}
+                />
+              </View>
                 <TextInput
                   style={styles.input}
                   placeholder="Enter your email"
@@ -74,7 +84,7 @@ const ForgotPassword = () => {
                   returnKeyType="done"
                   keyboardType="email-address"
                   autoCapitalize="none"
-                  onSubmitEditing={Keyboard.dismiss} // Dismiss keyboard when pressing "Enter"
+                  onSubmitEditing={Keyboard.dismiss}
                 />
 
                 {isLoading ? (
@@ -110,41 +120,35 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: 'transparent',
   },
-  gradientBackground: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    backgroundColor: '#e6f3ff', 
-    borderTopWidth: Dimensions.get('window').height,
-    borderTopColor: '#f0f7ff', 
-    borderLeftWidth: Dimensions.get('window').width,
-    borderLeftColor: '#dceeff',
-    transform: Platform.OS === 'web' ? [{ rotate: '-10deg' }] : [],
-    opacity: 0.95,
-  },  
   contentContainer: {
     flexGrow: 1,
     justifyContent: 'center',
     alignItems: 'center',
   },
   box: {
-    width: '90%',
+    width: "90%",
     maxWidth: 400,
     padding: 20,
-    backgroundColor: 'rgba(255, 255, 255, 0.95)',
+    backgroundColor: "transparent",
     borderRadius: 10,
+    borderColor: "#ffd21f",
+    borderWidth: 2,
     elevation: 5,
-    boxShadow: '0px 4px 16px rgba(0, 0, 0, 0.1)',
+    shadowColor: "#000",
+    shadowOpacity: 0.1,
+    shadowOffset: { width: 0, height: 4 },
+    shadowRadius: 8,
   },
-  title: {
-    fontSize: Platform.OS === 'web' ? 26 : 24,
-    fontWeight: 'bold',
-    marginBottom: 20,
-    textAlign: 'center',
-    color: '#333',
-  },
+  wordmarkContainer: {
+    alignItems: "center",
+    justifyContent: "center",
+    marginBottom: 24, 
+  },  
+  wordmark: {
+    width: 350,      
+    height: 50,         
+    resizeMode: "cover",
+  },    
   input: {
     height: 48,
     borderColor: 'gray',
@@ -155,34 +159,34 @@ const styles = StyleSheet.create({
     backgroundColor: '#E5E5E5',
   },
   resetButton: {
-    backgroundColor: '#000000',
+    backgroundColor: "#ffd21f",
     paddingVertical: 12,
     borderRadius: 8,
     alignItems: 'center',
-    // marginTop: 10,
+    marginTop: 4,
   },
   resetButtonText: {
-    color: '#ffffff',
+    color: 'black',
     fontWeight: 'bold',
-    fontSize: 22,
+    fontSize: 24,
   },
   success: {
     color: 'green',
     marginTop: 8,
     textAlign: 'center',
-    fontSize: 20,
+    fontSize: 24,
   },
   error: {
     color: 'red',
     marginTop: 8,
     textAlign: 'center',
-    fontSize: 20,
+    fontSize: 24,
   },
   loginLink: {
-    marginTop: 8,
+    marginTop: 16,
     textAlign: 'center',
     color: '#2e78b7',
-    fontSize: 22,
+    fontSize: 24,
   },
   boldLink: {
     fontWeight: 'bold',

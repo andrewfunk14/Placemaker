@@ -28,6 +28,14 @@ export default function Home() {
       <TouchableOpacity style={styles.button} onPress={handleLogout}>
         <Text style={styles.buttonText}>Logout</Text>
       </TouchableOpacity>
+
+      <TouchableOpacity
+        style={[styles.button, { backgroundColor: "#2e78b7", marginTop: 12 }]}
+        onPress={() => router.push("/resetpassword")}
+      >
+        <Text style={styles.buttonText}>Reset Password</Text>
+      </TouchableOpacity>
+      
     </View>
   );
 }
