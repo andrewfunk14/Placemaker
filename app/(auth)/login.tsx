@@ -1,7 +1,7 @@
 // login.tsx
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { supabase } from "../../lib/supabaseClient";
-import { useRouter, Link } from "expo-router";
+import { useRouter } from "expo-router";
 import {
   View,
   Text,
@@ -28,7 +28,14 @@ const Login = () => {
   const router = useRouter();
   const { setUserId, setRoles } = useUser();
 
+  const emailRef = useRef<TextInput>(null);
   const passwordRef = useRef<TextInput>(null);
+
+  useEffect(() => {
+    if (Platform.OS === "web") {
+      emailRef.current?.focus();
+    }
+  }, []);
 
   const handleLogin = async () => {
     setIsLoading(true);
@@ -48,20 +55,20 @@ const Login = () => {
 
         const { data: profileData, error: profileError } = await supabase
           .from("users")
-          .select("role")
+          .select("roles, email")
           .eq("id", user.id)
           .single();
 
         if (profileError) throw profileError;
 
-        if (profileData?.role) {
-          await setRoles(profileData.role);
+        if (profileData?.roles) {
+          await setRoles(profileData.roles);
         }
 
         router.push('/(placemaker)/home');
     }
     } catch (error: any) {
-      setErrorMessage(error.message || "Failed to log in");
+      setErrorMessage("Email or password is incorrect");
     } finally {
       setIsLoading(false);
     }
@@ -77,8 +84,8 @@ const Login = () => {
       />
       <Pressable
         onPress={Platform.OS !== "web" ? Keyboard.dismiss : undefined}
-        style={{ flex: 1 }}
-      >
+        style={{ flex: 1, pointerEvents: "auto" }}
+        >
         <KeyboardAvoidingView
           behavior={Platform.OS === "ios" ? "padding" : undefined}
           style={styles.container}
@@ -92,6 +99,7 @@ const Login = () => {
                 <Image
                   source={require('../../assets/dark-wordmark.png')}
                   style={styles.wordmark}
+                  resizeMode="cover"
                 />
               </View>
               <TextInput
@@ -118,9 +126,16 @@ const Login = () => {
                 onSubmitEditing={Keyboard.dismiss}
               />
 
-              <Link href="/forgotpassword" asChild>
+              <TouchableOpacity
+                onPress={(e) => {
+                  if (Platform.OS === "web") {
+                    (e.currentTarget as unknown as HTMLElement).blur();
+                  }
+                  router.push("/forgotpassword");
+                }}
+              >
                 <Text style={styles.forgotPasswordText}>Forgot Password?</Text>
-              </Link>
+              </TouchableOpacity>
 
               {isLoading ? (
                 <ActivityIndicator size="large" color="white" />
@@ -136,9 +151,16 @@ const Login = () => {
 
               <View style={styles.signupLinksContainer}>
                 <Text style={styles.whiteText}>Don't have an account?</Text>
-                  <Link href="/signup" asChild>
-                    <Text style={styles.signupLinkText}>Sign Up</Text>
-                  </Link>
+                  <TouchableOpacity
+                    onPress={(e) => {
+                      if (Platform.OS === "web") {
+                        (e.currentTarget as unknown as HTMLElement).blur();
+                      }
+                      router.push("/signup");
+                    }}
+                  >                  
+                  <Text style={styles.signupLinkText}>Sign Up</Text>
+                </TouchableOpacity>
               </View>
             </View>
           </ScrollView>
@@ -167,10 +189,7 @@ const styles = StyleSheet.create({
     borderColor: "#ffd21f",
     borderWidth: 2,
     elevation: 5,
-    shadowColor: "#000",
-    shadowOpacity: 0.1,
-    shadowOffset: { width: 0, height: 4 },
-    shadowRadius: 8,
+    boxShadow: "0px 4px 8px rgba(0,0,0,0.1)",
   },
   wordmarkContainer: {
     alignItems: "center",
@@ -180,7 +199,6 @@ const styles = StyleSheet.create({
   wordmark: {
     width: 350,      
     height: 50,         
-    resizeMode: "cover",
   },    
   input: {
     height: 48,

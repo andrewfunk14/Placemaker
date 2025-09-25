@@ -15,7 +15,7 @@ import {
   Platform,
   Pressable,
 } from 'react-native';
-import { useRouter, Link } from 'expo-router';
+import { useRouter } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
 
 const ForgotPassword = () => {
@@ -31,7 +31,7 @@ const ForgotPassword = () => {
     setMessage('');
   
     if (!email.trim()) {
-      setErrorMessage('Please enter your email address');
+      setErrorMessage('Please enter email address');
       setIsLoading(false);
       return;
     }
@@ -40,7 +40,9 @@ const ForgotPassword = () => {
       console.log("Sending password reset request for:", email);
   
       const { error } = await supabase.auth.resetPasswordForEmail(email.trim(), {
-        redirectTo: 'https://www.sanctum.blue/resetpassword?type=recovery'
+        redirectTo: Platform.OS === "web"
+        ? "http://localhost:8081/resetpassword"
+        : "exp://127.0.0.1:19000/--/resetpassword"
       });
   
       if (error) {
@@ -48,7 +50,7 @@ const ForgotPassword = () => {
         throw error;
       }
   
-      setMessage('A password reset link has been sent to your email');
+      setMessage('Check email for password reset link');
     } catch (error: any) {
       console.error("Error in handleForgotPassword:", error.message);
       setErrorMessage(error.message || 'Failed to send password reset email');
@@ -65,7 +67,7 @@ const ForgotPassword = () => {
         end={{ x: 0, y: 1 }}
         style={StyleSheet.absoluteFillObject}
       />
-      <Pressable onPress={Platform.OS !== 'web' ? Keyboard.dismiss : undefined} style={{ flex: 1 }}>
+      <Pressable onPress={Platform.OS !== 'web' ? Keyboard.dismiss : undefined}   style={{ flex: 1, pointerEvents: "auto" }}>
         <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} style={styles.container}>
           <ScrollView contentContainerStyle={styles.contentContainer} keyboardShouldPersistTaps="handled">
             <View style={styles.box}>
@@ -73,6 +75,7 @@ const ForgotPassword = () => {
                 <Image
                   source={require('../../assets/dark-wordmark.png')}
                   style={styles.wordmark}
+                  resizeMode="cover"
                 />
               </View>
                 <TextInput
@@ -98,15 +101,18 @@ const ForgotPassword = () => {
                 {message ? <Text style={styles.success}>{message}</Text> : null}
                 {errorMessage ? <Text style={styles.error}>{errorMessage}</Text> : null}
 
-                {/* Link to return to the login page */}
-                <Link href="/login" asChild>
-                  <TouchableOpacity>
-                    <Text style={styles.loginLink}>
-                      Back to <Text style={[styles.loginLink, styles.boldLink]}>Login</Text>
-                    </Text>
-                  </TouchableOpacity>
-                </Link>
-
+                <TouchableOpacity
+                  onPress={(e) => {
+                    if (Platform.OS === "web") {
+                      (e.currentTarget as unknown as HTMLElement).blur();
+                    }
+                    router.push("/login");
+                  }}
+                >                    
+                  <Text style={styles.loginLink}>
+                    Back to <Text style={[styles.loginLink, styles.boldLink]}>Login</Text>
+                  </Text>
+                </TouchableOpacity>
               </View>
             </ScrollView>
           </KeyboardAvoidingView>
@@ -134,10 +140,7 @@ const styles = StyleSheet.create({
     borderColor: "#ffd21f",
     borderWidth: 2,
     elevation: 5,
-    shadowColor: "#000",
-    shadowOpacity: 0.1,
-    shadowOffset: { width: 0, height: 4 },
-    shadowRadius: 8,
+    boxShadow: "0px 4px 8px rgba(0,0,0,0.1)",
   },
   wordmarkContainer: {
     alignItems: "center",
@@ -147,7 +150,6 @@ const styles = StyleSheet.create({
   wordmark: {
     width: 350,      
     height: 50,         
-    resizeMode: "cover",
   },    
   input: {
     height: 48,
@@ -178,12 +180,12 @@ const styles = StyleSheet.create({
   },
   error: {
     color: 'red',
-    marginTop: 8,
+    marginTop: 12,
     textAlign: 'center',
     fontSize: 24,
   },
   loginLink: {
-    marginTop: 16,
+    marginTop: 12,
     textAlign: 'center',
     color: '#2e78b7',
     fontSize: 24,

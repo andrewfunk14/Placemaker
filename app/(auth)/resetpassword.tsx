@@ -1,7 +1,7 @@
 // resetpassword.tsx
 import React, { useEffect, useState, useRef } from 'react';
 import { supabase } from '../../lib/supabaseClient';
-import { useRouter, Link } from 'expo-router';
+import { useRouter } from 'expo-router';
 import {
   View,
   Text,
@@ -35,34 +35,30 @@ const ResetPassword = () => {
     const extractToken = async () => {
       try {
         let url = '';
-
+  
         if (Platform.OS === 'web') {
-          if (typeof window !== 'undefined') {
-            url = window.location.href;
-          }
+          url = typeof window !== 'undefined' ? window.location.href : '';
         } else {
-          url = await Linking.getInitialURL() || '';
+          url = (await Linking.getInitialURL()) || '';
         }
-
-        console.log("Full URL:", url);
-
+  
+        if (!url) return;
+  
         const searchParams = new URLSearchParams(new URL(url).search);
         const hashParams = new URLSearchParams(new URL(url).hash.substring(1));
-
+  
         const token = searchParams.get('access_token') || hashParams.get('access_token');
-
+  
         if (token) {
           console.log("Extracted Access Token:", token);
           setAccessToken(token);
-        } else {
-          console.warn("No access token found in URL.");
-        }
+        } 
       } catch (error) {
         console.error("Error extracting token:", error);
       }
     };
-
-    extractToken();
+  
+    extractToken();  
 
     const checkUser = async () => {
       try {
@@ -165,7 +161,7 @@ const ResetPassword = () => {
         end={{ x: 0, y: 1 }}
         style={StyleSheet.absoluteFillObject}
       />
-        <Pressable onPress={Platform.OS !== 'web' ? Keyboard.dismiss : undefined} style={{ flex: 1 }}>
+        <Pressable onPress={Platform.OS !== 'web' ? Keyboard.dismiss : undefined}   style={{ flex: 1, pointerEvents: "auto" }}>
           <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} style={styles.container}>
             <ScrollView contentContainerStyle={styles.contentContainer} keyboardShouldPersistTaps="handled">
               <View style={styles.box}>
@@ -173,6 +169,7 @@ const ResetPassword = () => {
                   <Image
                     source={require('../../assets/dark-wordmark.png')}
                     style={styles.wordmark}
+                    resizeMode="cover"
                   />
                 </View>
                 <TextInput
@@ -193,6 +190,7 @@ const ResetPassword = () => {
                   placeholderTextColor="#a0a0a0"
                   secureTextEntry
                   value={confirmPassword}
+                  returnKeyType="done"
                   onChangeText={(text) => setConfirmPassword(text)}
                 />
 
@@ -204,11 +202,16 @@ const ResetPassword = () => {
                   </TouchableOpacity>
                 )}
                 {errorMessage ? <Text style={styles.error}>{errorMessage}</Text> : null}
-                <Link href="/login" asChild>
-                  <TouchableOpacity>
-                    <Text style={styles.loginLink}>Back to <Text style={styles.boldLink}>Login</Text></Text>
-                  </TouchableOpacity>
-                </Link>
+                <TouchableOpacity
+                  onPress={(e) => {
+                    if (Platform.OS === "web") {
+                      (e.currentTarget as unknown as HTMLElement).blur();
+                    }
+                    router.push("/login");
+                  }}
+                >                    
+                  <Text style={styles.loginLink}>Back to <Text style={styles.boldLink}>Login</Text></Text>
+                </TouchableOpacity>
               </View>
             </ScrollView>
           </KeyboardAvoidingView>
@@ -236,10 +239,7 @@ const styles = StyleSheet.create({
     borderColor: "#ffd21f",
     borderWidth: 2,
     elevation: 5,
-    shadowColor: "#000",
-    shadowOpacity: 0.1,
-    shadowOffset: { width: 0, height: 4 },
-    shadowRadius: 8,
+    boxShadow: "0px 4px 8px rgba(0,0,0,0.1)",
   },
   wordmarkContainer: {
     alignItems: "center",
@@ -249,7 +249,6 @@ const styles = StyleSheet.create({
   wordmark: {
     width: 350,      
     height: 50,         
-    resizeMode: "cover",
   },    
   input: {
     height: 48,
@@ -274,12 +273,12 @@ const styles = StyleSheet.create({
   },
   error: {
     color: 'red',
-    marginTop: 8,
+    marginTop: 12,
     textAlign: 'center',
     fontSize: 24,
   },
   loginLink: {
-    marginTop: 16,
+    marginTop: 12,
     textAlign: 'center',
     color: '#2e78b7',
     fontSize: 24,

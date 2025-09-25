@@ -17,8 +17,6 @@ export interface AuthState {
   error: string | null;
 }
 
-// --- Thunks --- //
-
 // Fetch user details after authentication
 export const fetchUserDetails = createAsyncThunk(
   "auth/fetchUserDetails",

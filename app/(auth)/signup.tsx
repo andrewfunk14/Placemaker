@@ -1,7 +1,7 @@
 // signup.tsx
 import React, { useState, useRef } from "react";
 import { supabase } from "../../lib/supabaseClient";
-import { useRouter, Link } from "expo-router";
+import { useRouter } from "expo-router";
 import {
   View,
   Text,
@@ -35,42 +35,87 @@ const Signup = () => {
   const confirmPasswordRef = useRef<TextInput>(null);
 
   const handleSignup = async () => {
+    setErrorMessage("");
+  
+    if (!name.trim()) {
+      setErrorMessage("Name is required");
+      return;
+    }
+    if (!email.trim()) {
+      setErrorMessage("Email is required");
+      return;
+    }
+    if (!password.trim()) {
+      setErrorMessage("Password is required");
+      return;
+    }
+    if (password.length < 6) {
+      setErrorMessage("Password must be at least 6 characters");
+      return;
+    }
+    if (password !== confirmPassword) {
+      setErrorMessage("Passwords do not match");
+      return;
+    }
+  
     setIsLoading(true);
     setErrorMessage("");
-
+  
     try {
       const { data, error } = await supabase.auth.signUp({
         email,
         password,
       });
-
-      if (error) throw error;
-
+  
+      if (error) {
+        const errMsg = (error as any).message || "";
+  
+        if (
+          errMsg.includes("already registered") ||
+          errMsg.includes("User already registered") ||
+          errMsg.includes("duplicate key value")
+        ) {
+          setErrorMessage("This email is already registered");
+          return;
+        }
+  
+        setErrorMessage(errMsg || "Failed to sign up");
+        return;
+      }
+  
       const user = data?.user;
       if (user) {
-        await setUserId(user.id);
-
         const { error: insertError } = await supabase.from("users").insert([
           {
             id: user.id,
-            name: name as string,
-            email: email as string,
-            role: ["placemaker"],
+            name: name,
+            email: email,
+            roles: ["placemaker"],
           },
         ]);
-
-        if (insertError) throw insertError;
-
+  
+        if (insertError) {
+          if (insertError.code === "23505") {
+            setErrorMessage("This email is already registered");
+            return;
+          }
+  
+          console.error("Insert error:", insertError);
+          setErrorMessage("Something went wrong creating your profile");
+          return;
+        }
+  
+        await setUserId(user.id);
         await setRoles(selectedRoles);
-
-        router.push('/(placemaker)/home');
+        router.push("/(placemaker)/home");
       }
-    } catch (error: any) {
-      setErrorMessage(error.message || "Failed to sign up");
+    } catch (err: any) {
+      console.error("Unexpected signup error:", err);
+      setErrorMessage("Something went wrong creating your profile");
     } finally {
       setIsLoading(false);
     }
-  };
+  };  
 
   return (
     <View style={styles.container}>
@@ -82,7 +127,7 @@ const Signup = () => {
       />
         <Pressable
         onPress={Platform.OS !== "web" ? Keyboard.dismiss : undefined}
-        style={{ flex: 1 }}
+        style={{ flex: 1, pointerEvents: "auto" }}
         >
         <KeyboardAvoidingView
             behavior={Platform.OS === "ios" ? "padding" : undefined}
@@ -97,6 +142,7 @@ const Signup = () => {
                 <Image
                   source={require('../../assets/dark-wordmark.png')}
                   style={styles.wordmark}
+                  resizeMode="cover"
                 />
               </View>
               <TextInput
@@ -128,7 +174,8 @@ const Signup = () => {
                 secureTextEntry
                 value={password}
                 onChangeText={setPassword}
-                returnKeyType="done"
+                returnKeyType="next"
+                onSubmitEditing={() => confirmPasswordRef.current?.focus()}
               />
               <TextInput
                 ref={confirmPasswordRef}
@@ -157,13 +204,18 @@ const Signup = () => {
 
                 <View style={styles.loginLinksContainer}>
                   <Text style={styles.whiteText}>Already have an account?</Text>
-                    <Link href="/login" asChild>
-                      <TouchableOpacity>
-                        <Text style={styles.loginLink}>
-                          Back to <Text style={[styles.loginLink, styles.boldLink]}>Login</Text>
-                        </Text>
-                      </TouchableOpacity>
-                    </Link>
+                    <TouchableOpacity
+                      onPress={(e) => {
+                        if (Platform.OS === "web") {
+                          (e.currentTarget as unknown as HTMLElement).blur();
+                        }
+                        router.push("/login");
+                      }}
+                    >                        
+                    <Text style={styles.loginLink}>
+                      Back to <Text style={[styles.loginLink, styles.boldLink]}>Login</Text>
+                    </Text>
+                  </TouchableOpacity>
                 </View>
               </View>
             </ScrollView>
@@ -192,10 +244,7 @@ const styles = StyleSheet.create({
     borderColor: "#ffd21f",
     borderWidth: 2,
     elevation: 5,
-    shadowColor: "#000",
-    shadowOpacity: 0.1,
-    shadowOffset: { width: 0, height: 4 },
-    shadowRadius: 8,
+    boxShadow: "0px 4px 8px rgba(0,0,0,0.1)",
   },
   wordmarkContainer: {
     alignItems: "center",
@@ -205,7 +254,6 @@ const styles = StyleSheet.create({
   wordmark: {
     width: 350,      
     height: 50,         
-    resizeMode: "cover",
   },    
   input: {
     height: 48,
@@ -230,7 +278,7 @@ const styles = StyleSheet.create({
     fontSize: 24,
     color: 'white',
     textAlign: 'center',
-    marginTop: 4,
+    // marginTop: 4,
   },
   loginLink: {
     marginTop: 12,

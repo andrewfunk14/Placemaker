@@ -1,9 +1,9 @@
 import { View, Text, StyleSheet } from "react-native";
 
-export default function HomeScreen() {
+export default function LearnScreen() {
   return (
     <View style={styles.container}>
-      <Text style={styles.text}>Welcome to Home</Text>
+      <Text style={styles.text}>Welcome to Learn</Text>
     </View>
   );
 }
@@ -18,6 +18,6 @@ const styles = StyleSheet.create({
   text: { 
     fontSize: 24, 
     fontWeight: "bold",
-    color: "#fff",
+    color: "#fff", 
   },
 });
