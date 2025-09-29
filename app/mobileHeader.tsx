@@ -21,7 +21,6 @@ interface MobileHeaderProps {
 }
 
 const MobileHeader: React.FC<MobileHeaderProps> = ({
-  showBackButton = true,
   profileImageUrl,
 }) => {
   const router = useRouter();
@@ -102,12 +101,12 @@ const styles = StyleSheet.create({
   },
   headerContainer: {
     width: "100%",
-    backgroundColor: "#000",
+    backgroundColor: "#0d0d0d",
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
     paddingHorizontal: 16,
-    paddingTop: Platform.OS === "ios" ? 50 : 20,
+    paddingTop: Platform.OS === "ios" ? 52 : 20,
     paddingBottom: 12,
   },
   leftContainer: {
@@ -122,7 +121,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   wordmark: {
-    width: 300,
+    width: 200,
     height: 50,
   },
   rightContainer: {

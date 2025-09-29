@@ -120,7 +120,7 @@ const Signup = () => {
   return (
     <View style={styles.container}>
       <LinearGradient
-        colors={['#2c2c2c', '#000000']}
+        colors={['#222222', '#0d0d0d']}
         start={{ x: 0, y: 0 }}
         end={{ x: 0, y: 1 }}
         style={StyleSheet.absoluteFillObject}
@@ -139,8 +139,17 @@ const Signup = () => {
             >
             <View style={styles.box}>
               <View style={styles.wordmarkContainer}>
+                {/* <Image
+                  source={require('../../assets/dark-wordmark.svg')}
+                  style={styles.wordmark}
+                  resizeMode="cover"
+                /> */}
                 <Image
-                  source={require('../../assets/dark-wordmark.png')}
+                  source={
+                    Platform.OS === "web"
+                      ? require("../../assets/dark-wordmark.svg")
+                      : require("../../assets/dark-wordmark.png")
+                  }
                   style={styles.wordmark}
                   resizeMode="cover"
                 />
@@ -249,11 +258,11 @@ const styles = StyleSheet.create({
   wordmarkContainer: {
     alignItems: "center",
     justifyContent: "center",
-    marginBottom: 24, 
+    marginBottom: 20, 
   },  
   wordmark: {
-    width: 350,      
-    height: 50,         
+    width: 250,      
+    height: 40,         
   },    
   input: {
     height: 48,

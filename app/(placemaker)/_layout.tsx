@@ -27,7 +27,7 @@ export default function PlacemakerLayout() {
         <View style={styles.sidebar}>
           <View style={styles.wordmarkContainer}>
             <Image
-              source={require("../../assets/dark-wordmark.png")}
+              source={require("../../assets/dark-wordmark.svg")}
               style={styles.wordmark}
               resizeMode="cover"
             />
@@ -69,7 +69,7 @@ export default function PlacemakerLayout() {
             onPress={() => router.push("/(placemaker)/(build)/build")}
           >
             <Ionicons
-              name="hammer-outline"
+              name="cube-outline"
               size={24}
               color={currentPath.startsWith("/(placemaker)/(build)") ? "#FFD21F" : "#fff"}
             />
@@ -116,19 +116,19 @@ export default function PlacemakerLayout() {
     );
   }
 
-  // ✅ mobile stays the same
+  // mobile
   return (
     <View style={{ flex: 1 }}>
       <MobileHeader />
       <Tabs
         screenOptions={{
           headerShown: false,
-          tabBarActiveTintColor: "#DC3545",
+          tabBarActiveTintColor: "#FFD21F",
           tabBarInactiveTintColor: "#fff",
           tabBarStyle: {
-            backgroundColor: "#000",
-            borderTopColor: "#000",
-            height: 80,
+            backgroundColor: "#0d0d0d",
+            borderTopColor: "#0d0d0d",
+            height: 88,
             paddingBottom: 12,
             paddingTop: 4,
           },
@@ -140,7 +140,7 @@ export default function PlacemakerLayout() {
       >
         <Tabs.Screen name="home" options={{ title: "Home", tabBarIcon: ({ color, size }) => <Ionicons name="home-outline" size={size} color={color} /> }} />
         <Tabs.Screen name="(learn)/learn" options={{ title: "Learn", tabBarIcon: ({ color, size }) => <Ionicons name="book-outline" size={size} color={color} /> }} />
-        <Tabs.Screen name="(build)/build" options={{ title: "Build", tabBarIcon: ({ color, size }) => <Ionicons name="hammer-outline" size={size} color={color} /> }} />
+        <Tabs.Screen name="(build)/build" options={{ title: "Build", tabBarIcon: ({ color, size }) => <Ionicons name="cube-outline" size={size} color={color} /> }} />
         <Tabs.Screen name="(connect)/connect" options={{ title: "Connect", tabBarIcon: ({ color, size }) => <Ionicons name="people-outline" size={size} color={color} /> }} />
         <Tabs.Screen name="profile" options={{ title: "Profile", tabBarIcon: ({ color, size }) => <Ionicons name="person-outline" size={size} color={color} /> }} />
       </Tabs>
@@ -152,7 +152,7 @@ const styles = StyleSheet.create({
   container: { flex: 1, flexDirection: "row" },
   sidebar: {
     width: 220,
-    backgroundColor: "#111",
+    backgroundColor: "#0d0d0d",
     paddingTop: 12,
     paddingHorizontal: 10,
   },
@@ -162,7 +162,7 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   wordmark: {
-    width: 300,
+    width: 200,
     height: 50,
   },
   link: {
