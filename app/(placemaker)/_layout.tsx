@@ -133,7 +133,7 @@ export default function PlacemakerLayout() {
             paddingTop: 4,
           },
           tabBarLabelStyle: {
-            fontSize: 15,
+            fontSize: 16,
             fontWeight: "600",
           },
         }}
@@ -159,7 +159,7 @@ const styles = StyleSheet.create({
   wordmarkContainer: {
     alignItems: "center",
     justifyContent: "center",
-    marginBottom: 8,
+    // marginBottom: 4,
   },
   wordmark: {
     width: 200,
@@ -173,7 +173,7 @@ const styles = StyleSheet.create({
   },
   linkText: {
     color: "#fff",
-    fontSize: 20,
+    fontSize: 22,
     marginLeft: 8,
   },
   content: {

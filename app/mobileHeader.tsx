@@ -106,7 +106,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "space-between",
     paddingHorizontal: 16,
-    paddingTop: Platform.OS === "ios" ? 52 : 20,
+    paddingTop: Platform.OS === "ios" ? 56 : 20,
     paddingBottom: 12,
   },
   leftContainer: {
@@ -122,7 +122,7 @@ const styles = StyleSheet.create({
   },
   wordmark: {
     width: 200,
-    height: 50,
+    height: 52,
   },
   rightContainer: {
     width: 50,
