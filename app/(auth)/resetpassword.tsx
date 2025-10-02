@@ -8,7 +8,6 @@ import {
   Image,
   TextInput,
   TouchableOpacity,
-  ActivityIndicator,
   StyleSheet,
   Alert,
   Keyboard,
@@ -202,16 +201,19 @@ const ResetPassword = () => {
                   returnKeyType="done"
                   onChangeText={(text) => setConfirmPassword(text)}
                 />
+                <TouchableOpacity
+                  style={[styles.resetButton, isLoading && { opacity: 0.7 }]}
+                    onPress={handleResetPassword}
+                    disabled={isLoading}
+                >
+                  <Text style={styles.resetButtonText}>
+                    {isLoading ? "Resseting..." : "Reset Password"}
+                  </Text>
+                </TouchableOpacity>
 
-                {isLoading ? (
-                  <ActivityIndicator size="large" color="#000" />
-                ) : (
-                  <TouchableOpacity style={styles.resetButton} onPress={handleResetPassword}>
-                    <Text style={styles.resetButtonText}>Reset Password</Text>
-                  </TouchableOpacity>
-                )}
                 {errorMessage ? <Text style={styles.error}>{errorMessage}</Text> : null}
                 <TouchableOpacity
+                  style={styles.backButton}
                   onPress={(e) => {
                     if (Platform.OS === "web") {
                       (e.currentTarget as unknown as HTMLElement).blur();
@@ -233,6 +235,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: 'transparent',
+    cursor: 'auto',
   },
   contentContainer: {
     flexGrow: 1,
@@ -281,13 +284,20 @@ const styles = StyleSheet.create({
     fontSize: 24,
   },
   error: {
-    color: 'red',
-    marginTop: 12,
+    color: "#ff4d4f",
+    marginTop: 16,
     textAlign: 'center',
     fontSize: 24,
   },
+  backButton: {
+    alignSelf: "center",
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+    borderRadius: 6,
+    backgroundColor: "transparent",
+  },
   loginLink: {
-    marginTop: 12,
+    marginTop: 4,
     textAlign: 'center',
     color: '#2e78b7',
     fontSize: 24,

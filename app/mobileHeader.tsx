@@ -29,13 +29,26 @@ const MobileHeader: React.FC<MobileHeaderProps> = ({
   const [showMenu, setShowMenu] = useState(false);
   const handleBack = () => {
     if (history.length > 1) {
-      dispatch(popPath());
       const prev = history[history.length - 2];
-      router.replace(prev);
+      if (prev === "/login" || prev === "/(auth)/login") {
+        router.replace("/(placemaker)/home");
+      } else {
+        dispatch(popPath());
+        router.replace(prev);
+      }
     } else {
-      router.replace("/(placemaker)/home"); 
+      router.replace("/(placemaker)/home");
     }
-  };
+  };  
+  // const handleBack = () => {
+  //   if (history.length > 1) {
+  //     dispatch(popPath());
+  //     const prev = history[history.length - 2];
+  //     router.replace(prev);
+  //   } else {
+  //     router.replace("/(placemaker)/home"); 
+  //   }
+  // };
 
   const closeMenu = () => setShowMenu(false);
 
@@ -106,8 +119,8 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "space-between",
     paddingHorizontal: 16,
-    paddingTop: Platform.OS === "ios" ? 56 : 20,
-    paddingBottom: 12,
+    paddingTop: Platform.OS === "ios" ? 52 : 20,
+    paddingBottom: 8,
   },
   leftContainer: {
     width: 50,

@@ -7,7 +7,6 @@ import {
   Image,
   TextInput,
   TouchableOpacity,
-  ActivityIndicator,
   StyleSheet,
   ScrollView,
   Keyboard,
@@ -50,7 +49,7 @@ const ForgotPassword = () => {
         throw error;
       }
   
-      setMessage('Check email for password reset link');
+      setMessage('Check email for reset link');
     } catch (error: any) {
       console.error("Error in handleForgotPassword:", error.message);
       setErrorMessage(error.message || 'Failed to send password reset email');
@@ -98,19 +97,21 @@ const ForgotPassword = () => {
                   autoCapitalize="none"
                   onSubmitEditing={Keyboard.dismiss}
                 />
-
-                {isLoading ? (
-                  <ActivityIndicator size="large" color="#000" />
-                ) : (
-                  <TouchableOpacity style={styles.resetButton} onPress={handleForgotPassword}>
-                    <Text style={styles.resetButtonText}>Send Password Link</Text>
-                  </TouchableOpacity>
-                )}
+                <TouchableOpacity
+                  style={[styles.resetButton, isLoading && { opacity: 0.7 }]}
+                    onPress={handleForgotPassword}
+                    disabled={isLoading}
+                >
+                  <Text style={styles.resetButtonText}>
+                    {isLoading ? "Sending..." : "Send Password Link"}
+                  </Text>
+                </TouchableOpacity>
 
                 {message ? <Text style={styles.success}>{message}</Text> : null}
                 {errorMessage ? <Text style={styles.error}>{errorMessage}</Text> : null}
 
                 <TouchableOpacity
+                  style={styles.backButton}
                   onPress={(e) => {
                     if (Platform.OS === "web") {
                       (e.currentTarget as unknown as HTMLElement).blur();
@@ -134,6 +135,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: 'transparent',
+    cursor: 'auto',
   },
   contentContainer: {
     flexGrow: 1,
@@ -182,19 +184,26 @@ const styles = StyleSheet.create({
     fontSize: 24,
   },
   success: {
-    color: 'green',
-    marginTop: 8,
+    color: "#4ade80",
+    marginTop: 16,
     textAlign: 'center',
     fontSize: 24,
   },
   error: {
-    color: 'red',
-    marginTop: 12,
+    color: "#ff4d4f",
+    marginTop: 16,
     textAlign: 'center',
     fontSize: 24,
   },
+  backButton: {
+    alignSelf: "center",
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+    borderRadius: 6,
+    backgroundColor: "transparent",
+  },
   loginLink: {
-    marginTop: 12,
+    marginTop: 4,
     textAlign: 'center',
     color: '#2e78b7',
     fontSize: 24,

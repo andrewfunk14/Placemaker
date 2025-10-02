@@ -8,7 +8,6 @@ import {
   Image,
   TextInput,
   TouchableOpacity,
-  ActivityIndicator,
   StyleSheet,
   Keyboard,
   KeyboardAvoidingView,
@@ -136,6 +135,7 @@ const Login = () => {
               />
 
               <TouchableOpacity
+                style={styles.forgotPasswordButton}
                 onPress={(e) => {
                   if (Platform.OS === "web") {
                     (e.currentTarget as unknown as HTMLElement).blur();
@@ -146,13 +146,15 @@ const Login = () => {
                 <Text style={styles.forgotPasswordText}>Forgot Password?</Text>
               </TouchableOpacity>
 
-              {isLoading ? (
-                <ActivityIndicator size="large" color="white" />
-              ) : (
-                <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
-                  <Text style={styles.loginButtonText}>Login</Text>
-                </TouchableOpacity>
-              )}
+              <TouchableOpacity
+                style={[styles.loginButton, isLoading && { opacity: 0.7 }]}
+                  onPress={handleLogin}
+                  disabled={isLoading}
+              >
+                <Text style={styles.loginButtonText}>
+                  {isLoading ? "Logging in..." : "Login"}
+                </Text>
+              </TouchableOpacity>
 
               {errorMessage ? (
                 <Text style={styles.error}>{errorMessage}</Text>
@@ -183,6 +185,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "transparent",
+    cursor: 'auto',
   },
   scrollContainer: {
     flexGrow: 1,
@@ -218,6 +221,13 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     backgroundColor: "#E5E5E5",
   },
+  forgotPasswordButton: {
+    alignSelf: "center",
+    // paddingVertical: 4,
+    paddingHorizontal: 16,
+    borderRadius: 6,
+    backgroundColor: "transparent",
+  },
   forgotPasswordText: {
     color: '#2e78b7',
     fontSize: 24,
@@ -227,8 +237,8 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   error: {
-    color: "red",
-    marginTop: 8,
+    color: "#ff4d4f",
+    marginTop: 12,
     textAlign: "center",
     fontSize: 24,
   },
@@ -240,14 +250,14 @@ const styles = StyleSheet.create({
     fontSize: 24,
     color: 'white',
     textAlign: 'center',
-    marginBottom: 8,
+    marginBottom: 12,
   },
   signupLinkText: {
     textAlign: 'center',
     color: '#2e78b7',
     fontSize: 24,
     fontWeight: 'bold',
-    marginVertical: 4,
+    marginBottom: 4,
   },
   loginButton: {
     backgroundColor: "#ffd21f",

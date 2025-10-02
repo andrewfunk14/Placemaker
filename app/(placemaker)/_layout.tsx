@@ -149,9 +149,13 @@ export default function PlacemakerLayout() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, flexDirection: "row" },
+  container: { 
+    flex: 1, 
+    flexDirection: "row",
+    cursor: 'auto', 
+  },
   sidebar: {
-    width: 220,
+    width: 250,
     backgroundColor: "#0d0d0d",
     paddingTop: 12,
     paddingHorizontal: 10,
@@ -162,8 +166,8 @@ const styles = StyleSheet.create({
     // marginBottom: 4,
   },
   wordmark: {
-    width: 200,
-    height: 50,
+    width: 230,
+    height: 55,
   },
   link: {
     flexDirection: "row",

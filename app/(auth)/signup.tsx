@@ -25,6 +25,7 @@ const Signup = () => {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [selectedRoles, setSelectedRoles] = useState<UserRole[]>(["placemaker"]);
   const [errorMessage, setErrorMessage] = useState("");
+  const [successMessage, setSuccessMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
   const router = useRouter();
@@ -34,89 +35,79 @@ const Signup = () => {
   const passwordRef = useRef<TextInput>(null);
   const confirmPasswordRef = useRef<TextInput>(null);
 
+  const showError = (msg: string) => {
+    setErrorMessage(msg);
+    setSuccessMessage("");
+    // setTimeout(() => setErrorMessage(""), 5000);
+  };
+  
+  const showSuccess = (msg: string) => {
+    setSuccessMessage(msg);
+    setErrorMessage("");
+    // setTimeout(() => setSuccessMessage(""), 3000);
+  };
+  
   const handleSignup = async () => {
     setErrorMessage("");
+    setSuccessMessage("");
   
-    if (!name.trim()) {
-      setErrorMessage("Name is required");
-      return;
-    }
-    if (!email.trim()) {
-      setErrorMessage("Email is required");
-      return;
-    }
-    if (!password.trim()) {
-      setErrorMessage("Password is required");
-      return;
-    }
-    if (password.length < 6) {
-      setErrorMessage("Password must be at least 6 characters");
-      return;
-    }
-    if (password !== confirmPassword) {
-      setErrorMessage("Passwords do not match");
-      return;
-    }
+    if (!name.trim()) return showError("Name is required");
+    if (!email.trim()) return showError("Email is required");
+    if (!password.trim()) return showError("Password is required");
+    if (password.length < 6) return showError("Password must be at least 6 characters");
+    if (password !== confirmPassword) return showError("Passwords do not match");
   
     setIsLoading(true);
-    setErrorMessage("");
   
     try {
       const { data, error } = await supabase.auth.signUp({
         email,
         password,
+        options: {
+          data: { name, roles: ["placemaker"] },
+          emailRedirectTo: "http://localhost:8081/login",
+        },
       });
   
+      // 1) If Supabase reports an error, show it.
       if (error) {
-        const errMsg = (error as any).message || "";
-  
+        const err = error.message || "Failed to sign up";
         if (
-          errMsg.includes("already registered") ||
-          errMsg.includes("User already registered") ||
-          errMsg.includes("duplicate key value")
+          err.includes("already registered") ||
+          err.includes("duplicate key value") ||
+          err.includes("User already registered")
         ) {
-          setErrorMessage("This email is already registered");
-          return;
+          return showError("This email is already registered");
         }
-  
-        setErrorMessage(errMsg || "Failed to sign up");
-        return;
+        return showError(err);
       }
   
+      // 2) No error: check identities array to detect duplicate.
       const user = data?.user;
-      if (user) {
-        const { error: insertError } = await supabase.from("users").insert([
-          {
-            id: user.id,
-            name: name,
-            email: email,
-            roles: ["placemaker"],
-          },
-        ]);
+      const identities = (user as any)?.identities ?? [];
   
-        if (insertError) {
-          if (insertError.code === "23505") {
-            setErrorMessage("This email is already registered");
-            return;
-          }
-  
-          console.error("Insert error:", insertError);
-          setErrorMessage("Something went wrong creating your profile");
-          return;
-        }
-  
-        await setUserId(user.id);
-        await setRoles(selectedRoles);
-        router.push("/(placemaker)/home");
+      if (!user) {
+        // nothing created on Supabase => treat as error
+        return showError("Signup failed — user was not created.");
       }
-    } catch (err: any) {
+  
+      if (identities.length === 0) {
+        // Supabase’s silent duplicate case
+        return showError("This email is already registered");
+      }
+  
+      // 3) Success path (Supabase actually created a new user + sent email)
+      await setUserId(user.id);
+      await setRoles(selectedRoles);
+      showSuccess("Check email for confirmation link");
+    } catch (err) {
       console.error("Unexpected signup error:", err);
-      setErrorMessage("Something went wrong creating your profile");
+      showError("Something went wrong creating your profile");
     } finally {
       setIsLoading(false);
     }
   };  
-
+  
   return (
     <View style={styles.container}>
       <LinearGradient
@@ -211,6 +202,10 @@ const Signup = () => {
                 <Text style={styles.error}>{errorMessage}</Text>
                 ) : null}
 
+                {successMessage ? (
+                  <Text style={styles.success}>{successMessage}</Text>
+                ) : null}
+
                 <View style={styles.loginLinksContainer}>
                   <Text style={styles.whiteText}>Already have an account?</Text>
                     <TouchableOpacity
@@ -238,6 +233,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: 'transparent',
+    cursor: 'auto',
   },
   scrollContainer: {
     flexGrow: 1,
@@ -274,11 +270,18 @@ const styles = StyleSheet.create({
     backgroundColor: '#E5E5E5',
   },
   error: {
-    color: 'red',
-    marginTop: 8,
+    color: "#ff4d4f",
+    marginTop: 12,
     textAlign: 'center',
     fontSize: 24,
   },
+  success: {
+    color: "#4ade80",
+    marginTop: 12,
+    textAlign: "center",
+    fontSize: 24,
+    // fontWeight: "600",
+  },  
   loginLinksContainer: {
     marginTop: 12,
     alignItems: 'center',
@@ -287,10 +290,10 @@ const styles = StyleSheet.create({
     fontSize: 24,
     color: 'white',
     textAlign: 'center',
-    // marginTop: 4,
   },
   loginLink: {
     marginTop: 12,
+    marginBottom: 4,
     textAlign: 'center',
     color: '#2e78b7',
     fontSize: 24,

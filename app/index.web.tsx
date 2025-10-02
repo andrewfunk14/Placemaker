@@ -27,6 +27,7 @@ export default function LandingPage() {
   const [message, setMessage] = useState("");
   const [messageType, setMessageType] = useState<"error" | "success" | "">("");
   const [menuOpen, setMenuOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   const scrollToSection = (id: string) => {
     if (Platform.OS === "web") {
@@ -47,43 +48,62 @@ export default function LandingPage() {
   };
 
   const handleWaitingListSignup = async () => {
-    if (!name || !email) {
-      setMessage("Missing name or email");
+    setIsLoading(true);
+  
+    try {
+      if (!name || !email) {
+        setMessage("Missing name or email");
+        setMessageType("error");
+  
+        setTimeout(() => {
+          setMessage("");
+          setMessageType("");
+        }, 5000);
+  
+        return;
+      }
+  
+      const { error } = await supabase
+        .from("waiting_list")
+        .insert([{ name, email }]);
+  
+      if (error) {
+        if (error.code === "23505") {
+          setMessage("Email already on list");
+          setMessageType("error");
+        } else {
+          setMessage("Something went wrong. Please try again");
+          setMessageType("error");
+        }
+  
+        setTimeout(() => {
+          setMessage("");
+          setMessageType("");
+        }, 5000);
+  
+        return;
+      }
+  
+      setMessage(`Thanks for joining, ${name}!`);
+      setMessageType("success");
+      setName("");
+      setEmail("");
+      // setTimeout(() => {
+      //   setMessage("");
+      //   setMessageType("");
+      // }, 5000);
+    } catch (err) {
+      setMessage("Unexpected error. Please try again.");
       setMessageType("error");
-
+  
       setTimeout(() => {
         setMessage("");
         setMessageType("");
       }, 5000);
-
-      return;
+    } finally {
+      setIsLoading(false);
     }
-  
-    const { error } = await supabase
-      .from("waiting_list")
-      .insert([{ name, email }]);
-  
-    if (error) {
-      if (error.code === "23505") {
-        // PostgreSQL unique violation
-        setMessage("Email already on list");
-        setMessageType("error");
-      } else {
-        setMessage("Something went wrong. Please try again");
-        setMessageType("error");
-      }
-      return;
-    }
-  
-    setMessage(`Thanks for joining, ${name}!`);
-    setMessageType("success");
-    setName("");
-    setEmail("");
-    setTimeout(() => {
-      setMessage("");
-      setMessageType("");
-    }, 3000);
-  };
+  };  
 
   return (
     <View style={styles.container}>
@@ -97,12 +117,13 @@ export default function LandingPage() {
       {/* Header */}
       <View style={styles.header}>
         <View style={[styles.headerContent, isMobile && styles.headerContentMobile]}>
-          <Image
-            source={require("../assets/dark-wordmark.svg")}
-            style={styles.wordmark}
-            resizeMode="contain"
-          />
-
+          <TouchableOpacity onPress={() => scrollToSection("heroSection")}>
+            <Image
+              source={require("../assets/dark-wordmark.svg")}
+              style={styles.wordmark}
+              resizeMode="contain"
+            />
+          </TouchableOpacity>
           {isMobile ? (
             <TouchableOpacity onPress={() => setMenuOpen(!menuOpen)}>
               <Text style={styles.menuIcon}>☰</Text>
@@ -115,12 +136,34 @@ export default function LandingPage() {
               <TouchableOpacity onPress={() => scrollToSection("whoWeServeSection")}>
                 <Text style={styles.navText}>Who We Serve</Text>
               </TouchableOpacity>
-              <TouchableOpacity onPress={() => router.push("/(auth)/signup")}>
+              <TouchableOpacity
+                onPress={() => {
+                  if (Platform.OS === "web") {
+                    window.open("/signup", "_blank");
+                  } else {
+                    router.push("/(auth)/signup");
+                  }
+                }}
+              >
+                <Text style={styles.signupText}>Sign Up</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => {
+                  if (Platform.OS === "web") {
+                    window.open("/login", "_blank");
+                  } else {
+                    router.push("/(auth)/login");
+                  }
+                }}
+              >
+                <Text style={styles.loginButton}>Login</Text>
+              </TouchableOpacity>
+              {/* <TouchableOpacity onPress={() => router.push("/(auth)/signup")}>
                 <Text style={styles.signupText}>Sign Up</Text>
               </TouchableOpacity>
               <TouchableOpacity onPress={() => router.push("/(auth)/login")}>
                 <Text style={styles.loginButton}>Login</Text>
-              </TouchableOpacity>
+              </TouchableOpacity> */}
             </View>
           )}
         </View>
@@ -168,11 +211,11 @@ export default function LandingPage() {
         {/* Hero Section */}
         <View id="heroSection" style={[styles.section, styles.hero]}>
           <Text style={styles.heroTitle}>
-            The #1 Private Community{"\n"}for Real Estate Development.
+            The #1 Private Community{"\n"}for Real Estate Development
           </Text>
 
           <Text style={styles.heroSubtitle}>
-            Join our waiting list to gain early access to the Placemaker community.
+            Join our waiting list to gain early access to Placemaker.
           </Text>
 
           {/* Email signup box */}
@@ -198,9 +241,15 @@ export default function LandingPage() {
                   {message}
                 </Text>
               ) : null}
-            
-            <TouchableOpacity style={styles.ctaButton} onPress={handleWaitingListSignup}>
-              <Text style={styles.ctaButtonText}>Join Waiting List</Text>
+
+            <TouchableOpacity
+              style={[styles.ctaButton, isLoading && { opacity: 0.7 }]}
+                onPress={handleWaitingListSignup}
+                disabled={isLoading}
+            >
+              <Text style={styles.ctaButtonText}>
+                {isLoading ? "Joining..." : "Join Waiting List"}
+              </Text>
             </TouchableOpacity>
           </View>
 
@@ -281,6 +330,7 @@ const styles = StyleSheet.create({
   container: { 
     flex: 1, 
     backgroundColor: "#0a0a0a",
+    cursor: 'auto',
   },
   header: {
     position: "absolute",
@@ -397,8 +447,6 @@ const styles = StyleSheet.create({
   input: {
     flex: 1,
     backgroundColor: "rgba(255,255,255,0.1)",
-    borderColor: "#fff",
-    // borderWidth: .1,
     color: "#fff",
     borderRadius: 6,
     paddingHorizontal: 12,
@@ -415,7 +463,7 @@ const styles = StyleSheet.create({
   ctaButtonText: { 
     color: "#000", 
     fontWeight: "600", 
-    fontSize: 16 
+    fontSize: 18, 
   },
   message: {
     marginBottom: 16,
