@@ -208,9 +208,9 @@ export default function LandingPage() {
 
       {/* Page Content */}
       <ScrollView ref={scrollViewRef} style={{ flex: 1 }}>
-        {/* Hero Section */}
-        <View id="heroSection" style={[styles.section, styles.hero]}>
-          <Text style={styles.heroTitle}>
+      {/* Hero Section */}
+      <View nativeID="heroSection" style={[styles.section, styles.hero]}>
+        <Text style={styles.heroTitle}>
             The #1 Private Community{"\n"}for Real Estate Development
           </Text>
 
