@@ -6,7 +6,7 @@ import { useAppDispatch } from "../store/hooks";
 import { setUser } from "../store/slices/authSlice";
 
 // Define user roles
-export type UserRole = "placemaker" | "policymaker" | "dealmaker" | "changemaker";
+export type UserRole = "free" | "placemaker" | "policymaker" | "dealmaker" | "changemaker";
 
 interface UserContextType {
   roles: UserRole[];
@@ -20,7 +20,7 @@ export const UserContext = createContext<UserContextType | undefined>(undefined)
 
 export const UserProvider = ({ children }: { children: ReactNode }) => {
   const dispatch = useAppDispatch();
-  const [roles, setRoles] = useState<UserRole[]>(["placemaker"]); // default always placemaker
+  const [roles, setRoles] = useState<UserRole[]>(["free"]); // default always free
   const [userId, setUserId] = useState<string | null>(null);
 
   useEffect(() => {
@@ -45,11 +45,11 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
             const fetchedRoles: string[] = profileData.roles || [];
 
             // Filter only valid roles
-            const validRoles: UserRole[] = (["placemaker", "policymaker", "dealmaker", "changemaker"] as const)
+            const validRoles: UserRole[] = (["free", "placemaker", "policymaker", "dealmaker", "changemaker"] as const)
               .filter((role) => fetchedRoles.includes(role)) as UserRole[];
 
-            // Always include "placemaker" by default
-            const uniqueRoles: UserRole[] = Array.from(new Set(["placemaker", ...validRoles]));
+            // Always include "free" by default
+            const uniqueRoles: UserRole[] = Array.from(new Set(["free", ...validRoles]));
             setRoles(uniqueRoles);
 
             await AsyncStorage.setItem("roles", JSON.stringify(uniqueRoles));
@@ -73,9 +73,9 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
 
           if (savedRoles) {
             const parsedRoles: string[] = JSON.parse(savedRoles);
-            const validRoles: UserRole[] = (["placemaker", "policymaker", "dealmaker", "changemaker"] as const)
+            const validRoles: UserRole[] = (["free", "placemaker", "policymaker", "dealmaker", "changemaker"] as const)
               .filter((role) => parsedRoles.includes(role)) as UserRole[];
-            setRoles(validRoles.length ? validRoles : ["placemaker"]);
+            setRoles(validRoles.length ? validRoles : ["free"]);
           }
         }
       } catch (err) {
@@ -91,7 +91,7 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
         setUserId(session.user.id);
       } else {
         setUserId(null);
-        setRoles(["placemaker"]);
+        setRoles(["free"]);
         AsyncStorage.removeItem("userId");
         AsyncStorage.removeItem("roles");
         dispatch(setUser(null));
@@ -105,7 +105,7 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
 
   // Update roles
   const handleSetRoles = async (newRoles: UserRole[]) => {
-    const uniqueRoles: UserRole[] = Array.from(new Set(["placemaker", ...newRoles]));
+    const uniqueRoles: UserRole[] = Array.from(new Set(["free", ...newRoles]));
     setRoles(uniqueRoles);
     await AsyncStorage.setItem("roles", JSON.stringify(uniqueRoles));
   };

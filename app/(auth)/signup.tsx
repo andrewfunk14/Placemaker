@@ -23,7 +23,7 @@ const Signup = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [selectedRoles, setSelectedRoles] = useState<UserRole[]>(["placemaker"]);
+  const [selectedRoles, setSelectedRoles] = useState<UserRole[]>(["free"]);
   const [errorMessage, setErrorMessage] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -64,7 +64,7 @@ const Signup = () => {
         email,
         password,
         options: {
-          data: { name, roles: ["placemaker"] },
+          data: { name, roles: ["free"] },
           emailRedirectTo: "http://localhost:8081/login",
         },
       });

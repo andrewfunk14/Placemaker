@@ -130,12 +130,12 @@ export default function LandingPage() {
             </TouchableOpacity>
           ) : (
             <View style={styles.navLinks}>
-              <TouchableOpacity onPress={() => scrollToSection("whatWeDoSection")}>
+              {/* <TouchableOpacity onPress={() => scrollToSection("whatWeDoSection")}>
                 <Text style={styles.navText}>What We Do</Text>
               </TouchableOpacity>
               <TouchableOpacity onPress={() => scrollToSection("whoWeServeSection")}>
                 <Text style={styles.navText}>Who We Serve</Text>
-              </TouchableOpacity>
+              </TouchableOpacity> */}
               <TouchableOpacity
                 onPress={() => {
                   if (Platform.OS === "web") {
@@ -170,7 +170,7 @@ export default function LandingPage() {
 
         {isMobile && menuOpen && (
           <View style={styles.mobileMenu}>
-            <TouchableOpacity
+            {/* <TouchableOpacity
               onPress={() => {
                 scrollToSection("whatWeDoSection");
                 setMenuOpen(false);
@@ -185,7 +185,7 @@ export default function LandingPage() {
               }}
             >
               <Text style={styles.mobileMenuItem}>Who We Serve</Text>
-            </TouchableOpacity>
+            </TouchableOpacity> */}
             {/* <TouchableOpacity
               onPress={() => {
                 router.push("/(auth)/login");
@@ -211,7 +211,7 @@ export default function LandingPage() {
       {/* Hero Section */}
       <View nativeID="heroSection" style={[styles.section, styles.hero]}>
         <Text style={styles.heroTitle}>
-            The #1 Private Community{"\n"}for Real Estate Development
+            The Professional Community{"\n"}for Real Estate Development
           </Text>
 
           <Text style={styles.heroSubtitle}>
@@ -255,8 +255,7 @@ export default function LandingPage() {
 
         </View>
 
-        {/* What We Do Section */}
-        <View id="whatWeDoSection" style={styles.section}>
+        {/* <View id="whatWeDoSection" style={styles.section}>
           <Text style={styles.sectionTitle}>What We Do</Text>
           <View style={styles.cardGrid}>
             <View style={styles.card}>
@@ -287,10 +286,9 @@ export default function LandingPage() {
               </Text>
             </View>
           </View>
-        </View>
+        </View> */}
 
-        {/* Who We Serve Section */}
-        <View id="whoWeServeSection" style={styles.section}>
+        {/* <View id="whoWeServeSection" style={styles.section}>
           <Text style={styles.sectionTitle}>Who We Serve</Text>
           <View style={styles.cardGrid}>
             <View style={styles.card}>
@@ -315,7 +313,7 @@ export default function LandingPage() {
               </Text>
             </View>
           </View>
-        </View>
+        </View> */}
 
         {/* Footer */}
         <View style={styles.footer}>

@@ -33,9 +33,9 @@ export const fetchUserDetails = createAsyncThunk(
       // Convert single role string to array for Redux
       const roles: UserRole[] = Array.isArray(data.role)
         ? data.role.filter((r: string) =>
-            ["placemaker", "policymaker", "dealmaker", "changemaker"].includes(r)
+            ["free", "placemaker", "policymaker", "dealmaker", "changemaker"].includes(r)
           )
-        : ["placemaker", ...(data.role ? [data.role] : [])];
+        : ["free", ...(data.role ? [data.role] : [])];
 
       return { ...data, roles } as User;
     } catch (error: any) {
@@ -70,9 +70,9 @@ export const signInWithEmail = createAsyncThunk(
       // Convert single role string to array
       const roles: UserRole[] = Array.isArray(userData.role)
         ? userData.role.filter((r: string) =>
-            ["placemaker", "policymaker", "dealmaker", "changemaker"].includes(r)
+            ["free", "placemaker", "policymaker", "dealmaker", "changemaker"].includes(r)
           )
-        : ["placemaker", ...(userData.role ? [userData.role] : [])];
+        : ["free", ...(userData.role ? [userData.role] : [])];
 
       return { ...userData, roles } as User;
     } catch (error: any) {
