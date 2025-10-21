@@ -215,7 +215,7 @@ export default function LandingPage() {
           </Text>
 
           <Text style={styles.heroSubtitle}>
-            Join our waiting list to gain early access to Placemaker.
+            Join our waiting list to gain access to Placemaker.
           </Text>
 
           {/* Email signup box */}
@@ -341,8 +341,11 @@ const styles = StyleSheet.create({
   headerContent: {
     flexDirection: "row",
     justifyContent: "space-between",
-    backgroundColor: "#0d0d0d",
+    // backgroundColor: "#0d0d0d",
+    backgroundColor: "transparent",
     borderRadius: 12,
+    borderColor: "#ffd21f",
+    borderWidth: 1,
     paddingVertical: 16,
     paddingHorizontal: 24,
     width: "70%",

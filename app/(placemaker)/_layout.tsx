@@ -1,16 +1,15 @@
-// (placemaker)/_layout.tsx
-import { Platform, View, Text, TouchableOpacity, StyleSheet, Image } from "react-native";
+// app/(placemaker)/_layout.tsx
+import { Platform, View, StyleSheet, Image, TouchableOpacity, Text } from "react-native";
 import { useEffect } from "react";
-import { Tabs, Stack, useRouter, useSegments } from "expo-router";
+import { Stack, useRouter, useSegments } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
-import MobileHeader from "../mobileHeader";
 import { useAppDispatch, useAppSelector } from "../../store/hooks";
 import { pushPath } from "../../store/slices/navigationSlice";
 
 export default function PlacemakerLayout() {
   const router = useRouter();
   const segments = useSegments();
-  const history = useAppSelector((state) => state.navigation.history);
+  const history = useAppSelector(s => s.navigation.history);
   const currentPath = history[history.length - 1] || "/";
   const dispatch = useAppDispatch();
 
@@ -22,6 +21,7 @@ export default function PlacemakerLayout() {
   }, [segments]);
 
   if (Platform.OS === "web") {
+    // WEB: sidebar + a Stack that renders the (tabs) group (tab bar will be hidden in tabs layout)
     return (
       <View style={styles.container}>
         <View style={styles.sidebar}>
@@ -33,163 +33,74 @@ export default function PlacemakerLayout() {
             />
           </View>
 
-          {/* Home */}
-          <TouchableOpacity
-            style={[styles.link, currentPath.startsWith("/(placemaker)/home") && styles.activeLink]}
-            onPress={() => router.push("/(placemaker)/home")}
-          >
-            <Ionicons
-              name="home-outline"
-              size={24}
-              color={currentPath.startsWith("/(placemaker)/home") ? "#FFD21F" : "#fff"}
-            />
-            <Text style={[styles.linkText, currentPath.startsWith("/(placemaker)/home") && styles.activeLinkText]}>
-              Home
-            </Text>
-          </TouchableOpacity>
-
-          {/* Learn */}
-          <TouchableOpacity
-            style={[styles.link, currentPath.startsWith("/(placemaker)/(learn)") && styles.activeLink]}
-            onPress={() => router.push("/(placemaker)/(learn)/learn")}
-          >
-            <Ionicons
-              name="book-outline"
-              size={24}
-              color={currentPath.startsWith("/(placemaker)/(learn)") ? "#FFD21F" : "#fff"}
-            />
-            <Text style={[styles.linkText, currentPath.startsWith("/(placemaker)/(learn)") && styles.activeLinkText]}>
-              Learn
-            </Text>
-          </TouchableOpacity>
-
-          {/* Build */}
-          <TouchableOpacity
-            style={[styles.link, currentPath.startsWith("/(placemaker)/(build)") && styles.activeLink]}
-            onPress={() => router.push("/(placemaker)/(build)/build")}
-          >
-            <Ionicons
-              name="cube-outline"
-              size={24}
-              color={currentPath.startsWith("/(placemaker)/(build)") ? "#FFD21F" : "#fff"}
-            />
-            <Text style={[styles.linkText, currentPath.startsWith("/(placemaker)/(build)") && styles.activeLinkText]}>
-              Build
-            </Text>
-          </TouchableOpacity>
-
-          {/* Connect */}
-          <TouchableOpacity
-            style={[styles.link, currentPath.startsWith("/(placemaker)/(connect)") && styles.activeLink]}
-            onPress={() => router.push("/(placemaker)/(connect)/connect")}
-          >
-            <Ionicons
-              name="people-outline"
-              size={24}
-              color={currentPath.startsWith("/(placemaker)/(connect)") ? "#FFD21F" : "#fff"}
-            />
-            <Text style={[styles.linkText, currentPath.startsWith("/(placemaker)/(connect)") && styles.activeLinkText]}>
-              Connect
-            </Text>
-          </TouchableOpacity>
-
-          {/* Profile */}
-          <TouchableOpacity
-            style={[styles.link, currentPath.startsWith("/(placemaker)/profile") && styles.activeLink]}
-            onPress={() => router.push("/(placemaker)/profile")}
-          >
-            <Ionicons
-              name="person-outline"
-              size={24}
-              color={currentPath.startsWith("/(placemaker)/profile") ? "#FFD21F" : "#fff"}
-            />
-            <Text style={[styles.linkText, currentPath.startsWith("/(placemaker)/profile") && styles.activeLinkText]}>
-              Profile
-            </Text>
-          </TouchableOpacity>
+          <NavLink
+            label="Home"
+            icon="home-outline"
+            active={currentPath.startsWith("/(placemaker)/(tabs)/home")}
+            onPress={() => router.push("/(placemaker)/(tabs)/home")}
+          />
+          <NavLink
+            label="Learn"
+            icon="book-outline"
+            active={currentPath.startsWith("/(placemaker)/(tabs)/(learn)")}
+            onPress={() => router.push("/(placemaker)/(tabs)/(learn)/learn")}
+          />
+          <NavLink
+            label="Build"
+            icon="cube-outline"
+            active={currentPath.startsWith("/(placemaker)/(tabs)/(build)")}
+            onPress={() => router.push("/(placemaker)/(tabs)/(build)/build")}
+          />
+          <NavLink
+            label="Connect"
+            icon="people-outline"
+            active={currentPath.startsWith("/(placemaker)/(tabs)/(connect)")}
+            onPress={() => router.push("/(placemaker)/(tabs)/(connect)/connect")}
+          />
+          <NavLink
+            label="Profile"
+            icon="person-outline"
+            active={currentPath.startsWith("/(placemaker)/(tabs)/profile")}
+            onPress={() => router.push("/(placemaker)/(tabs)/profile")}
+          />
         </View>
 
         <View style={styles.content}>
-          <Stack screenOptions={{ headerShown: false }} />
+          <Stack screenOptions={{ headerShown: false }}>
+            <Stack.Screen name="(tabs)" />
+          </Stack>
         </View>
       </View>
     );
   }
 
-  // mobile
+  // MOBILE: do NOT render MobileHeader here. Let the Tabs layout own the mobile UI.
   return (
-    <View style={{ flex: 1 }}>
-      <MobileHeader />
-      <Tabs
-        screenOptions={{
-          headerShown: false,
-          tabBarActiveTintColor: "#FFD21F",
-          tabBarInactiveTintColor: "#fff",
-          tabBarStyle: {
-            backgroundColor: "#0d0d0d",
-            borderTopColor: "#0d0d0d",
-            height: 88,
-            paddingBottom: 12,
-            paddingTop: 4,
-          },
-          tabBarLabelStyle: {
-            fontSize: 16,
-            fontWeight: "600",
-          },
-        }}
-      >
-        <Tabs.Screen name="home" options={{ title: "Home", tabBarIcon: ({ color, size }) => <Ionicons name="home-outline" size={size} color={color} /> }} />
-        <Tabs.Screen name="(learn)/learn" options={{ title: "Learn", tabBarIcon: ({ color, size }) => <Ionicons name="book-outline" size={size} color={color} /> }} />
-        <Tabs.Screen name="(build)/build" options={{ title: "Build", tabBarIcon: ({ color, size }) => <Ionicons name="cube-outline" size={size} color={color} /> }} />
-        <Tabs.Screen name="(connect)/connect" options={{ title: "Connect", tabBarIcon: ({ color, size }) => <Ionicons name="people-outline" size={size} color={color} /> }} />
-        <Tabs.Screen name="profile" options={{ title: "Profile", tabBarIcon: ({ color, size }) => <Ionicons name="person-outline" size={size} color={color} /> }} />
-      </Tabs>
-    </View>
+    <Stack screenOptions={{ headerShown: false }}>
+      <Stack.Screen name="(tabs)" />
+    </Stack>
+  );
+}
+
+function NavLink({
+  label, icon, active, onPress,
+}: { label: string; icon: keyof typeof Ionicons.glyphMap; active: boolean; onPress: () => void }) {
+  return (
+    <TouchableOpacity style={[styles.link, active && styles.activeLink]} onPress={onPress}>
+      <Ionicons name={icon} size={24} color={active ? "#FFD21F" : "#fff"} />
+      <Text style={[styles.linkText, active && styles.activeLinkText]}>{label}</Text>
+    </TouchableOpacity>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { 
-    flex: 1, 
-    flexDirection: "row",
-    cursor: 'auto', 
-  },
-  sidebar: {
-    width: 250,
-    backgroundColor: "#0d0d0d",
-    paddingTop: 12,
-    paddingHorizontal: 10,
-  },
-  wordmarkContainer: {
-    alignItems: "center",
-    justifyContent: "center",
-    // marginBottom: 4,
-  },
-  wordmark: {
-    width: 230,
-    height: 55,
-  },
-  link: {
-    flexDirection: "row",
-    alignItems: "center",
-    paddingVertical: 12,
-    paddingHorizontal: 8,
-  },
-  linkText: {
-    color: "#fff",
-    fontSize: 22,
-    marginLeft: 8,
-  },
-  content: {
-    flex: 1,
-    backgroundColor: "#000",
-  },
-  activeLink: {
-    // backgroundColor: "#222",
-    borderRadius: 6,
-  },
-  activeLinkText: {
-    color: "#FFD21F",
-    fontWeight: "bold",
-  },
+  container: { flex: 1, flexDirection: "row", cursor: "auto" },
+  sidebar: { width: 250, backgroundColor: "#0d0d0d", paddingTop: 12, paddingHorizontal: 10 },
+  wordmarkContainer: { alignItems: "center", justifyContent: "center" },
+  wordmark: { width: 230, height: 55 },
+  link: { flexDirection: "row", alignItems: "center", paddingVertical: 12, paddingHorizontal: 8 },
+  linkText: { color: "#fff", fontSize: 22, marginLeft: 8 },
+  activeLink: { borderRadius: 6 },
+  activeLinkText: { color: "#FFD21F", fontWeight: "bold" },
+  content: { flex: 1, backgroundColor: "#000" },
 });

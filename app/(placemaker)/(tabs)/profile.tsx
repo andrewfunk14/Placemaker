@@ -1,9 +1,9 @@
 // (placemaker)/profile.tsx
 import React from "react";
 import { View, Text, StyleSheet, TouchableOpacity, Platform } from "react-native";
-import { useUser } from "../userContext";
+import { useUser } from "../../userContext";
 import { useRouter } from "expo-router";
-import { supabase } from "../../lib/supabaseClient";
+import { supabase } from "../../../lib/supabaseClient";
 
 export default function Profile() {
   const { roles, userId, setRoles, setUserId } = useUser();
