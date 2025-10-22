@@ -1,5 +1,5 @@
 // app/NewEventModal.tsx
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -16,7 +16,7 @@ import { LinearGradient } from "expo-linear-gradient";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { useAppDispatch } from "../store/hooks";
 import { useUser } from "./userContext";
-import { createEvent, fetchEvents } from "../store/slices/eventsSlice";
+import { createEvent, fetchEvents, updateEvent, EventRow } from "../store/slices/eventsSlice";
 import { unwrapResult } from "@reduxjs/toolkit";
 
 const pad = (n: number) => (n < 10 ? `0${n}` : `${n}`);
@@ -34,15 +34,26 @@ const tzOffset = (d: Date) => {
 const toLocalISOWithTZ = (d: Date) =>
   `${toLocalYYYYMMDD(d)}T${toLocalHHMM(d)}:00${tzOffset(d)}`;
 
-type Props = { visible: boolean; onClose: () => void };
+type Props = {
+  visible: boolean;
+  onClose: () => void;
+  /** Pass an event to edit; omit for create mode */
+  event?: EventRow | null;
+  /** Current signed-in user id, used to validate edit permission */
+  currentUserId: string | null;
+};
 
-export default function NewEventModal({ visible, onClose }: Props) {
+export default function NewEventModal({ visible, onClose, event, currentUserId }: Props) {
   const dispatch = useAppDispatch();
   const { roles } = useUser();
+  const isEdit = !!event;
+  const isCreator = isEdit ? event?.created_by === currentUserId : false;
   const canCreate = roles?.includes("placemaker");
+  const canEdit = isEdit ? isCreator : canCreate;
 
   const [title, setTitle] = useState("");
   const [address, setAddress] = useState("");
+  const [description, setDescription] = useState("");
   const [saving, setSaving] = useState(false);
 
   // final selected values
@@ -63,9 +74,33 @@ export default function NewEventModal({ visible, onClose }: Props) {
   const [webTempDate, setWebTempDate] = useState<string>(""); // "YYYY-MM-DD"
   const [webTempTime, setWebTempTime] = useState<string>(""); // "HH:MM"
 
+  useEffect(() => {
+    if (!visible) return;
+    if (isEdit && event) {
+      setTitle(event.title ?? "");
+      setAddress(event.address ?? "");
+      setDescription(event.description ?? "");
+      // parse event.start_at into local date + time
+      const d = new Date(event.start_at);
+      setStartDay(new Date(d.getFullYear(), d.getMonth(), d.getDate()));
+      setStartTime({ h: d.getHours(), m: d.getMinutes() });
+      setIosTempDate(d);
+      setIosTempTime(d);
+      setShowDatePicker(false);
+      setShowTimePicker(false);
+      setShowWebDateSheet(false);
+      setShowWebTimeSheet(false);
+    } else {
+      // create mode -> ensure blank
+      reset();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [visible, isEdit, event?.id]);
+
   const reset = () => {
     setTitle("");
     setAddress("");
+    setDescription("");
     setStartDay(null);
     setStartTime(null);
     setShowDatePicker(false);
@@ -83,8 +118,8 @@ export default function NewEventModal({ visible, onClose }: Props) {
     new Date(day.getFullYear(), day.getMonth(), day.getDate(), hm.h, hm.m, 0, 0);
 
   const save = async () => {
-    if (!canCreate) {
-      Alert.alert("Only Placemakers can create events.");
+    if (!canEdit) {
+      Alert.alert(isEdit ? "Only the creator can edit this event." : "Only Placemakers can create events.");
       return;
     }
     if (!title.trim() || !startDay || !startTime) {
@@ -99,17 +134,22 @@ export default function NewEventModal({ visible, onClose }: Props) {
     try {
       const payload = {
         title: title.trim(),
-        description: null,
+        description: description.trim() ? description.trim() : null,
         address: address || null,
         start_at,
         end_at: null,
       };
-      await dispatch(createEvent(payload)).then(unwrapResult);
+
+      if (isEdit && event?.id) {
+        await dispatch(updateEvent({ id: event.id, changes: payload })).then(unwrapResult);
+      } else {
+        await dispatch(createEvent(payload)).then(unwrapResult);
+      }
       await dispatch(fetchEvents());
       close();
     } catch (e: any) {
       console.error(e);
-      Alert.alert("Error", e.message ?? "Failed to create event.");
+      Alert.alert("Error", e.message ?? (isEdit ? "Failed to update event." : "Failed to create event."));
     } finally {
       setSaving(false);
     }
@@ -275,7 +315,6 @@ export default function NewEventModal({ visible, onClose }: Props) {
               }}
               style={styles.iosPicker}
             />
-
           </View>
         )}
       </>
@@ -325,8 +364,7 @@ export default function NewEventModal({ visible, onClose }: Props) {
             <DateTimePicker
               value={iosTempTime}
               mode="time"
-              // Keep it open on BOTH platforms:
-              display={Platform.OS === "ios" ? "spinner" : "spinner"} // spinner on iOS too
+              display={Platform.OS === "ios" ? "spinner" : "spinner"}
               {...(Platform.OS === "ios" ? { locale: "en-US" } : {})}  // AM/PM on iOS
               {...(Platform.OS === "android" ? { is24Hour: false } : {})} // 12h on Android
               onChange={(_, date) => {
@@ -334,7 +372,6 @@ export default function NewEventModal({ visible, onClose }: Props) {
               }}
               style={styles.iosPicker}
             />
-
           </View>
         )}
       </>
@@ -359,26 +396,21 @@ export default function NewEventModal({ visible, onClose }: Props) {
 
         {/* Card */}
         <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : undefined} style={styles.cardWrap}>
-{(showDatePicker || showTimePicker || showWebDateSheet || showWebTimeSheet) && (
-  <Pressable
-    style={StyleSheet.absoluteFill}
-    onPress={() => {
-      if (showDatePicker) setShowDatePicker(false);
-      if (showTimePicker) setShowTimePicker(false);
-      if (showWebDateSheet) setShowWebDateSheet(false);
-      if (showWebTimeSheet) setShowWebTimeSheet(false);
-    }}
-  />
-)}
+          {/* invisible overlay to tap-out and close any sheet */}
+          {(showDatePicker || showTimePicker || showWebDateSheet || showWebTimeSheet) && (
+            <Pressable
+              style={StyleSheet.absoluteFill}
+              onPress={() => {
+                if (showDatePicker) setShowDatePicker(false);
+                if (showTimePicker) setShowTimePicker(false);
+                if (showWebDateSheet) setShowWebDateSheet(false);
+                if (showWebTimeSheet) setShowWebTimeSheet(false);
+              }}
+            />
+          )}
 
           <View style={styles.card}>
-            <Text style={styles.title}>Create Event</Text>
-
-            {!canCreate && (
-              <Text style={styles.locked}>
-                Only <Text style={{ fontWeight: "800" }}>placemaker</Text> accounts can create events.
-              </Text>
-            )}
+            <Text style={styles.title}>{isEdit ? "Edit Event" : "Create Event"}</Text>
 
             <TextInput
               style={styles.input}
@@ -409,16 +441,27 @@ export default function NewEventModal({ visible, onClose }: Props) {
               onChangeText={setAddress}
             />
 
+            <TextInput
+              style={[styles.input, styles.textarea]}
+              placeholder="Description (optional)"
+              placeholderTextColor="#a0a0a0"
+              value={description}
+              onChangeText={setDescription}
+              multiline
+              numberOfLines={4}
+              textAlignVertical="top"
+            />
+
             <View style={styles.row}>
               <TouchableOpacity style={[styles.btn, styles.btnGhost]} onPress={close}>
                 <Text style={[styles.btnText, styles.btnGhostText]}>Cancel</Text>
               </TouchableOpacity>
               <TouchableOpacity
-                disabled={!canCreate || saving}
-                style={[styles.btn, (!canCreate || saving) && { opacity: 0.5 }]}
+                disabled={!canEdit || saving}
+                style={[styles.btn, (!canEdit || saving) && { opacity: 0.5 }]}
                 onPress={save}
               >
-                <Text style={styles.btnText}>{saving ? "Saving..." : "Save"}</Text>
+                <Text style={styles.btnText}>{saving ? "Saving..." : isEdit ? "Update" : "Save"}</Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -510,6 +553,10 @@ const styles = StyleSheet.create({
     color: "#a0a0a0",
     marginBottom: 12,
     fontSize: 16,
+  },
+  textarea: {
+    height: 110,
+    paddingTop: 10,
   },
   inputText: { color: "#a0a0a0", fontSize: 16 },
   center: { justifyContent: "center" },

@@ -158,7 +158,7 @@ const styles = StyleSheet.create({
     zIndex: 9999,
   },
   menuContainer: {
-    backgroundColor: "#fff",
+    backgroundColor: "#0d0d0d",
     borderRadius: 8,
     padding: 8,
     width: 160,
