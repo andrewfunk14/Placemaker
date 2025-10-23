@@ -30,6 +30,15 @@ export const fetchEvents = createAsyncThunk(
   "events/fetchEvents",
   async (_: void, { rejectWithValue }) => {
     try {
+      const now = new Date().toISOString();
+
+      // 🗑️ Delete past events first
+      await supabase
+        .from("events")
+        .delete()
+        .lt("start_at", now);
+
+      // 🔄 Then fetch remaining ones
       const { data, error } = await supabase
         .from("events")
         .select(
@@ -38,6 +47,7 @@ export const fetchEvents = createAsyncThunk(
         .order("start_at", { ascending: true });
 
       if (error) throw error;
+
       return (data ?? []) as EventRow[];
     } catch (e: any) {
       return rejectWithValue(e.message ?? "Failed to fetch events");
