@@ -1,9 +1,8 @@
-// store/slices/authSlice.ts
+// slices/authSlice.ts
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import { supabase } from "../../lib/supabaseClient";
 import type { UserRole } from "../../app/userContext";
 
-// User type with multiple roles
 export interface User {
   id: string;
   name?: string;
@@ -17,20 +16,18 @@ export interface AuthState {
   error: string | null;
 }
 
-// Fetch user details after authentication
 export const fetchUserDetails = createAsyncThunk(
   "auth/fetchUserDetails",
   async (userId: string, { rejectWithValue }) => {
     try {
       const { data, error } = await supabase
         .from("users")
-        .select("id, name, email, role") // role in DB is string or array
+        .select("id, name, email, role")
         .eq("id", userId)
         .single();
 
       if (error) throw error;
 
-      // Convert single role string to array for Redux
       const roles: UserRole[] = Array.isArray(data.role)
         ? data.role.filter((r: string) =>
             ["free", "placemaker", "policymaker", "dealmaker", "changemaker"].includes(r)
@@ -44,7 +41,6 @@ export const fetchUserDetails = createAsyncThunk(
   }
 );
 
-// Sign in with email
 export const signInWithEmail = createAsyncThunk(
   "auth/signInWithEmail",
   async (
@@ -58,7 +54,6 @@ export const signInWithEmail = createAsyncThunk(
       if (authError) throw authError;
       if (!authData.user?.id) throw new Error("No user ID returned from authentication");
 
-      // Fetch user details from users table
       const { data: userData, error: userError } = await supabase
         .from("users")
         .select("id, name, email, role, organization_key, phone_number, hourly_rate")
@@ -67,7 +62,6 @@ export const signInWithEmail = createAsyncThunk(
 
       if (userError) throw userError;
 
-      // Convert single role string to array
       const roles: UserRole[] = Array.isArray(userData.role)
         ? userData.role.filter((r: string) =>
             ["free", "placemaker", "policymaker", "dealmaker", "changemaker"].includes(r)
@@ -81,7 +75,6 @@ export const signInWithEmail = createAsyncThunk(
   }
 );
 
-// Sign out
 export const signOut = createAsyncThunk("auth/signOut", async (_, { rejectWithValue }) => {
   try {
     const { error } = await supabase.auth.signOut();
@@ -91,7 +84,6 @@ export const signOut = createAsyncThunk("auth/signOut", async (_, { rejectWithVa
   }
 });
 
-// --- Slice --- //
 const initialState: AuthState = {
   user: null,
   loading: false,

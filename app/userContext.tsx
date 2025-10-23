@@ -1,11 +1,10 @@
-// app/userContext.tsx
+// userContext.tsx
 import React, { createContext, useContext, useState, useEffect, ReactNode } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { supabase } from "../lib/supabaseClient";
 import { useAppDispatch } from "../store/hooks";
 import { setUser } from "../store/slices/authSlice";
 
-// Define user roles
 export type UserRole = "free" | "placemaker" | "policymaker" | "dealmaker" | "changemaker";
 
 interface UserContextType {
@@ -15,18 +14,16 @@ interface UserContextType {
   setUserId: (id: string | null) => void;
 }
 
-// Create context
 export const UserContext = createContext<UserContextType | undefined>(undefined);
 
 export const UserProvider = ({ children }: { children: ReactNode }) => {
   const dispatch = useAppDispatch();
-  const [roles, setRoles] = useState<UserRole[]>(["free"]); // default always free
+  const [roles, setRoles] = useState<UserRole[]>(["free"]);
   const [userId, setUserId] = useState<string | null>(null);
 
   useEffect(() => {
     const loadUserData = async () => {
       try {
-        // Restore Supabase session
         const { data: { session } } = await supabase.auth.getSession();
 
         if (session?.user) {
@@ -34,7 +31,6 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
           setUserId(id);
           await AsyncStorage.setItem("userId", id);
 
-          // Fetch roles from `users` table
           const { data: profileData, error } = await supabase
             .from("users")
             .select("roles, email, name")
@@ -44,17 +40,14 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
           if (!error && profileData) {
             const fetchedRoles: string[] = profileData.roles || [];
 
-            // Filter only valid roles
             const validRoles: UserRole[] = (["free", "placemaker", "policymaker", "dealmaker", "changemaker"] as const)
               .filter((role) => fetchedRoles.includes(role)) as UserRole[];
 
-            // Always include "free" by default
             const uniqueRoles: UserRole[] = Array.from(new Set(["free", ...validRoles]));
             setRoles(uniqueRoles);
 
             await AsyncStorage.setItem("roles", JSON.stringify(uniqueRoles));
 
-            // Update Redux store
             dispatch(
               setUser({
                 id,
@@ -65,7 +58,6 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
             );
           }
         } else {
-          // Fallback: restore from AsyncStorage
           const savedUserId = await AsyncStorage.getItem("userId");
           const savedRoles = await AsyncStorage.getItem("roles");
 
@@ -85,7 +77,6 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
 
     loadUserData();
 
-    // Listen for auth state changes
     const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
       if (session?.user) {
         setUserId(session.user.id);
@@ -103,14 +94,12 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
     };
   }, [dispatch]);
 
-  // Update roles
   const handleSetRoles = async (newRoles: UserRole[]) => {
     const uniqueRoles: UserRole[] = Array.from(new Set(["free", ...newRoles]));
     setRoles(uniqueRoles);
     await AsyncStorage.setItem("roles", JSON.stringify(uniqueRoles));
   };
 
-  // Update userId
   const handleSetUserId = async (id: string | null) => {
     setUserId(id);
     if (id) {
@@ -128,7 +117,6 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
   );
 };
 
-// Hook to use context
 export const useUser = () => {
   const context = useContext(UserContext);
   if (!context) throw new Error("useUser must be used within a UserProvider");

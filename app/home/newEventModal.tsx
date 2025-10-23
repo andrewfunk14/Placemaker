@@ -14,9 +14,9 @@ import {
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import DateTimePicker from "@react-native-community/datetimepicker";
-import { useAppDispatch } from "../store/hooks";
-import { useUser } from "./userContext";
-import { createEvent, fetchEvents, updateEvent, EventRow } from "../store/slices/eventsSlice";
+import { useAppDispatch } from "../../store/hooks";
+import { useUser } from "../../app/userContext";
+import { createEvent, fetchEvents, updateEvent, EventRow } from "../../store/slices/eventsSlice";
 import { unwrapResult } from "@reduxjs/toolkit";
 
 const pad = (n: number) => (n < 10 ? `0${n}` : `${n}`);

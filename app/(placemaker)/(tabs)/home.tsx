@@ -19,7 +19,7 @@ import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import { fetchEvents, EventRow, deleteEvent } from "../../../store/slices/eventsSlice";
 import { useUser } from "../../userContext";
 import { differenceInMinutes } from "date-fns";
-import NewEventModal from "../../newEventModal";
+import NewEventModal from "../../home/newEventModal";
 import { Feather } from "@expo/vector-icons";
 
 export default function Home() {
@@ -33,7 +33,7 @@ export default function Home() {
 
   const [showNew, setShowNew] = useState(false);
   const [selectedEvent, setSelectedEvent] = useState<EventRow | null>(null);
-  const [toDelete, setToDelete] = useState<EventRow | null>(null); // confirm dialog state
+  const [toDelete, setToDelete] = useState<EventRow | null>(null);
   const [refreshing, setRefreshing] = useState(false);
   const [query, setQuery] = useState("");
 

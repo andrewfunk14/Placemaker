@@ -45,7 +45,6 @@ export const fetchEvents = createAsyncThunk(
   }
 );
 
-// This will be allowed only by RLS if user is a placemaker
 export const createEvent = createAsyncThunk(
   "events/createEvent",
   async (
@@ -59,7 +58,6 @@ export const createEvent = createAsyncThunk(
     { rejectWithValue }
   ) => {
     try {
-      // normalize and only send defined fields
       const insert = {
         title: payload.title,
         description: payload.description ?? null,
@@ -77,18 +75,6 @@ export const createEvent = createAsyncThunk(
   }
 );
 
-/** Utility: strip undefined so we don't overwrite columns with null unintentionally */
-const clean = <T extends Record<string, any>>(obj: T) =>
-  Object.fromEntries(
-    Object.entries(obj).filter(([_, v]) => v !== undefined)
-  ) as Partial<T>;
-
-/**
- * Update an event by id.
- * Only pass fields you want to change in `changes`.
- * Requires RLS to allow the current user (e.g. creator/placemaker) to update.
- */
-// store/slices/eventsSlice.ts
 export const updateEvent = createAsyncThunk(
   "events/updateEvent",
   async (args: { id: string; changes: Partial<EventRow> }, { rejectWithValue }) => {
@@ -111,12 +97,10 @@ export const updateEvent = createAsyncThunk(
   }
 );
 
-// slices/eventsSlice.ts
 export const deleteEvent = createAsyncThunk(
   "events/deleteEvent",
   async (id: string, { rejectWithValue }) => {
     try {
-      // `select().single()` forces an error if 0 rows were deleted (e.g., RLS blocked)
       const { data, error } = await supabase
         .from("events")
         .delete()
@@ -125,7 +109,6 @@ export const deleteEvent = createAsyncThunk(
         .single();
 
       if (error) throw error;
-      // data.id is the deleted id
       return data.id as string;
     } catch (e: any) {
       return rejectWithValue(e.message ?? "Failed to delete event");
@@ -165,8 +148,6 @@ const eventsSlice = createSlice({
       })
       .addCase(createEvent.fulfilled, (s) => {
         s.loading = false;
-        // We don't have the new row here (insert returned true),
-        // fetchEvents is called by the UI after creating, so nothing else to do.
       })
 
       // update
@@ -180,9 +161,7 @@ const eventsSlice = createSlice({
         if (idx !== -1) {
           s.items[idx] = a.payload;
         } else {
-          // if the item isn't in the list (e.g. stale UI), add it
           s.items.push(a.payload);
-          // optional: keep list sorted by start_at
           s.items.sort(
             (x, y) =>
               new Date(x.start_at).getTime() - new Date(y.start_at).getTime()

@@ -1,15 +1,17 @@
-// app/_layout.tsx
+// _layout.tsx
 import React from "react";
 import { Stack } from "expo-router";
 import { Provider } from "react-redux";
 import { store } from "../store/store";
 import { UserProvider } from "./userContext";
 import { Platform } from 'react-native';
+import WebAutofillFix from "../store/styles/webAutofillFix";
 
 export default function RootLayout() {
   return (
     <Provider store={store}>
       <UserProvider>
+        <WebAutofillFix />
         <Stack 
           screenOptions={{
             headerShown: false,

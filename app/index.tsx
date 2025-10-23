@@ -1,4 +1,4 @@
-// app/index.tsx
+// index.tsx
 import { Redirect } from "expo-router";
 import { useUser } from "./userContext";
 

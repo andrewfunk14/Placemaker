@@ -15,6 +15,7 @@ import { useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import { supabase } from "../lib/supabaseClient";
+import { cardShadow } from "../store/styles/shadow";
 
 const { width: windowWidth, height: windowHeight } = Dimensions.get("window");
 const isMobile = windowWidth < 768;
@@ -206,9 +207,7 @@ export default function LandingPage() {
         )}
       </View>
 
-      {/* Page Content */}
       <ScrollView ref={scrollViewRef} style={{ flex: 1 }}>
-      {/* Hero Section */}
       <View nativeID="heroSection" style={[styles.section, styles.hero]}>
         <Text style={styles.heroTitle}>
             The Professional Community{"\n"}for Real Estate Development
@@ -218,7 +217,6 @@ export default function LandingPage() {
             Join our waiting list to gain access to Placemaker.
           </Text>
 
-          {/* Email signup box */}
           <View style={styles.formContainer}>
             <TextInput
               style={styles.input}
@@ -315,7 +313,6 @@ export default function LandingPage() {
           </View>
         </View> */}
 
-        {/* Footer */}
         <View style={styles.footer}>
           <Text style={styles.footerText}>© {new Date().getFullYear()} Placemaker. All rights reserved.</Text>
         </View>
@@ -341,7 +338,6 @@ const styles = StyleSheet.create({
   headerContent: {
     flexDirection: "row",
     justifyContent: "space-between",
-    // backgroundColor: "#0d0d0d",
     backgroundColor: "transparent",
     borderRadius: 12,
     borderColor: "#ffd21f",
@@ -351,14 +347,7 @@ const styles = StyleSheet.create({
     width: "70%",
     minWidth: windowWidth > 1024 ? 650 : "90%",
     maxWidth: 1200,
-    ...(Platform.OS === "web"
-      ? { boxShadow: "0px 4px 12px rgba(0,0,0,0.25)" }
-      : {
-          shadowColor: "#000",
-          shadowOpacity: 0.25,
-          shadowRadius: 8,
-          shadowOffset: { width: 0, height: 4 },
-        }),
+    ...cardShadow,
   },
   headerContentMobile: {
     width: "100%",
@@ -503,14 +492,7 @@ const styles = StyleSheet.create({
     flex: 1,
     minWidth: windowWidth > 768 ? 280 : "100%",
     maxWidth: 320,
-    ...(Platform.OS === "web"
-      ? { boxShadow: "0px 4px 12px rgba(0,0,0,0.25)" }
-      : {
-          shadowColor: "#000",
-          shadowOpacity: 0.25,
-          shadowRadius: 8,
-          shadowOffset: { width: 0, height: 4 },
-        }),
+    ...cardShadow,
   },
   cardTitle: { 
     fontSize: 20, 

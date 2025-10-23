@@ -14,6 +14,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { useAppDispatch, useAppSelector } from "../store/hooks";
 import { popPath } from "../store/slices/navigationSlice";
 import { resetHistory } from "../store/slices/navigationSlice";
+import { cardShadow } from "../store/styles/shadow";
 
 interface MobileHeaderProps {
   showBackButton?: boolean;
@@ -40,15 +41,6 @@ const MobileHeader: React.FC<MobileHeaderProps> = ({
       router.replace("/(placemaker)/home");
     }
   };  
-  // const handleBack = () => {
-  //   if (history.length > 1) {
-  //     dispatch(popPath());
-  //     const prev = history[history.length - 2];
-  //     router.replace(prev);
-  //   } else {
-  //     router.replace("/(placemaker)/home"); 
-  //   }
-  // };
 
   const closeMenu = () => setShowMenu(false);
 
@@ -56,14 +48,12 @@ const MobileHeader: React.FC<MobileHeaderProps> = ({
   return (
     <View style={styles.headerWrapper}>
       <View style={styles.headerContainer}>
-        {/* Back Button */}
         <View style={styles.leftContainer}>
           <TouchableOpacity onPress={handleBack} style={styles.backButton}>
             <Ionicons name="chevron-back" size={40} color="#fff" />
           </TouchableOpacity>
         </View>
 
-        {/* Center Wordmark */}
         <View style={styles.centerContainer}>
           <Image
             source={require("../assets/dark-wordmark.png")}
@@ -72,7 +62,6 @@ const MobileHeader: React.FC<MobileHeaderProps> = ({
           />
         </View>
 
-        {/* Profile Picture */}
         <View style={styles.rightContainer}>
           <TouchableOpacity
             onPress={() => setShowMenu(!showMenu)}
@@ -163,7 +152,7 @@ const styles = StyleSheet.create({
     padding: 8,
     width: 160,
     elevation: 5,
-    boxShadow: "0px 4px 12px rgba(0, 0, 0, 0.15)",
+    ...cardShadow,
   },
   menuItem: {
     paddingVertical: 4,

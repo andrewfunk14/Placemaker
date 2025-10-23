@@ -1,4 +1,4 @@
-// store/slices/navigationSlice.ts
+// slices/navigationSlice.ts
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 interface NavigationState {
