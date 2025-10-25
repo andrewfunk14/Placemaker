@@ -15,7 +15,7 @@ import { useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import { supabase } from "../lib/supabaseClient";
-import { cardShadow } from "../store/styles/shadow";
+import { cardShadow } from "../styles/shadow";
 
 const { width: windowWidth, height: windowHeight } = Dimensions.get("window");
 const isMobile = windowWidth < 768;

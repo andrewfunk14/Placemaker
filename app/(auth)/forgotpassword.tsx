@@ -16,8 +16,8 @@ import {
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
-import { authStyles as s } from "../../store/styles/authStyles";
-import { cardShadow } from "../../store/styles/shadow";
+import { authStyles as s } from "../../styles/authStyles";
+import { cardShadow } from "../../styles/shadow";
 
 const ForgotPassword = () => {
   const [email, setEmail] = useState('');

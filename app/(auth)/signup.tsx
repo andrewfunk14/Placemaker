@@ -17,8 +17,8 @@ import {
 } from "react-native";
 import { useUser, UserRole } from "../userContext";
 import { LinearGradient } from 'expo-linear-gradient';
-import { authStyles as s } from "../../store/styles/authStyles";
-import { cardShadow } from "../../store/styles/shadow";
+import { authStyles as s } from "../../styles/authStyles";
+import { cardShadow } from "../../styles/shadow";
 
 const Signup = () => {
   const [name, setName] = useState("");

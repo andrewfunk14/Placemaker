@@ -14,7 +14,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { useAppDispatch, useAppSelector } from "../store/hooks";
 import { popPath } from "../store/slices/navigationSlice";
 import { resetHistory } from "../store/slices/navigationSlice";
-import { cardShadow } from "../store/styles/shadow";
+import { cardShadow } from "../styles/shadow";
 
 interface MobileHeaderProps {
   showBackButton?: boolean;
@@ -161,12 +161,12 @@ const styles = StyleSheet.create({
   menuText: {
     fontSize: 20,
     color: "#000",
-    fontWeight: "bold",
+    // fontWeight: "bold",
   },
   logoutText: {
     fontSize: 20,
-    color: "red",
-    fontWeight: "bold",
+    color: "#ff4d4f",
+    fontWeight: "600",
   },
 });
 

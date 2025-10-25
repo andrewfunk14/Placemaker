@@ -52,17 +52,17 @@ export const styles = StyleSheet.create({
     backgroundColor: "rgba(12, 10, 10, 0.04)",
     borderRadius: 16,
     padding: 12,
-    borderWidth: 1,
+    borderWidth: 2,
     borderColor: colors.border,
   },
   badge: {
     alignSelf: "flex-start",
     backgroundColor: colors.badgeBg,
     color: colors.accent,
-    fontSize: 16,
+    fontSize: 18,
     fontWeight: "700",
-    paddingVertical: 10,
-    paddingHorizontal: 10,
+    paddingVertical: 8,
+    paddingHorizontal: 8,
     borderRadius: 8,
   },
   cardHeader: {
@@ -99,30 +99,30 @@ export const styles = StyleSheet.create({
   },
   cardTitle: {
     color: colors.textPrimary,
-    fontSize: 20,
-    fontWeight: "700",
-    marginTop: Platform.OS === "web" ? 0 : 4,
+    fontSize: Platform.OS === "web" ? 28 : 26,
+    fontWeight: "600",
+    marginBottom: 8,
   },
   cardMetaRow: {
     flexDirection: "row",
-    flexWrap: "nowrap",
+    flexWrap: "wrap",
     alignItems: "center",
-    marginTop: 8,
+    marginBottom: 8,
   },
   cardMeta: {
     color: colors.textSecondary,
-    fontSize: 18,
-    flexShrink: 1,
+    fontSize: 22,
   },
   cardDot: { 
-    color: colors.textSecondary 
+    color: colors.textSecondary, 
+    fontSize: 20,
   },
   cardDesc: {
-    marginTop: 8,
     color: colors.textPrimary,
-    fontSize: 15,
+    fontSize: 20,
     lineHeight: 20,
     opacity: 0.95,
+    marginTop: 8,
   },
 
   // EMPTY STATE
@@ -260,9 +260,9 @@ export const styles = StyleSheet.create({
     borderRadius: 8,
     paddingHorizontal: 12,
     backgroundColor: colors.backgroundMid,
-    color: "#a0a0a0",
+    color: "#ffffff",
     marginBottom: 12,
-    fontSize: 16,
+    fontSize: 18,
   },
   textarea: {
     height: 110,
@@ -270,7 +270,7 @@ export const styles = StyleSheet.create({
   },
   inputText: { 
     color: "#a0a0a0", 
-    fontSize: 16 
+    fontSize: 18, 
   },
   center: { 
     justifyContent: "center", 
@@ -329,5 +329,12 @@ export const styles = StyleSheet.create({
       ios: { height: 320 },
       android: { height: 0 },
     }),
+  },
+  error: {
+    color: colors.danger,
+    marginBottom: 12,
+    textAlign: "center" as const,
+    fontSize: 22,
+    fontWeight: 600,
   },
 });

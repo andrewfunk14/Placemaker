@@ -1,7 +1,7 @@
 // home/newEventModal/webDate.tsx
 import React from "react";
 import { Platform, View } from "react-native";
-import { styles } from "../../../store/styles/homeStyles";
+import { styles } from "../../../styles/homeStyles";
 
 const pad = (n: number) => (n < 10 ? `0${n}` : `${n}`);
 const toLocalYYYYMMDD = (d: Date) =>
@@ -42,3 +42,4 @@ export default function WebDate({ startDay, setStartDay }: Props) {
     </View>
   );
 }
+

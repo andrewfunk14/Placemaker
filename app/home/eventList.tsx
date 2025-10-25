@@ -9,7 +9,7 @@ import {
 } from "react-native";
 import { EventRow } from "../../store/slices/eventsSlice";
 import EventCard from "../home/eventCard";
-import { styles } from "../../store/styles/homeStyles";
+import { styles } from "../../styles/homeStyles";
 
 interface EventListProps {
   events: EventRow[];
@@ -18,7 +18,7 @@ interface EventListProps {
   onRefresh: () => void;
   currentUserId: string | null;
   formatEventDateTime: (iso: string) => string;
-  startsInLabel: (iso: string) => string;
+  startsInLabel: (iso: string) => { label: string; status: "future" | "now" | "past" };
   onEdit: (event: EventRow) => void;
   onDelete: (event: EventRow) => void;
 }

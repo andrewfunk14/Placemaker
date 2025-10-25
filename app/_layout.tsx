@@ -5,7 +5,7 @@ import { Provider } from "react-redux";
 import { store } from "../store/store";
 import { UserProvider } from "./userContext";
 import { Platform } from 'react-native';
-import WebAutofillFix from "../store/styles/webAutofillFix";
+import WebAutofillFix from "../styles/webAutofillFix";
 
 export default function RootLayout() {
   return (

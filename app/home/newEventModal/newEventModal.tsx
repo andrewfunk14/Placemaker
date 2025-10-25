@@ -9,7 +9,6 @@ import {
   Pressable,
   KeyboardAvoidingView,
   Modal,
-  Alert,
   InputAccessoryView,
   Keyboard,
 } from "react-native";
@@ -17,12 +16,13 @@ import { useAppDispatch } from "../../../store/hooks";
 import { useUser } from "../../userContext";
 import { createEvent, fetchEvents, updateEvent, EventRow } from "../../../store/slices/eventsSlice";
 import { unwrapResult } from "@reduxjs/toolkit";
-import { styles } from "../../../store/styles/homeStyles";
+import { styles } from "../../../styles/homeStyles";
 import WebStyles from "./webStyles";
 import WebDate from "./webDate";
 import WebTime from "./webTime";
 import NativeDate from "./nativeDate";
 import NativeTime from "./nativeTime";
+import { combineDateTime } from "../../../utils/time";
 
 const pad = (n: number) => (n < 10 ? `0${n}` : `${n}`);
 const toLocalYYYYMMDD = (d: Date) =>
@@ -60,7 +60,9 @@ export default function NewEventModal({ visible, onClose, event, currentUserId }
   const [startDay, setStartDay] = useState<Date | null>(null);
   const [startTime, setStartTime] = useState<{ h: number; m: number } | null>(null);
 
-  // picker visibility
+  // 👇 field error state
+  const [errors, setErrors] = useState<{ title?: string; date?: string; time?: string }>({});
+
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [showTimePicker, setShowTimePicker] = useState(false);
 
@@ -71,8 +73,13 @@ export default function NewEventModal({ visible, onClose, event, currentUserId }
   // web sheet states
   const [showWebDateSheet, setShowWebDateSheet] = useState(false);
   const [showWebTimeSheet, setShowWebTimeSheet] = useState(false);
-  const [webTempDate, setWebTempDate] = useState("");
-  const [webTempTime, setWebTempTime] = useState("");
+
+  const [clock, setClock] = useState(0);
+
+  useEffect(() => {
+    const id = setInterval(() => setClock((x) => x + 1), 60_000); // every minute
+    return () => clearInterval(id);
+  }, []);
 
   // prefill edit mode
   useEffect(() => {
@@ -89,6 +96,21 @@ export default function NewEventModal({ visible, onClose, event, currentUserId }
     } else reset();
   }, [visible, isEdit, event?.id]);
 
+  useEffect(() => {
+    if (!visible) return;
+    if (isEdit && event) {
+      setTitle(event.title ?? "");
+      setAddress(event.address ?? "");
+      setDescription(event.description ?? "");
+      const d = new Date(event.start_at);
+      setStartDay(new Date(d.getFullYear(), d.getMonth(), d.getDate()));
+      setStartTime({ h: d.getHours(), m: d.getMinutes() });
+      setIosTempDate(d);
+      setIosTempTime(d);
+      setErrors({});
+    } else reset();
+  }, [visible, isEdit, event?.id]);
+
   const reset = () => {
     setTitle("");
     setAddress("");
@@ -99,41 +121,91 @@ export default function NewEventModal({ visible, onClose, event, currentUserId }
     setShowTimePicker(false);
     setShowWebDateSheet(false);
     setShowWebTimeSheet(false);
+    setErrors({});
   };
 
   const close = () => {
     onClose();
-    setTimeout(() => {
-      reset();
-    }, 300);
-  };  
-
-  const combineDateTime = (day: Date, hm: { h: number; m: number }) =>
-    new Date(day.getFullYear(), day.getMonth(), day.getDate(), hm.h, hm.m);
+    setTimeout(() => reset(), 300);
+  };
 
   const [mode, setMode] = useState<"create" | "edit">("create");
 
   useEffect(() => {
     if (!visible) return;
-    if (event) {
-      setMode("edit");
-    } else {
-      setMode("create");
-      reset();
-    }
+    setMode(event ? "edit" : "create");
+    if (!event) reset();
   }, [visible, event]);
 
-  const save = async () => {
-    if (!canEdit) {
-      Alert.alert(isEdit ? "Only the creator can edit this event." : "Only Placemakers can create events.");
-      return;
+  const validate = () => {
+    if (!title.trim()) {
+      setErrors({ title: "Title is required" });
+      return false;
     }
-    if (!title.trim() || !startDay || !startTime) {
-      Alert.alert("Missing info", "Please enter title, date, and time.");
-      return;
+  
+    if (!startDay) {
+      setErrors({ date: "Date is required" });
+      return false;
     }
+  
+    if (!startTime) {
+      setErrors({ time: "Time is required" });
+      return false;
+    }
+  
+    // 🧭 Combine date & time
+    const candidate = combineDateTime(startDay, startTime);
+    const now = new Date();
+  
+    // Only enforce "future" if creating OR editing a future event
+    if (mode === "create") {
+      if (candidate <= now) {
+        setErrors({ date: "Event must be in the future" });
+        return false;
+      }
+    } else if (mode === "edit") {
+      const TWO_HOURS_MS = 2 * 60 * 60 * 1000;
+      if (candidate.getTime() + TWO_HOURS_MS < now.getTime()) {
+        setErrors({ date: "Event must be 2 hours from current time" });
+        return false;
+      }
+    }
+  
+    setErrors({});
+    return true;
+  };  
 
-    const startDate = combineDateTime(startDay, startTime);
+  // Clear error when field becomes valid
+  const onChangeTitle = (v: string) => {
+    setTitle(v);
+    if (v.trim()) setErrors((e) => ({ ...e, title: undefined }));
+  };
+  
+  const onPickStartDay = (d: Date | null) => {
+    setStartDay(d);
+    if (d) {
+      setErrors((e) => ({ ...e, date: undefined }));
+    }
+    if (d && startTime) {
+      setErrors((e) => ({ ...e, time: undefined }));
+    }
+  };
+  
+  const onPickStartTime = (t: { h: number; m: number } | null) => {
+    setStartTime(t);
+    if (t) {
+      setErrors((e) => ({ ...e, time: undefined }));
+    }
+    if (t && startDay) {
+      setErrors((e) => ({ ...e, date: undefined }));
+    }
+  };
+
+  const save = async () => {
+    if (!canEdit) return;
+    if (!validate()) return;
+
+    const startDate = combineDateTime(startDay!, startTime!);
     const start_at = toLocalISOWithTZ(startDate);
 
     setSaving(true);
@@ -149,11 +221,10 @@ export default function NewEventModal({ visible, onClose, event, currentUserId }
         await dispatch(updateEvent({ id: event.id, changes: payload })).then(unwrapResult);
       } else {
         await dispatch(createEvent(payload)).then(unwrapResult);
-      }      
+      }
       await dispatch(fetchEvents());
       close();
     } catch (e: any) {
-      Alert.alert("Error", e.message ?? "Save failed.");
     } finally {
       setSaving(false);
     }
@@ -162,61 +233,64 @@ export default function NewEventModal({ visible, onClose, event, currentUserId }
   return (
     <Modal visible={visible} animationType="fade" transparent onRequestClose={close}>
       <View style={styles.modalRoot}>
-        <Pressable style={styles.backdrop} onPress={close}></Pressable>
+        <Pressable style={styles.backdrop} onPress={close} />
         <WebStyles />
-        <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : undefined} style={styles.eventModalCardWrap}>
+        <KeyboardAvoidingView
+          behavior={Platform.OS === "ios" ? "padding" : undefined}
+          style={styles.eventModalCardWrap}
+        >
           <View style={styles.eventModalCard}>
             <Text style={styles.modalTitleText}>
               {mode === "edit" ? "Edit Event" : "Create Event"}
             </Text>
+
+            {/* Title */}
             <TextInput
               style={styles.input}
               placeholder="Event Title"
               placeholderTextColor="#a0a0a0"
               value={title}
-              onChangeText={setTitle}
+              onChangeText={onChangeTitle}
+              autoCapitalize="sentences"
+              returnKeyType="done"
             />
+            {errors.title ? <Text style={styles.error}>{errors.title}</Text> : null}
 
+            {/* Date & Time */}
             {Platform.OS === "web" ? (
               <>
-                <WebDate
-                  startDay={startDay}
-                  setStartDay={setStartDay}
-                  // showWebDateSheet={showWebDateSheet}
-                  // setShowWebDateSheet={setShowWebDateSheet}
-                  // webTempDate={webTempDate}
-                  // setWebTempDate={setWebTempDate}
-                />
-                <WebTime
-                  startTime={startTime}
-                  setStartTime={setStartTime}
-                  // showWebTimeSheet={showWebTimeSheet}
-                  // setShowWebTimeSheet={setShowWebTimeSheet}
-                  // webTempTime={webTempTime}
-                  // setWebTempTime={setWebTempTime}
-                />
+                <WebDate startDay={startDay} setStartDay={onPickStartDay} />
+                {errors.date ? <Text style={styles.error}>{errors.date}</Text> : null}
+
+                <WebTime startTime={startTime} setStartTime={onPickStartTime} />
+                {errors.time ? <Text style={styles.error}>{errors.time}</Text> : null}
+
               </>
             ) : (
               <>
                 <NativeDate
                   startDay={startDay}
-                  setStartDay={setStartDay}
+                  setStartDay={onPickStartDay}
                   iosTempDate={iosTempDate}
                   setIosTempDate={setIosTempDate}
                   showDatePicker={showDatePicker}
                   setShowDatePicker={setShowDatePicker}
                 />
+                {errors.date ? <Text style={styles.error}>{errors.date}</Text> : null}
+
                 <NativeTime
                   startTime={startTime}
-                  setStartTime={setStartTime}
+                  setStartTime={onPickStartTime}
                   iosTempTime={iosTempTime}
                   setIosTempTime={setIosTempTime}
                   showTimePicker={showTimePicker}
                   setShowTimePicker={setShowTimePicker}
                 />
+                {errors.time ? <Text style={styles.error}>{errors.time}</Text> : null}
               </>
             )}
 
+            {/* Location */}
             <TextInput
               style={styles.input}
               placeholder="Location"
@@ -225,6 +299,7 @@ export default function NewEventModal({ visible, onClose, event, currentUserId }
               onChangeText={setAddress}
             />
 
+            {/* Description */}
             <TextInput
               style={[styles.input, styles.textarea]}
               placeholder="Description (optional)"
@@ -243,18 +318,21 @@ export default function NewEventModal({ visible, onClose, event, currentUserId }
                   style={{
                     backgroundColor: "#222",
                     padding: 12,
-                    borderTopWidth: .2,
+                    borderTopWidth: 0.2,
                     borderTopColor: "#0d0d0d",
                     alignItems: "flex-end",
                   }}
                 >
                   <TouchableOpacity onPress={() => Keyboard.dismiss()}>
-                    <Text style={{ color: "#2e78b7", fontWeight: "600", fontSize: 20 }}>Done</Text>
+                    <Text style={{ color: "#2e78b7", fontWeight: "600", fontSize: 20 }}>
+                      Done
+                    </Text>
                   </TouchableOpacity>
                 </View>
               </InputAccessoryView>
             )}
 
+            {/* Actions */}
             <View style={styles.row}>
               <TouchableOpacity style={[styles.btn, styles.btnGhost]} onPress={close}>
                 <Text style={[styles.btnText, styles.btnGhostText]}>Cancel</Text>

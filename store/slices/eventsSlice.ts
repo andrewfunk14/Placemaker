@@ -30,15 +30,16 @@ export const fetchEvents = createAsyncThunk(
   "events/fetchEvents",
   async (_: void, { rejectWithValue }) => {
     try {
-      const now = new Date().toISOString();
+      // ⏱ keep events until 2 hours after they start
+      const cutoffISO = new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString();
 
-      // 🗑️ Delete past events first
+      // 🗑️ Delete events strictly older than (start_at < now - 2h)
       await supabase
         .from("events")
         .delete()
-        .lt("start_at", now);
+        .lt("start_at", cutoffISO);
 
-      // 🔄 Then fetch remaining ones
+      // 🔄 Fetch the rest
       const { data, error } = await supabase
         .from("events")
         .select(

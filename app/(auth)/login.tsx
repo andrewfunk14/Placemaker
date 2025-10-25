@@ -17,8 +17,8 @@ import {
 } from "react-native";
 import { useUser } from "../userContext";
 import { LinearGradient } from 'expo-linear-gradient';
-import { authStyles as s } from "../../store/styles/authStyles";
-import { cardShadow } from "../../store/styles/shadow";
+import { authStyles as s } from "../../styles/authStyles";
+import { cardShadow } from "../../styles/shadow";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -69,7 +69,7 @@ const Login = () => {
         router.push('/(placemaker)/home');
     }
     } catch (error: any) {
-      setErrorMessage("Email or password is incorrect");
+      setErrorMessage("Email or Password is incorrect");
     } finally {
       setIsLoading(false);
     }

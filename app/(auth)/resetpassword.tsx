@@ -18,8 +18,8 @@ import {
   Linking,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { authStyles as s } from "../../store/styles/authStyles";
-import { cardShadow } from "../../store/styles/shadow";
+import { authStyles as s } from "../../styles/authStyles";
+import { cardShadow } from "../../styles/shadow";
 
 const ResetPassword = () => {
   const [newPassword, setNewPassword] = useState('');

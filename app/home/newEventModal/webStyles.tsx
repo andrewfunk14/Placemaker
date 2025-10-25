@@ -1,3 +1,4 @@
+// webStyles.tsx
 import React from "react";
 import { Platform } from "react-native";
 
@@ -36,7 +37,7 @@ input.pm-dt[value=""]::-webkit-datetime-edit {
 
 /* ✅ Always show readable gray selected text when filled */
 input.pm-dt:not([value=""])::-webkit-datetime-edit {
-  color: #a0a0a0 !important;
+  color: #ffffff !important;
 }
 
 /* ✅ Custom placeholder */

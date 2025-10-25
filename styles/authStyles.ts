@@ -52,7 +52,7 @@ export const authStyles = StyleSheet.create({
     borderRadius: 8,
     backgroundColor: colors.inputBg,
     color: "#e5e5e5",
-    fontSize: 16,
+    fontSize: 18,
   },
   primaryBtn: {
     backgroundColor: colors.brand,
@@ -65,7 +65,7 @@ export const authStyles = StyleSheet.create({
   primaryBtnText: {
     color: "black",
     fontWeight: "bold",
-    fontSize: 24,
+    fontSize: 26,
   },
   ghostBtn: {
     alignSelf: "center",
@@ -90,12 +90,12 @@ export const authStyles = StyleSheet.create({
   },
   link: {
     color: colors.link,
-    fontSize: 24,
-    fontWeight: "bold",
+    fontSize: 28,
+    fontWeight: "600",
     textAlign: "center" as const,
   },
   helperText: {
-    fontSize: 24,
+    fontSize: 28,
     color: colors.text,
     textAlign: "center" as const,
     marginBottom: 12,
@@ -104,13 +104,14 @@ export const authStyles = StyleSheet.create({
     color: colors.danger,
     marginTop: 4,
     textAlign: "center" as const,
-    fontSize: 24,
+    fontSize: 26,
+    fontWeight: 600,
   },
   success: {
     color: colors.success,
     marginTop: 4,
     textAlign: "center" as const,
-    fontSize: 24,
+    fontSize: 26,
   },
   footerRow: {
     marginTop: 8,

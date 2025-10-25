@@ -10,11 +10,11 @@ import {
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import { fetchEvents, deleteEvent, EventRow } from "../../../store/slices/eventsSlice";
 import { useUser } from "../../userContext";
-import { differenceInMinutes } from "date-fns";
 import NewEventModal from "../../home/newEventModal/newEventModal";
 import DeleteConfirmModal from "../../home/deleteConfirmModal";
-import { styles } from "../../../store/styles/homeStyles";
+import { styles } from "../../../styles/homeStyles";
 import EventList from "../../home/eventList";
+import { startsInLabel, formatEventDate, formatEventTime } from "../../../utils/time"
 
 export default function Home() {
   const dispatch = useAppDispatch();
@@ -31,16 +31,16 @@ export default function Home() {
   const canCreate = roles.includes("placemaker");
 
   const formatEventDateTime = useCallback(
-    (iso: string) =>
-      new Date(iso).toLocaleString(undefined, {
-        year: "numeric",
-        month: "short",
-        day: "numeric",
-        hour: "numeric",
-        minute: "2-digit",
-      }),
+    (iso: string) => `${formatEventDate(iso)} • ${formatEventTime(iso)}`,
     []
   );
+
+  const [clock, setClock] = useState(0);
+  
+  useEffect(() => {
+    const id = setInterval(() => setClock((x) => x + 1), 60_000);
+    return () => clearInterval(id);
+  }, []);
 
   useEffect(() => {
     dispatch(fetchEvents());
@@ -61,15 +61,6 @@ export default function Home() {
     setRefreshing(true);
     await dispatch(fetchEvents());
     setRefreshing(false);
-  };
-
-  const startsInLabel = (iso: string) => {
-    const mins = Math.max(0, differenceInMinutes(new Date(iso), new Date()));
-    if (mins < 60) return `Starts in ${mins} min`;
-    const hours = Math.round(mins / 60);
-    if (hours < 24) return `Starts in ${hours} hour${hours === 1 ? "" : "s"}`;
-    const days = Math.round(hours / 24);
-    return `Starts in ${days} day${days === 1 ? "" : "s"}`;
   };
 
   const confirmDelete = async () => {

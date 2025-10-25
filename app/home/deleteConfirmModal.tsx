@@ -1,7 +1,7 @@
 // home/deleteConfirmModal.tsx
 import React from "react";
 import { Modal, View, Text, TouchableOpacity, Pressable } from "react-native";
-import { styles } from "../../store/styles/homeStyles";
+import { styles } from "../../styles/homeStyles";
 
 interface Props {
   visible: boolean;
