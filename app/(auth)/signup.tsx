@@ -147,6 +147,7 @@ const Signup = () => {
                 onChangeText={setName}
                 returnKeyType="next"
                 onSubmitEditing={() => emailRef.current?.focus()}
+                keyboardAppearance="dark"
               />
   
               <TextInput
@@ -160,6 +161,7 @@ const Signup = () => {
                 keyboardType="email-address"
                 autoCapitalize="none"
                 onSubmitEditing={() => passwordRef.current?.focus()}
+                keyboardAppearance="dark"
               />
   
               <TextInput
@@ -172,6 +174,7 @@ const Signup = () => {
                 onChangeText={setPassword}
                 returnKeyType="next"
                 onSubmitEditing={() => confirmPasswordRef.current?.focus()}
+                keyboardAppearance="dark"
               />
   
               <TextInput
@@ -184,6 +187,7 @@ const Signup = () => {
                 onChangeText={setConfirmPassword}
                 returnKeyType="done"
                 onSubmitEditing={Keyboard.dismiss}
+                keyboardAppearance="dark"
               />
   
               <TouchableOpacity

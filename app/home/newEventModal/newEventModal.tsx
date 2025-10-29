@@ -252,6 +252,7 @@ export default function NewEventModal({ visible, onClose, event, currentUserId }
               onChangeText={onChangeTitle}
               autoCapitalize="sentences"
               returnKeyType="done"
+              keyboardAppearance="dark"
             />
             {errors.title ? <Text style={styles.error}>{errors.title}</Text> : null}
 
@@ -296,6 +297,8 @@ export default function NewEventModal({ visible, onClose, event, currentUserId }
               placeholderTextColor="#a0a0a0"
               value={address}
               onChangeText={setAddress}
+              returnKeyType="done"
+              keyboardAppearance="dark"
             />
 
             {/* Description */}
@@ -309,6 +312,7 @@ export default function NewEventModal({ visible, onClose, event, currentUserId }
               numberOfLines={4}
               textAlignVertical="top"
               inputAccessoryViewID="done-bar"
+              keyboardAppearance="dark"
             />
 
             {Platform.OS === "ios" && (

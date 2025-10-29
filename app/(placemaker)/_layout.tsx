@@ -127,7 +127,11 @@ function NavLink({
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, flexDirection: "row", cursor: "auto" },
+  container: { 
+    flex: 1, 
+    flexDirection: "row", 
+    cursor: "auto" 
+  },
   sidebar: {
     width: 250,
     backgroundColor: "#0d0d0d",
@@ -135,14 +139,32 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     justifyContent: "flex-start",
   },
-  wordmarkContainer: { alignItems: "center", justifyContent: "center" },
-  wordmark: { width: 230, height: 55 },
-
-  link: { flexDirection: "row", alignItems: "center", paddingVertical: 12, paddingHorizontal: 8 },
-  linkText: { color: "#fff", fontSize: 26, marginLeft: 12 },
-  activeLink: { borderRadius: 6 },
-  activeLinkText: { color: "#FFD21F", fontWeight: "bold" },
-
+  wordmarkContainer: { 
+    alignItems: "center", 
+    justifyContent: "center" 
+  },
+  wordmark: { 
+    width: 230, 
+    height: 55 
+  },
+  link: { 
+    flexDirection: "row", 
+    alignItems: "center", 
+    paddingVertical: 12, 
+    paddingHorizontal: 8 
+  },
+  linkText: { 
+    color: "#fff", 
+    fontSize: 26, 
+    marginLeft: 12 
+  },
+  activeLink: { 
+    borderRadius: 6 
+  },
+  activeLinkText: { 
+    color: "#FFD21F", 
+    fontWeight: "bold" 
+  },
   logoutButton: {
     flexDirection: "row",
     alignItems: "center",
@@ -155,6 +177,8 @@ const styles = StyleSheet.create({
     marginLeft: 8,
     fontWeight: "500",
   },
-
-  content: { flex: 1, backgroundColor: "#000" },
+  content: { 
+    flex: 1, 
+    backgroundColor: "#000" 
+  },
 });

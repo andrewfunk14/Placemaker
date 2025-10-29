@@ -104,6 +104,7 @@ const ForgotPassword = () => {
                 keyboardType="email-address"
                 autoCapitalize="none"
                 onSubmitEditing={Keyboard.dismiss}
+                keyboardAppearance="dark"
               />
   
               <TouchableOpacity

@@ -197,6 +197,7 @@ const ResetPassword = () => {
                 returnKeyType="next"
                 onChangeText={setNewPassword}
                 onSubmitEditing={() => passwordRef.current?.focus()}
+                keyboardAppearance="dark"
               />
   
               <TextInput
@@ -208,6 +209,7 @@ const ResetPassword = () => {
                 value={confirmPassword}
                 returnKeyType="done"
                 onChangeText={setConfirmPassword}
+                keyboardAppearance="dark"
               />
   
               <TouchableOpacity

@@ -117,6 +117,7 @@ const Login = () => {
                 keyboardType="email-address"
                 autoCapitalize="none"
                 onSubmitEditing={() => passwordRef.current?.focus()}
+                keyboardAppearance="dark"
               />
 
               <TextInput
@@ -129,6 +130,7 @@ const Login = () => {
                 onChangeText={setPassword}
                 returnKeyType="done"
                 onSubmitEditing={Keyboard.dismiss}
+                keyboardAppearance="dark"
               />
 
               <TouchableOpacity

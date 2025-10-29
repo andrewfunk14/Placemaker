@@ -90,7 +90,7 @@ export const profileStyles = StyleSheet.create({
   },
   subtitle: {
     color: colors.textSecondary,
-    fontSize: Platform.OS === "web" ? 32 : 28,
+    fontSize: Platform.OS === "web" ? 30 : 28,
     fontWeight: "500",
     marginBottom: Platform.OS === "web" ? 12 : 0,
   },  
@@ -100,7 +100,7 @@ export const profileStyles = StyleSheet.create({
     gap: 8,
     justifyContent: "flex-start",
     alignItems: "center",
-    marginTop: 8,
+    marginTop: 4,
   },
   badgeRowMobile: {
     flexDirection: "row",
