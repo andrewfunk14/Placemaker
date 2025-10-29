@@ -1,4 +1,4 @@
-// _layout.tsx
+// app/_layout.tsx
 import React from "react";
 import { Stack } from "expo-router";
 import { Provider } from "react-redux";
@@ -22,3 +22,5 @@ export default function RootLayout() {
     </Provider>
   );
 }
+
+

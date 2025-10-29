@@ -1,11 +1,17 @@
 // home/eventCard.tsx
 import React from "react";
-import { View, Text, TouchableOpacity, Linking, Platform } from "react-native";
-import { Feather } from "@expo/vector-icons";
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  Linking,
+  Platform,
+} from "react-native";
 import { EventRow } from "../../store/slices/eventsSlice";
-import { styles } from "../../styles/homeStyles";
+import { styles, colors } from "../../styles/homeStyles";
 import { cardShadow } from "../../styles/shadow";
 import ParsedText from "react-native-parsed-text";
+import { Pencil, MinusCircle } from "lucide-react-native";
 
 interface Props {
   item: EventRow;
@@ -25,10 +31,10 @@ export default function EventCard({
 }: Props) {
   const address = item.address?.trim() ?? "";
 
-  // 🔍 Detect if it's a URL (Zoom, Meet, etc.)
+  // Detect URL (Zoom, Meet, etc.)
   const isUrl = /^https?:\/\/\S+/i.test(address);
 
-  // 🏠 Detect if it's a real street-style address
+  // Detect real-world address
   const looksLikeAddress = (text: string) => {
     const cleaned = text.trim();
     const hasNumber = /\d/.test(cleaned);
@@ -39,8 +45,10 @@ export default function EventCard({
   };
   const isRealAddress = looksLikeAddress(address);
 
-  // 🕒 Compute event timing info
+  // Compute timing
   const { label, status } = startsInLabel(item.start_at);
+  const isNow = status === "now";
+  const isPast = status === "past";
 
   const date = new Date(item.start_at);
   const dateLabel = date.toLocaleDateString("en-US", {
@@ -53,21 +61,28 @@ export default function EventCard({
     minute: "2-digit",
   });
 
-  // 🎨 Style conditions
-  const isNow = status === "now";
-  const isPast = status === "past";
-
   return (
     <View
       style={[
         styles.card,
         cardShadow(),
-        isNow && { borderColor: "#7fd35c" }, // green border when happening now
-        isPast && { opacity: 0.7 }, // optional dimming for past events
+        isNow && { borderColor: "#7fd35c" },
+        isPast && { opacity: 0.7 },
       ]}
     >
-      {/* Header Row */}
-      <View style={styles.cardHeader}>
+      {isCreator && (
+        <TouchableOpacity
+          style={styles.editTopRightButton}
+          onPress={onEdit}
+          hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+          activeOpacity={0.7}
+        >
+          <Pencil color={colors.accent} size={28} />
+        </TouchableOpacity>
+      )}
+
+      {/* === Badge Row w/ Delete Button === */}
+      <View style={styles.badgeRow}>
         <Text
           style={[
             styles.badge,
@@ -77,32 +92,21 @@ export default function EventCard({
         >
           {label}
         </Text>
-
-        <View
-          style={[styles.actionsTop, !isCreator && styles.actionsTopGhost]}
-          pointerEvents={isCreator ? "auto" : "none"}
-        >
-          <TouchableOpacity style={styles.iconBtn} onPress={onEdit}>
-            <Feather
-              name="edit-2"
-              size={24}
-              style={[styles.iconEdit, !isCreator && styles.iconHidden]}
-            />
+        {isCreator && (
+          <TouchableOpacity
+            onPress={onDelete}
+            style={styles.deleteCircle}
+            activeOpacity={0.7}
+          >
+            <MinusCircle color={colors.danger} size={36} />
           </TouchableOpacity>
-          <TouchableOpacity style={styles.iconBtn} onPress={onDelete}>
-            <Feather
-              name="trash-2"
-              size={24}
-              style={[styles.iconDelete, !isCreator && styles.iconHidden]}
-            />
-          </TouchableOpacity>
-        </View>
+        )}
       </View>
 
-      {/* Title */}
+      {/* === Title === */}
       <Text style={[styles.cardTitle, { flexWrap: "wrap" }]}>{item.title}</Text>
 
-      {/* Date + Time */}
+      {/* === Date + Time === */}
       <View
         style={{
           flexDirection: "row",
@@ -116,7 +120,7 @@ export default function EventCard({
         <Text style={styles.cardMeta}>{timeLabel}</Text>
       </View>
 
-      {/* Address / Links */}
+      {/* === Address / Links === */}
       {isUrl ? (
         <TouchableOpacity onPress={() => Linking.openURL(address)}>
           <Text style={[styles.cardMeta, { color: "#2e78b7" }]} numberOfLines={2}>
@@ -144,7 +148,7 @@ export default function EventCard({
         </Text>
       ) : null}
 
-      {/* Description */}
+      {/* === Description === */}
       {item.description ? (
         <ParsedText
           style={[styles.cardDesc, { flexWrap: "wrap" }]}

@@ -15,6 +15,9 @@ import { useAppDispatch, useAppSelector } from "../store/hooks";
 import { popPath } from "../store/slices/navigationSlice";
 import { resetHistory } from "../store/slices/navigationSlice";
 import { cardShadow } from "../styles/shadow";
+import { supabase } from "../lib/supabaseClient";
+import { signOut } from "../store/slices/authSlice";
+import { clearProfile } from "../store/slices/profileSlice";
 
 interface MobileHeaderProps {
   showBackButton?: boolean;
@@ -44,6 +47,17 @@ const MobileHeader: React.FC<MobileHeaderProps> = ({
 
   const closeMenu = () => setShowMenu(false);
 
+  const handleLogout = async () => {
+      try {
+        await supabase.auth.signOut();
+        dispatch(signOut());
+        dispatch(clearProfile());
+        dispatch(resetHistory());
+        router.replace("/login");
+      } catch (err) {
+        console.error("Logout failed:", err);
+      }
+    };
 
   return (
     <View style={styles.headerWrapper}>
@@ -81,6 +95,7 @@ const MobileHeader: React.FC<MobileHeaderProps> = ({
           <View style={styles.menuContainer}>
             <TouchableOpacity
               onPress={() => {
+                handleLogout
                 closeMenu();
                 dispatch(resetHistory());
                 router.replace("/login");

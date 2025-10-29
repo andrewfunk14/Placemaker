@@ -215,7 +215,6 @@ export default function NewEventModal({ visible, onClose, event, currentUserId }
         description: description.trim() || null,
         address: address || null,
         start_at,
-        end_at: null,
       };
       if (mode === "edit" && event?.id) {
         await dispatch(updateEvent({ id: event.id, changes: payload })).then(unwrapResult);
@@ -342,7 +341,7 @@ export default function NewEventModal({ visible, onClose, event, currentUserId }
                 style={[styles.btn, (!canEdit || saving) && { opacity: 0.5 }]}
                 onPress={save}
               >
-                <Text style={styles.btnText}>{saving ? "Saving..." : isEdit ? "Update" : "Save"}</Text>
+                <Text style={styles.btnText}>{saving ? "Saving..." : isEdit ? "Save" : "Save"}</Text>
               </TouchableOpacity>
             </View>
           </View>

@@ -365,11 +365,11 @@ const styles = StyleSheet.create({
   },
   navText: { 
     color: "#fff", 
-    fontSize: 18 
+    fontSize: 20 
   },
   signupText: { 
     color: "#ffd21f", 
-    fontSize: 18 
+    fontSize: 20 
   },
   loginButton: {
     color: "#000",
@@ -378,7 +378,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     borderRadius: 6,
     fontWeight: "600",
-    fontSize: 18,
+    fontSize: 20,
   },
   menuIcon: { 
     fontSize: 28, 
@@ -442,6 +442,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     paddingVertical: 12,
     marginBottom: 16,
+    fontSize: 18,
   },
   ctaButton: {
     backgroundColor: "#ffd21f",
@@ -453,7 +454,7 @@ const styles = StyleSheet.create({
   ctaButtonText: { 
     color: "#000", 
     fontWeight: "600", 
-    fontSize: 18, 
+    fontSize: 20, 
   },
   message: {
     marginBottom: 16,

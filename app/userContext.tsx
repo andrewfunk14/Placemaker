@@ -81,13 +81,15 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
       if (session?.user) {
         setUserId(session.user.id);
       } else {
+        console.log("🧹 Logged out — clearing context and Redux");
         setUserId(null);
         setRoles(["free"]);
-        AsyncStorage.removeItem("userId");
-        AsyncStorage.removeItem("roles");
+        AsyncStorage.multiRemove(["userId", "roles"]);
         dispatch(setUser(null));
+        dispatch({ type: "auth/logout" });
+        dispatch({ type: "profile/clearProfile" });
       }
-    });
+    });    
 
     return () => {
       listener.subscription.unsubscribe();

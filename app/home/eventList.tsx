@@ -37,7 +37,7 @@ export default function EventList({
   if (loading) {
     return (
       <View style={{ marginTop: 24 }}>
-        <ActivityIndicator color="#ffd21f" />
+        {/* <ActivityIndicator color="#ffd21f" /> */}
       </View>
     );
   }

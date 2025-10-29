@@ -75,14 +75,23 @@ export const signInWithEmail = createAsyncThunk(
   }
 );
 
-export const signOut = createAsyncThunk("auth/signOut", async (_, { rejectWithValue }) => {
-  try {
-    const { error } = await supabase.auth.signOut();
-    if (error) throw error;
-  } catch (error: any) {
-    return rejectWithValue(error.message);
+export const signOut = createAsyncThunk(
+  "auth/signOut",
+  async (_, { dispatch, rejectWithValue }) => {
+    try {
+      const { error } = await supabase.auth.signOut();
+      if (error) throw error;
+
+      dispatch(logout());
+      dispatch({ type: "profile/clearProfile" });
+      return true;
+    } catch (err: any) {
+      dispatch(logout());
+      dispatch({ type: "profile/clearProfile" });
+      return rejectWithValue(err.message ?? "Sign out failed");
+    }
   }
-});
+);
 
 const initialState: AuthState = {
   user: null,
@@ -141,13 +150,10 @@ const authSlice = createSlice({
         state.loading = true;
       })
       .addCase(signOut.fulfilled, (state) => {
-        state.loading = false;
-        state.user = null;
-        state.error = null;
+        state.user = null; // ✅ clear user completely
       })
-      .addCase(signOut.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.payload as string;
+      .addCase(signOut.rejected, (state) => {
+        state.user = null; // ✅ still clear in case of network issues
       });
   },
 });

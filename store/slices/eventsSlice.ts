@@ -7,7 +7,6 @@ export type EventRow = {
   title: string;
   description: string | null;
   start_at: string;
-  end_at: string | null;
   address: string | null;
   created_by: string;
   created_at: string;
@@ -30,25 +29,27 @@ export const fetchEvents = createAsyncThunk(
   "events/fetchEvents",
   async (_: void, { rejectWithValue }) => {
     try {
-      // ⏱ keep events until 2 hours after they start
-      const cutoffISO = new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString();
+      const TWO_HOURS_MS = 2 * 60 * 60 * 1000;
+      const cutoffISO = new Date(Date.now() - TWO_HOURS_MS).toISOString();
 
-      // 🗑️ Delete events strictly older than (start_at < now - 2h)
+      // 🗑️ Remove events that started 2+ hours ago
+      // (start_at <= now - 2h)
       await supabase
         .from("events")
         .delete()
-        .lt("start_at", cutoffISO);
+        .lte("start_at", cutoffISO);
 
-      // 🔄 Fetch the rest
+      // 🔄 Fetch only events that haven't hit that cutoff
+      // This keeps "In Progress" (within the 2h window) + upcoming
       const { data, error } = await supabase
         .from("events")
         .select(
-          "id,title,description,start_at,end_at,address,created_by,created_at,updated_at"
+          "id,title,description,start_at,address,created_by,created_at,updated_at"
         )
+        .gt("start_at", cutoffISO)
         .order("start_at", { ascending: true });
 
       if (error) throw error;
-
       return (data ?? []) as EventRow[];
     } catch (e: any) {
       return rejectWithValue(e.message ?? "Failed to fetch events");
@@ -64,7 +65,6 @@ export const createEvent = createAsyncThunk(
       description?: string | null;
       address?: string | null;
       start_at: string;
-      end_at?: string | null;
     },
     { rejectWithValue }
   ) => {
@@ -74,7 +74,6 @@ export const createEvent = createAsyncThunk(
         description: payload.description ?? null,
         address: payload.address ?? null,
         start_at: payload.start_at,
-        end_at: payload.end_at ?? null,
       };
 
       const { error } = await supabase.from("events").insert([insert]);

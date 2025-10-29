@@ -76,7 +76,7 @@ export default function Home() {
   };
 
   return (
-    <View style={styles.root}>
+    <View style={styles.container}>
       <View style={styles.searchRow}>
         <TextInput
           value={query}

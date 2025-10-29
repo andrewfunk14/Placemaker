@@ -4,12 +4,15 @@ import { useEffect } from "react";
 import { Stack, useRouter, useSegments } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import { useAppDispatch, useAppSelector } from "../../store/hooks";
-import { pushPath } from "../../store/slices/navigationSlice";
+import { pushPath, resetHistory } from "../../store/slices/navigationSlice";
+import { supabase } from "../../lib/supabaseClient";
+import { signOut } from "../../store/slices/authSlice";
+import { clearProfile } from "../../store/slices/profileSlice";
 
 export default function PlacemakerLayout() {
   const router = useRouter();
   const segments = useSegments();
-  const history = useAppSelector(s => s.navigation.history);
+  const history = useAppSelector((s) => s.navigation.history);
   const currentPath = history[history.length - 1] || "/";
   const dispatch = useAppDispatch();
 
@@ -20,10 +23,22 @@ export default function PlacemakerLayout() {
     }
   }, [segments]);
 
+  const handleLogout = async () => {
+    try {
+      await supabase.auth.signOut();
+      dispatch(signOut());
+      dispatch(clearProfile());
+      dispatch(resetHistory());
+      router.replace("/login");
+    } catch (err) {
+      console.error("Logout failed:", err);
+    }
+  };
+
   if (Platform.OS === "web") {
-    // WEB: sidebar + a Stack that renders the (tabs) group (tab bar will be hidden in tabs layout)
     return (
       <View style={styles.container}>
+        {/* --- Sidebar --- */}
         <View style={styles.sidebar}>
           <View style={styles.wordmarkContainer}>
             <Image
@@ -33,6 +48,7 @@ export default function PlacemakerLayout() {
             />
           </View>
 
+          {/* --- Nav Links --- */}
           <NavLink
             label="Home"
             icon="home-outline"
@@ -63,6 +79,16 @@ export default function PlacemakerLayout() {
             active={currentPath.startsWith("/(placemaker)/(tabs)/profile")}
             onPress={() => router.push("/(placemaker)/(tabs)/profile")}
           />
+
+          <TouchableOpacity
+            onPress={handleLogout}
+            activeOpacity={0.8}
+            style={styles.logoutButton}
+          >
+            <Ionicons name="log-out-outline" size={32} color="#ff4d4f" />
+            <Text style={styles.logoutText}>Logout</Text>
+          </TouchableOpacity>
+
         </View>
 
         <View style={styles.content}>
@@ -74,7 +100,6 @@ export default function PlacemakerLayout() {
     );
   }
 
-  // MOBILE: do NOT render MobileHeader here. Let the Tabs layout own the mobile UI.
   return (
     <Stack screenOptions={{ headerShown: false }}>
       <Stack.Screen name="(tabs)" />
@@ -83,11 +108,19 @@ export default function PlacemakerLayout() {
 }
 
 function NavLink({
-  label, icon, active, onPress,
-}: { label: string; icon: keyof typeof Ionicons.glyphMap; active: boolean; onPress: () => void }) {
+  label,
+  icon,
+  active,
+  onPress,
+}: {
+  label: string;
+  icon: keyof typeof Ionicons.glyphMap;
+  active: boolean;
+  onPress: () => void;
+}) {
   return (
     <TouchableOpacity style={[styles.link, active && styles.activeLink]} onPress={onPress}>
-      <Ionicons name={icon} size={24} color={active ? "#FFD21F" : "#fff"} />
+      <Ionicons name={icon} size={28} color={active ? "#FFD21F" : "#fff"} />
       <Text style={[styles.linkText, active && styles.activeLinkText]}>{label}</Text>
     </TouchableOpacity>
   );
@@ -95,12 +128,33 @@ function NavLink({
 
 const styles = StyleSheet.create({
   container: { flex: 1, flexDirection: "row", cursor: "auto" },
-  sidebar: { width: 250, backgroundColor: "#0d0d0d", paddingTop: 12, paddingHorizontal: 10 },
+  sidebar: {
+    width: 250,
+    backgroundColor: "#0d0d0d",
+    paddingTop: 12,
+    paddingHorizontal: 10,
+    justifyContent: "flex-start",
+  },
   wordmarkContainer: { alignItems: "center", justifyContent: "center" },
   wordmark: { width: 230, height: 55 },
+
   link: { flexDirection: "row", alignItems: "center", paddingVertical: 12, paddingHorizontal: 8 },
-  linkText: { color: "#fff", fontSize: 22, marginLeft: 8 },
+  linkText: { color: "#fff", fontSize: 26, marginLeft: 12 },
   activeLink: { borderRadius: 6 },
   activeLinkText: { color: "#FFD21F", fontWeight: "bold" },
+
+  logoutButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginTop: 12,
+    paddingHorizontal: 8,
+  },
+  logoutText: {
+    color: "#ff4d4f",
+    fontSize: 26,
+    marginLeft: 8,
+    fontWeight: "500",
+  },
+
   content: { flex: 1, backgroundColor: "#000" },
 });

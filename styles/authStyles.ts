@@ -5,7 +5,7 @@ const colors = {
   bg: "#0d0d0d",
   brand: "#ffd21f",
   text: "#ffffff",
-  textMuted: "#a0a0a0",
+  placeholderText: "#a0a0a0",
   border: "#ffd21f",
   inputBg: "#1c1c1c",
   link: "#2e78b7",
@@ -52,7 +52,7 @@ export const authStyles = StyleSheet.create({
     borderRadius: 8,
     backgroundColor: colors.inputBg,
     color: "#e5e5e5",
-    fontSize: 18,
+    fontSize: 16,
   },
   primaryBtn: {
     backgroundColor: colors.brand,
