@@ -5,7 +5,7 @@ import { supabase } from "../lib/supabaseClient";
 import { useAppDispatch } from "../store/hooks";
 import { setUser } from "../store/slices/authSlice";
 
-export type UserRole = "free" | "placemaker" | "policymaker" | "dealmaker" | "changemaker";
+export type UserRole = "admin" | "free" | "placemaker" | "policymaker" | "dealmaker" | "changemaker";
 
 interface UserContextType {
   roles: UserRole[];
@@ -40,7 +40,7 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
           if (!error && profileData) {
             const fetchedRoles: string[] = profileData.roles || [];
 
-            const validRoles: UserRole[] = (["free", "placemaker", "policymaker", "dealmaker", "changemaker"] as const)
+            const validRoles: UserRole[] = (["admin", "free", "placemaker", "policymaker", "dealmaker", "changemaker"] as const)
               .filter((role) => fetchedRoles.includes(role)) as UserRole[];
 
             const uniqueRoles: UserRole[] = Array.from(new Set(["free", ...validRoles]));
@@ -65,7 +65,7 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
 
           if (savedRoles) {
             const parsedRoles: string[] = JSON.parse(savedRoles);
-            const validRoles: UserRole[] = (["free", "placemaker", "policymaker", "dealmaker", "changemaker"] as const)
+            const validRoles: UserRole[] = (["admin", "free", "placemaker", "policymaker", "dealmaker", "changemaker"] as const)
               .filter((role) => parsedRoles.includes(role)) as UserRole[];
             setRoles(validRoles.length ? validRoles : ["free"]);
           }

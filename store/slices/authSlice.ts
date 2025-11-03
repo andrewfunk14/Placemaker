@@ -30,7 +30,7 @@ export const fetchUserDetails = createAsyncThunk(
 
       const roles: UserRole[] = Array.isArray(data.role)
         ? data.role.filter((r: string) =>
-            ["free", "placemaker", "policymaker", "dealmaker", "changemaker"].includes(r)
+            ["admin","free", "placemaker", "policymaker", "dealmaker", "changemaker"].includes(r)
           )
         : ["free", ...(data.role ? [data.role] : [])];
 
@@ -64,7 +64,7 @@ export const signInWithEmail = createAsyncThunk(
 
       const roles: UserRole[] = Array.isArray(userData.role)
         ? userData.role.filter((r: string) =>
-            ["free", "placemaker", "policymaker", "dealmaker", "changemaker"].includes(r)
+            ["admin","free", "placemaker", "policymaker", "dealmaker", "changemaker"].includes(r)
           )
         : ["free", ...(userData.role ? [userData.role] : [])];
 

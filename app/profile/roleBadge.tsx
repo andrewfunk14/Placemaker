@@ -8,6 +8,7 @@ export type TierRole =
   | "policymaker"
   | "dealmaker"
   | "changemaker"
+  | "admin"
   | "free";
 
 export const ROLE_COLORS: Record<TierRole, string> = {
@@ -15,6 +16,7 @@ export const ROLE_COLORS: Record<TierRole, string> = {
   policymaker: "#3B82F6", // blue
   dealmaker: "#22C55E",  // green
   changemaker: "#F97316", // orange
+  admin: "#9CA3AF",        // gray
   free: "#9CA3AF",        // gray
 };
 

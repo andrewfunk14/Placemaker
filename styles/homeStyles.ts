@@ -148,7 +148,7 @@ export const styles = StyleSheet.create({
     color: colors.textPrimary,
     opacity: 0.7,
     textAlign: "center",
-    marginTop: 24,
+    marginTop: 16,
     fontSize: 24,
   },
 
