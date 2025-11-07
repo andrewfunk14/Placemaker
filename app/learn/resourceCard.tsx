@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   Image,
   Alert,
+  ScrollView,
 } from "react-native";
 import type { Resource } from "../../store/slices/resourcesSlice";
 import { useAppDispatch } from "../../store/hooks";
@@ -245,7 +246,23 @@ export default function ResourceCard({ resource, user }: ResourceCardProps) {
         </View>
       )}
 
-      {resource.tags?.length > 0 && (
+{resource.tags?.length > 0 && (
+  <ScrollView
+    horizontal
+    showsHorizontalScrollIndicator={false}
+    contentContainerStyle={styles.cardTagContainer}
+    style={{ marginTop: 6 }}
+  >
+    {resource.tags.map((tag) => (
+      <View key={tag} style={styles.cardTagPill}>
+        <Text style={styles.cardTagText}>#{tag}</Text>
+      </View>
+    ))}
+  </ScrollView>
+)}
+
+
+      {/* {resource.tags?.length > 0 && (
         <View style={styles.cardTagContainer}>
           {resource.tags.map((tag) => (
             <View key={tag} style={styles.cardTagPill}>
@@ -253,7 +270,7 @@ export default function ResourceCard({ resource, user }: ResourceCardProps) {
             </View>
           ))}
         </View>
-      )}
+      )} */}
 
       <DeleteConfirmModal
         visible={showDeleteConfirm}

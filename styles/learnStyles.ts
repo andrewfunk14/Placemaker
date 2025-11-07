@@ -229,8 +229,8 @@ export const learnStyles = StyleSheet.create({
   },
   cardTagContainer: {
     flexDirection: "row",
-    flexWrap: "wrap",
-  },
+    alignItems: "center",
+  },  
   cardTagPill: {
     backgroundColor: "rgba(255,255,255,0.1)",
     borderRadius: 14,
