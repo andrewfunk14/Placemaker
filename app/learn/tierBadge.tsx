@@ -18,7 +18,7 @@ export default function TierBadge({ tier }: TierBadgeProps) {
   }
 
   const color = TIER_COLORS[normalized as "free" | "paid"];
-  const label = normalized === "paid" ? "Placemaker+" : "Free";
+  const label = normalized === "paid" ? "Placemaker" : "Free";
 
   return (
     <View
