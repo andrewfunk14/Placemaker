@@ -53,7 +53,7 @@ export const styles = StyleSheet.create({
     backgroundColor: "rgba(12, 10, 10, 0.04)",
     borderRadius: 16,
     padding: 12,
-    borderWidth: 2,
+    borderWidth: 1,
     borderColor: colors.border,
   },
   badge: {

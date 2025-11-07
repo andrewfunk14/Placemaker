@@ -38,7 +38,7 @@ export const profileStyles = StyleSheet.create({
   profileContainer: {
     width: "100%",
     borderRadius: 16,
-    borderWidth: 2,
+    borderWidth: 1,
     borderColor: colors.border,
     padding: 16,
     backgroundColor: colors.backgroundMid,

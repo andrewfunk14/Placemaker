@@ -110,7 +110,7 @@ export const learnStyles = StyleSheet.create({
 // resourceCard.tsx
   cardContainer: {
     borderRadius: 16,
-    borderWidth: 2,
+    borderWidth: 1,
     borderColor: colors.accent,
     padding: 12,
     marginBottom: 12,
