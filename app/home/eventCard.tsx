@@ -13,6 +13,7 @@ import { styles, colors } from "../../styles/homeStyles";
 import { cardShadow } from "../../styles/shadow";
 import ParsedText from "react-native-parsed-text";
 import { Pencil, MinusCircle, User2 } from "lucide-react-native";
+import { useUser } from "../../app/userContext";
 
 interface Props {
   item: EventRow;
@@ -23,14 +24,6 @@ interface Props {
   onDelete: () => void;
 }
 
-const getInitials = (name?: string | null) => {
-  if (!name) return "";
-  const parts = name.trim().split(/\s+/);
-  const first = parts[0]?.[0] ?? "";
-  const last = parts[1]?.[0] ?? "";
-  return (first + last).toUpperCase();
-};
-
 export default function EventCard({
   item,
   isCreator,
@@ -40,10 +33,12 @@ export default function EventCard({
 }: Props) {
   const address = item.address?.trim() ?? "";
 
-  // Detect URL (Zoom, Meet, etc.)
+  const user = useUser();
+  const isAdmin = user?.roles?.includes("admin");
+
+
   const isUrl = /^https?:\/\/\S+/i.test(address);
 
-  // Detect real-world address
   const looksLikeAddress = (text: string) => {
     const cleaned = text.trim();
     const hasNumber = /\d/.test(cleaned);
@@ -54,7 +49,6 @@ export default function EventCard({
   };
   const isRealAddress = looksLikeAddress(address);
 
-  // Compute timing
   const { label, status } = startsInLabel(item.start_at);
   const isNow = status === "now";
   const isPast = status === "past";
@@ -81,7 +75,6 @@ export default function EventCard({
         isPast && { opacity: 0.7 },
       ]}
     >
-      {/* === Top-right: Edit if creator, else creator avatar === */}
       {isCreator ? (
         <TouchableOpacity
           style={styles.editTopRightButton}
@@ -115,7 +108,6 @@ export default function EventCard({
         </View>
       )}
 
-      {/* === Badge Row w/ Delete Button === */}
       <View style={styles.badgeRow}>
         <Text
           style={[
@@ -126,7 +118,7 @@ export default function EventCard({
         >
           {label}
         </Text>
-        {isCreator && (
+        {(isCreator || isAdmin) && (
           <TouchableOpacity
             onPress={onDelete}
             style={styles.deleteCircle}
@@ -137,10 +129,8 @@ export default function EventCard({
         )}
       </View>
 
-      {/* === Title === */}
       <Text style={[styles.cardTitle, { flexWrap: "wrap" }]}>{item.title}</Text>
 
-      {/* === Date + Time === */}
       <View
         style={{
           flexDirection: "row",
@@ -154,7 +144,6 @@ export default function EventCard({
         <Text style={styles.cardMeta}>{timeLabel}</Text>
       </View>
 
-      {/* === Address / Links === */}
       {isUrl ? (
         <TouchableOpacity onPress={() => Linking.openURL(address)}>
           <Text style={[styles.cardMeta, { color: "#2e78b7" }]} numberOfLines={2}>
@@ -182,7 +171,6 @@ export default function EventCard({
         </Text>
       ) : null}
 
-      {/* === Description === */}
       {item.description ? (
         <ParsedText
           style={[styles.cardDesc, { flexWrap: "wrap" }]}
