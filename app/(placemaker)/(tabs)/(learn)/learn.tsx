@@ -1,6 +1,13 @@
 // (tabs)/(learn)/learn.tsx
 import React, { useState, useEffect, useMemo } from "react";
-import { View, Text, TextInput, TouchableOpacity, ScrollView } from "react-native";
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  ScrollView,
+  RefreshControl,
+} from "react-native";
 import { learnStyles as styles, colors } from "../../../../styles/learnStyles";
 import { useAppDispatch, useAppSelector } from "../../../../store/hooks";
 import { fetchResources } from "../../../../store/slices/resourcesSlice";
@@ -38,9 +45,7 @@ export default function LearnScreen() {
     items.forEach((r) => {
       const creatorId = getCreatorId(r);
       const canSee =
-        isAdmin ||
-        r.is_approved ||
-        (!!currentUserId && creatorId === currentUserId);
+        isAdmin || r.is_approved || (!!currentUserId && creatorId === currentUserId);
       if (canSee) r.tags?.forEach((t: string) => tagSet.add(t));
     });
     return Array.from(tagSet).sort();
@@ -51,9 +56,7 @@ export default function LearnScreen() {
       .filter((r) => {
         const creatorId = getCreatorId(r);
         const canSee =
-          isAdmin ||
-          r.is_approved ||
-          (!!currentUserId && creatorId === currentUserId);
+          isAdmin || r.is_approved || (!!currentUserId && creatorId === currentUserId);
 
         if (!canSee) return false;
 
@@ -70,7 +73,10 @@ export default function LearnScreen() {
           return false;
         }
 
-        if (selectedTags.length > 0 && !r.tags?.some((t: string) => selectedTags.includes(t))) {
+        if (
+          selectedTags.length > 0 &&
+          !r.tags?.some((t: string) => selectedTags.includes(t))
+        ) {
           return false;
         }
 
@@ -120,7 +126,16 @@ export default function LearnScreen() {
         )}
       </View>
 
-      <ScrollView style={styles.content}>
+      <ScrollView
+        contentContainerStyle={styles.content}
+        refreshControl={
+          <RefreshControl
+            refreshing={loading}
+            onRefresh={() => dispatch(fetchResources())}
+            tintColor={colors.accent}
+          />
+        }
+      >
         <ResourceList resources={filtered} user={user} />
       </ScrollView>
 
@@ -134,11 +149,16 @@ export default function LearnScreen() {
         <Text style={styles.fabPlus}>＋</Text>
       </TouchableOpacity>
 
-      <UploadModal
-        visible={showUpload}
-        onClose={() => setShowUpload(false)}
-        mode="add"
-      />
+      {showUpload && (
+        <UploadModal
+          visible={showUpload}
+          onClose={() => {
+            setShowUpload(false);
+            setTimeout(() => dispatch(fetchResources()), 250);
+          }}
+          mode="add"
+        />
+      )}
     </View>
   );
 }

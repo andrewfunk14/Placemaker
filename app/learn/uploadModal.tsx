@@ -13,7 +13,7 @@ import {
   Alert,
 } from "react-native";
 import { useAppDispatch } from "../../store/hooks";
-import { uploadResource, fetchResources } from "../../store/slices/resourcesSlice";
+import { uploadResource } from "../../store/slices/resourcesSlice";
 import { learnStyles as styles, colors } from "../../styles/learnStyles";
 import ResourceTagDropdown from "./tagDropdown";
 import FileUpload from "./fileUpload";
@@ -65,6 +65,8 @@ export default function UploadModal({
   const [removedNewFiles, setRemovedNewFiles] = useState<string[]>([]);
   const prevUrlsRef = useRef<string[]>([]);
 
+  const uploadedThisSessionRef = useRef<string[]>([]);
+
   useEffect(() => {
     if (mode === "edit" && resource) {
       const urls = Array.isArray(resource.file_urls)
@@ -97,15 +99,11 @@ export default function UploadModal({
 
   const handleCancel = async () => {
     try {
-      const unsaved =
-        mode === "add"
-          ? uploadedUrls
-          : newFiles;
-
-      if (unsaved.length > 0) {
-        const paths = unsaved.map(extractStoragePath).filter(Boolean) as string[];
+      const allUploadedThisSession = uploadedThisSessionRef.current;
+      if (allUploadedThisSession.length > 0) {
+        const paths = allUploadedThisSession.map(extractStoragePath).filter(Boolean) as string[];
         if (paths.length > 0) {
-          console.log("🧹 Deleting unsaved files on cancel:", paths);
+          console.log("🧹 Removing all session uploads on cancel:", paths);
           const { error } = await supabase.storage.from("resources").remove(paths);
           if (error) console.error("⚠️ Cancel cleanup error:", error);
         }
@@ -113,6 +111,7 @@ export default function UploadModal({
     } catch (err) {
       console.error("Cancel cleanup failed:", err);
     } finally {
+      uploadedThisSessionRef.current = [];
       resetForm();
       setNewFiles([]);
       setRemovedNewFiles([]);
@@ -145,9 +144,7 @@ export default function UploadModal({
       if (allRemoved.length > 0) {
         const paths = allRemoved.map(extractStoragePath).filter(Boolean) as string[];
         if (paths.length > 0) {
-          console.log("🗑 Deleting removed files from Supabase:", paths);
-          const { error } = await supabase.storage.from("resources").remove(paths);
-          if (error) console.error("⚠️ Supabase deletion error:", error);
+          await supabase.storage.from("resources").remove(paths);
         }
       }
 
@@ -172,16 +169,16 @@ export default function UploadModal({
             tags,
             tier_access: null,
             file_urls: uploadedUrls,
-            is_approved: isAdmin ? true : false,
+            is_approved: false,
           })
         );
       }
 
-      await dispatch(fetchResources());
       resetForm();
       setNewFiles([]);
       setRemovedNewFiles([]);
-      onClose();
+
+      setTimeout(() => onClose(), 50);
     } catch (err: any) {
       console.error("Submit failed:", err);
       Alert.alert("Error", err.message || "Failed to save resource.");
@@ -190,9 +187,18 @@ export default function UploadModal({
     }
   };
 
+  if (!visible) return null;
+
   return (
-    <Modal visible={visible} animationType="fade" transparent onRequestClose={handleCancel}>
-      <Pressable style={styles.modalBackdrop} onPress={handleCancel} />
+    <Modal animationType="fade" transparent onRequestClose={handleCancel}>
+      <Pressable
+        style={[
+          styles.modalBackdrop,
+          submitting && { backgroundColor: "rgba(0,0,0,0.6)" },
+        ]}
+        disabled={submitting}
+        onPress={handleCancel}
+      />
       <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : undefined}
         style={styles.modalCardWrap}
@@ -238,23 +244,22 @@ export default function UploadModal({
                 const removed = prev.filter((u) => !urls.includes(u));
 
                 if (added.length > 0) {
-                  setNewFiles((prevNew) => [
-                    ...new Set([...prevNew, ...added.filter((u) => !initialFiles.includes(u))]),
-                  ]);
-                }
+                  uploadedThisSessionRef.current = [
+                    ...new Set([...uploadedThisSessionRef.current, ...added]),
+                  ];
+                }    
 
                 if (removed.length > 0) {
                   const removedWereNew = removed.filter(
-                    (u) => !initialFiles.includes(u) && newFiles.includes(u)
+                    (u) => !initialFiles.includes(u)
                   );
                   if (removedWereNew.length > 0) {
                     setRemovedNewFiles((prevRem) => [
                       ...new Set([...prevRem, ...removedWereNew]),
                     ]);
-                    setNewFiles((prevNew) =>
-                      prevNew.filter((u) => !removedWereNew.includes(u))
-                    );
                   }
+
+                  setNewFiles((prevNew) => prevNew.filter((u) => !removed.includes(u)));
                 }
 
                 setUploadedUrls(urls);

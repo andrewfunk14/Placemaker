@@ -274,14 +274,18 @@ export default function ResourceCard({ resource, user }: ResourceCardProps) {
         />
       )}
 
-      {isCreator && (
+      {isCreator && showEdit && (
         <UploadModal
           visible={showEdit}
-          onClose={() => setShowEdit(false)}
+          onClose={() => {
+            setShowEdit(false);
+            setTimeout(() => dispatch(fetchResources()), 250);
+          }}
           mode="edit"
           resource={resource}
         />
       )}
+
     </View>
   );
 }

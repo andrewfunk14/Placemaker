@@ -46,6 +46,7 @@ export const styles = StyleSheet.create({
     paddingHorizontal: webPad,
     paddingVertical: 12,
     gap: 12,
+    paddingBottom: 100,
   },
 
   // CARD STYLES

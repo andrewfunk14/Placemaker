@@ -1,5 +1,5 @@
 // learn/adminModal.tsx
-import React, { useMemo, useState, useEffect, useRef } from "react";
+import React, { useMemo, useState } from "react";
 import {
   Modal,
   View,
@@ -11,6 +11,7 @@ import {
   Platform,
   ScrollView,
   Alert,
+  Image,
 } from "react-native";
 import { supabase } from "../../lib/supabaseClient";
 import { useAppDispatch } from "../../store/hooks";
@@ -18,24 +19,10 @@ import { fetchResources } from "../../store/slices/resourcesSlice";
 import { learnStyles as styles, colors } from "../../styles/learnStyles";
 import ResourceTagDropdown from "./tagDropdown";
 import ResourceTierDropdown from "./tierDropdown";
-import FileUpload from "./fileUpload";
+import { FileText } from "lucide-react-native";
+import * as WebBrowser from "expo-web-browser";
 import type { Resource } from "../../store/slices/resourcesSlice";
 import { useUser } from "../../app/userContext";
-
-function extractStoragePath(url: string): string | null {
-  try {
-    const match = url.match(/\/object\/public\/resources\/(.+)$/);
-    if (match && match[1]) return match[1];
-    const parts = url.split("/");
-    const uploadsIndex = parts.indexOf("uploads");
-    if (uploadsIndex !== -1 && parts.length > uploadsIndex + 1) {
-      return `uploads/${parts.slice(uploadsIndex + 1).join("/")}`;
-    }
-    return null;
-  } catch {
-    return null;
-  }
-}
 
 export default function AdminModal({
   visible,
@@ -69,46 +56,14 @@ export default function AdminModal({
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
 
-  const [newFiles, setNewFiles] = useState<string[]>([]);
-  const [removedNewFiles, setRemovedNewFiles] = useState<string[]>([]);
-  const prevUrlsRef = useRef<string[]>([]);
-
-  useEffect(() => {
+  const handleCancel = () => {
+    setTitle(resource.title ?? "");
+    setDescription(resource.description ?? "");
+    setTags(resource.tags ?? []);
+    setTier(resource.tier_access ?? null);
     setUploadedUrls(initialFiles);
-    setNewFiles([]);
-    setRemovedNewFiles([]);
-    prevUrlsRef.current = initialFiles;
-  }, [initialFiles, visible]);
-
-  const handleCancel = async () => {
-    try {
-      if (newFiles.length > 0) {
-        const pathsToDelete = newFiles
-          .map((url) => extractStoragePath(url))
-          .filter(Boolean) as string[];
-
-        if (pathsToDelete.length > 0) {
-          console.log("🧹 Deleting unsaved admin files:", pathsToDelete);
-          const { error: removeError } = await supabase.storage
-            .from("resources")
-            .remove(pathsToDelete);
-
-          if (removeError) console.error("⚠️ Cancel cleanup error:", removeError);
-        }
-      }
-    } catch (err) {
-      console.error("Cancel cleanup failed:", err);
-    } finally {
-      setTitle(resource.title ?? "");
-      setDescription(resource.description ?? "");
-      setTags(resource.tags ?? []);
-      setTier(resource.tier_access ?? null);
-      setUploadedUrls(initialFiles);
-      setNewFiles([]);
-      setRemovedNewFiles([]);
-      setErrorMessage(null);
-      onClose();
-    }
+    setErrorMessage(null);
+    onClose();
   };
 
   const handleApprove = async () => {
@@ -121,28 +76,6 @@ export default function AdminModal({
       setSubmitting(true);
       setErrorMessage(null);
 
-      const oldFiles = Array.isArray(resource.file_urls)
-        ? resource.file_urls.filter(Boolean)
-        : resource.file_urls
-        ? [resource.file_urls]
-        : [];
-
-      const removedOldFiles = oldFiles.filter((url) => !uploadedUrls.includes(url));
-      const allRemoved = Array.from(new Set([...removedOldFiles, ...removedNewFiles]));
-
-      if (allRemoved.length > 0) {
-        const pathsToDelete = allRemoved
-          .map((url) => extractStoragePath(url))
-          .filter(Boolean) as string[];
-        if (pathsToDelete.length > 0) {
-          console.log("🗑 Deleting removed files from Supabase:", pathsToDelete);
-          const { error: removeError } = await supabase.storage
-            .from("resources")
-            .remove(pathsToDelete);
-          if (removeError) console.error("⚠️ Supabase delete error:", removeError);
-        }
-      }
-
       const { error } = await supabase
         .from("resources")
         .update({
@@ -150,7 +83,6 @@ export default function AdminModal({
           description: description?.trim() || null,
           tags,
           tier_access: tier,
-          file_urls: [...new Set(uploadedUrls)],
           is_approved: true,
           updated_at: new Date().toISOString(),
         })
@@ -159,8 +91,6 @@ export default function AdminModal({
       if (error) throw error;
 
       await dispatch(fetchResources()).unwrap();
-      setNewFiles([]);
-      setRemovedNewFiles([]);
       onClose();
     } catch (err) {
       console.error("Approve error:", err);
@@ -169,6 +99,20 @@ export default function AdminModal({
       setSubmitting(false);
     }
   };
+
+  const openFile = async (url: string) => {
+    try {
+      if (Platform.OS === "web") {
+        window.open(url, "_blank");
+      } else {
+        await WebBrowser.openBrowserAsync(url);
+      }
+    } catch {
+      Alert.alert("Error", "Failed to open file.");
+    }
+  };
+
+  if (!visible) return null;
 
   return (
     <Modal visible={visible} animationType="fade" transparent onRequestClose={handleCancel}>
@@ -215,44 +159,33 @@ export default function AdminModal({
               multiline
             />
 
-            {isAdmin && (
-              <FileUpload
-                initialFiles={uploadedUrls}
-                onChange={(urls) => {
-                  const prev = prevUrlsRef.current;
-                  const added = urls.filter((u) => !prev.includes(u));
-                  const removed = prev.filter((u) => !urls.includes(u));
-
-                  // Track new uploads
-                  if (added.length > 0) {
-                    setNewFiles((prevNew) => [
-                      ...new Set([
-                        ...prevNew,
-                        ...added.filter((u) => !initialFiles.includes(u)),
-                      ]),
-                    ]);
-                  }
-
-                  // Track new files that were later removed
-                  if (removed.length > 0) {
-                    const removedWereNew = removed.filter(
-                      (u) => !initialFiles.includes(u) && newFiles.includes(u)
-                    );
-                    if (removedWereNew.length > 0) {
-                      setRemovedNewFiles((prevRem) => [
-                        ...new Set([...prevRem, ...removedWereNew]),
-                      ]);
-                      setNewFiles((prevNew) =>
-                        prevNew.filter((u) => !removedWereNew.includes(u))
-                      );
-                    }
-                  }
-
-                  setUploadedUrls(urls);
-                  prevUrlsRef.current = urls;
-                }}
-                editable={isAdmin || user?.userId === resource.uploaded_by}
-              />
+            {uploadedUrls.length > 0 && (
+              <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+                {uploadedUrls.map((url, i) => (
+                  <TouchableOpacity
+                    key={i}
+                    onPress={() => openFile(url)}
+                    activeOpacity={0.8}
+                    style={styles.adminPreviewCard}
+                  >
+                    {/\.(png|jpe?g|gif|webp)$/i.test(url) ? (
+                      <Image source={{ uri: url }} style={styles.modalPreviewImage} />
+                    ) : (
+                      <FileText
+                        size={32}
+                        color={colors.link}
+                        style={styles.filePreviewIcon}
+                      />
+                    )}
+                    <Text numberOfLines={1} style={styles.filePreviewName}>
+                      {decodeURIComponent(url.split("/").pop() ?? "File").replace(
+                        /^\d+_/,
+                        ""
+                      )}
+                    </Text>
+                  </TouchableOpacity>
+                ))}
+              </ScrollView>
             )}
 
             <View style={styles.buttonRow}>
