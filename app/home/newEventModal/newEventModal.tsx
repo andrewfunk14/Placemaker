@@ -240,7 +240,7 @@ export default function NewEventModal({ visible, onClose, event, currentUserId }
         >
           <View style={styles.eventModalCard}>
             <Text style={styles.modalTitleText}>
-              {mode === "edit" ? "Edit Event" : "Create Event"}
+              {mode === "edit" ? "Edit Event" : "New Event"}
             </Text>
 
             {/* Title */}

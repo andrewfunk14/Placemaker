@@ -1,4 +1,4 @@
-// learn/resourceTagDropdown.tsx
+// learn/tagDropdown.tsx
 import React, { useState } from "react";
 import {
   View,
@@ -10,9 +10,8 @@ import {
 } from "react-native";
 import Modal from "react-native-modal";
 import { learnStyles as styles, colors } from "../../styles/learnStyles";
-import { ChevronDown, Check } from "lucide-react-native";
+import { ChevronDown } from "lucide-react-native";
 
-// 🏷️ Resource topic options
 const RESOURCE_TAGS = [
   "Deal Making",
   "Design",
@@ -44,11 +43,10 @@ export default function ResourceTagDropdown({
   };
 
   const displayText =
-    value.length > 0 ? value.join(", ") : "Topic Tags";
+    value.length > 0 ? value.join(", ") : "Topic Tag(s)";
 
   return (
     <View style={styles.dropdownContainer}>
-      {/* Dropdown trigger */}
       <TouchableOpacity
         activeOpacity={0.7}
         style={styles.dropdownButton}
@@ -63,10 +61,9 @@ export default function ResourceTagDropdown({
         >
           {displayText}
         </Text>
-        <ChevronDown size={20} color="#fff" strokeWidth={2} />
+        <ChevronDown size={24} color="#a0a0a0" strokeWidth={2} />
       </TouchableOpacity>
 
-      {/* Modal dropdown list */}
       <Modal
         isVisible={open}
         onBackdropPress={() => setOpen(false)}

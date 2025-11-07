@@ -13,10 +13,11 @@ import {
 import * as ImageManipulator from "expo-image-manipulator";
 import { useAppDispatch } from "../../store/hooks";
 import { uploadAvatar, type Profile } from "../../store/slices/profileSlice";
-import { profileStyles as styles } from "../../styles/profileStyles";
+import { colors, profileStyles as styles } from "../../styles/profileStyles";
 import WebCropper from "./webCropper";
 import { getCroppedDataUrlWeb, type CropPixels } from "../../utils/cropHelpers";
 import { pickImageCompat } from "../../utils/imagePickerCompat";
+import { User2 } from "lucide-react-native";
 
 type Maybe<T> = T | null | undefined;
 
@@ -118,9 +119,15 @@ export default function AvatarManager({
             <RNImage source={{ uri: displayedUri }} style={styles.avatarImage} />
           ) : (
             <View style={[styles.avatarImage, styles.avatarPlaceholder]}>
-              <Text style={styles.avatarInitials}>
-                {(profile?.name?.[0] ?? authUser?.email?.[0] ?? "P").toUpperCase()}
-              </Text>
+              {profile?.avatar_url ? (
+                <RNImage
+                  source={{ uri: profile.avatar_url }}
+                  style={styles.avatarImage}
+                  resizeMode="cover"
+                />
+              ) : (
+                <User2 color={colors.accent} size={80} />
+              )}
             </View>
           )}
 

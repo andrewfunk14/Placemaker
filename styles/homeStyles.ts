@@ -11,6 +11,7 @@ export const colors = {
   placeholderText: "#a0a0a0",
   accent: "#ffd21f",
   danger: "#ff4d4f",
+  success: "#4CAF50",
   translucentLight: "rgba(255,255,255,0.06)",
   translucentBorder: "rgba(255,255,255,0.12)",
   badgeBg: "rgba(255,210,31,0.15)",
@@ -23,7 +24,7 @@ export const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.backgroundMid, 
-    paddingTop: Platform.OS === "web" ? 20 : 16,
+    paddingTop: Platform.OS === "web" ? 16 : 12,
   },
   searchRow: {
     paddingHorizontal: webPad,
@@ -51,7 +52,7 @@ export const styles = StyleSheet.create({
   card: {
     backgroundColor: "rgba(12, 10, 10, 0.04)",
     borderRadius: 16,
-    padding: Platform.OS === "web" ? 16 : 12,
+    padding: 12,
     borderWidth: 2,
     borderColor: colors.border,
   },
@@ -61,7 +62,7 @@ export const styles = StyleSheet.create({
     color: colors.accent,
     fontSize: Platform.OS === "web" ? 22 : 24,
     fontWeight: "600",
-    paddingVertical: 12,
+    paddingVertical: 10,
     paddingHorizontal: 12,
     borderRadius: 8,
   },
@@ -101,10 +102,10 @@ export const styles = StyleSheet.create({
     justifyContent: "center",
     backgroundColor: "rgba(255,255,255,0.06)",
   },
-  creatorTopRightInitials: {
-    fontSize: 12,
-    fontWeight: "700",
-    color: "#ffd21f",
+  creatorAvatarImage: {
+    width: 30,
+    height: 30,
+    borderRadius: 15,
   },
   deleteCircle: {
     marginLeft: Platform.OS === "web" ? 12 : 8,
@@ -117,7 +118,7 @@ export const styles = StyleSheet.create({
   },  
   cardTitle: {
     color: colors.textPrimary,
-    fontSize: Platform.OS === "web" ? 28 : 26,
+    fontSize: Platform.OS === "web" ? 30 : 28,
     fontWeight: "600",
     marginBottom: 8,
   },
@@ -302,8 +303,8 @@ export const styles = StyleSheet.create({
   btn: {
     backgroundColor: colors.accent,
     paddingVertical: 10,
+    paddingHorizontal: 16,
     borderRadius: 10,
-    minWidth: 100,
   },
   btnText: { 
     color: "#000", 

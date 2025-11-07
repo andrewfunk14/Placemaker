@@ -71,7 +71,6 @@ export default function EventCard({
   });
 
   const avatarUrl = item.creator_profile?.avatar_url ?? null;
-  const creatorName = item.creator_profile?.name ?? null;
 
   return (
     <View
@@ -102,12 +101,14 @@ export default function EventCard({
             />
           ) : (
             <View style={styles.creatorTopRightFallback}>
-              {creatorName ? (
-                <Text style={styles.creatorTopRightInitials}>
-                  {getInitials(creatorName)}
-                </Text>
+              {avatarUrl ? (
+                <Image
+                  source={{ uri: avatarUrl }}
+                  style={styles.creatorAvatarImage}
+                  resizeMode="cover"
+                />
               ) : (
-                <User2 color={colors.accent} size={16} />
+                <User2 color={colors.accent} size={30} />
               )}
             </View>
           )}

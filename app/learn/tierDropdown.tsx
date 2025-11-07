@@ -1,4 +1,4 @@
-// learn/resourceTierDropdown.tsx
+// learn/tierDropdown.tsx
 import React, { useState } from "react";
 import {
   View,
@@ -43,9 +43,9 @@ export default function ResourceTierDropdown({
         >
           {value
             ? TIER_OPTIONS.find((o) => o.value === value)?.label
-            : "Select Access Tier"}
+            : "Select Tier"}
         </Text>
-        <ChevronDown size={20} color="#fff" strokeWidth={2} />
+        <ChevronDown size={24} color="#a0a0a0" strokeWidth={2} />
       </TouchableOpacity>
 
       <Modal
@@ -65,7 +65,7 @@ export default function ResourceTierDropdown({
           <FlatList
             data={TIER_OPTIONS}
             keyExtractor={(item) => item.value}
-            renderItem={({ item, index }) => (
+            renderItem={({ item }) => (
               <TouchableOpacity
                 onPress={() => {
                   onSelect(item.value as "free" | "paid");
@@ -73,8 +73,6 @@ export default function ResourceTierDropdown({
                 }}
                 style={[
                   styles.dropdownItem,
-                  index === TIER_OPTIONS.length - 1 &&
-                    styles.dropdownItemLast,
                 ]}
               >
                 <Text style={styles.dropdownItemText}>{item.label}</Text>

@@ -286,10 +286,10 @@ export const profileStyles = StyleSheet.create({
   button: {
     borderRadius: 10,
     paddingVertical: 10,
+    paddingHorizontal: 16,
     borderWidth: 2,
     alignItems: "center",
     justifyContent: "center",
-    minWidth: 100,
   },
   buttonPrimary: {
     borderRadius: 10,
