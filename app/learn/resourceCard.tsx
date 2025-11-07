@@ -251,7 +251,6 @@ export default function ResourceCard({ resource, user }: ResourceCardProps) {
           horizontal
           showsHorizontalScrollIndicator={false}
           contentContainerStyle={styles.cardTagContainer}
-          style={{ marginTop: 6 }}
         >
           {resource.tags.map((tag) => (
             <View key={tag} style={styles.cardTagPill}>
