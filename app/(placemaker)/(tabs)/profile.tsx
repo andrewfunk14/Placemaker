@@ -126,6 +126,38 @@ export default function ProfileScreen() {
               </View>
             )}
             </View>
+            {profile &&
+            (profile.expertise?.length ||
+              profile.needs?.length ||
+              profile.asset_types?.length ||
+              profile.markets?.length) ? (
+              <View style={styles.profileDetailsSection}>
+                {profile.expertise?.length ? (
+                  <View style={styles.profileDetailBlock}>
+                    <Text style={styles.profileDetailLabel}>Expertise</Text>
+                    <Text style={styles.profileDetailText}>{profile.expertise.join(", ")}</Text>
+                  </View>
+                ) : null}
+                {profile.asset_types?.length ? (
+                  <View style={styles.profileDetailBlock}>
+                    <Text style={styles.profileDetailLabel}>Asset Types</Text>
+                    <Text style={styles.profileDetailText}>{profile.asset_types.join(", ")}</Text>
+                  </View>
+                ) : null}
+                {profile.markets?.length ? (
+                  <View style={styles.profileDetailBlock}>
+                    <Text style={styles.profileDetailLabel}>Markets</Text>
+                    <Text style={styles.profileDetailText}>{profile.markets.join(", ")}</Text>
+                  </View>
+                ) : null}
+                {profile.needs?.length ? (
+                  <View>
+                    <Text style={styles.profileDetailLabel}>Needs</Text>
+                    <Text style={styles.profileDetailText}>{profile.needs.join(", ")}</Text>
+                  </View>
+                ) : null}
+              </View>
+            ) : null}
           </View>
 
         {/* EDIT MODAL */}
@@ -142,7 +174,6 @@ export default function ProfileScreen() {
           setBio={setEditBio}
           setType={setEditType}
           onClose={() => setEditModalOpen(false)}
-          onSave={handleSave}
         />
       </ScrollView>
     </View>

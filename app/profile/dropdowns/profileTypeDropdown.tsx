@@ -1,4 +1,4 @@
-// profile/profileTypeDropdown.tsx
+// dropdowns/profileTypeDropdown.tsx
 import React, { useState } from "react";
 import {
   View,
@@ -8,7 +8,7 @@ import {
   Dimensions,
 } from "react-native";
 import Modal from "react-native-modal";
-import { profileStyles as styles, colors } from "../../styles/profileStyles";
+import { profileStyles as styles, colors } from "../../../styles/profileStyles";
 import { ChevronDown } from "lucide-react-native";
 
 const TYPES = [
@@ -53,7 +53,7 @@ export default function ProfileTypeDropdown({
         >
           {value && value.trim() !== "" ? value : "Select Role"}
         </Text>
-        <ChevronDown size={20} color="#fff" strokeWidth={2} />
+        <ChevronDown size={22} color="#fff" strokeWidth={2} />
       </TouchableOpacity>
 
       <Modal

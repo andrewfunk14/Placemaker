@@ -13,10 +13,15 @@ import {
 } from "react-native";
 import { profileStyles as styles } from "../../styles/profileStyles";
 import AvatarManager from "./avatarManager";
-import ProfileTypeDropdown from "./profileTypeDropdown";
+import ProfileTypeDropdown from "./dropdowns/profileTypeDropdown";
 import type { Profile } from "../../store/slices/profileSlice";
 import { useAppDispatch } from "../../store/hooks";
-import { uploadAvatar } from "../../store/slices/profileSlice";
+import { uploadAvatar, updateProfile } from "../../store/slices/profileSlice";
+import ExpertiseDropdown from "./dropdowns/expertiseDropdown";
+import NeedsDropdown from "./dropdowns/needsDropdown";
+import AssetTypesDropdown from "./dropdowns/assetTypesDropdown";
+import MarketsDropdown from "./dropdowns/marketsDropdown";
+import { useUser } from "../../app/userContext";
 
 interface EditProfileModalProps {
   visible: boolean;
@@ -31,7 +36,6 @@ interface EditProfileModalProps {
   setBio: (v: string) => void;
   setType: (v: string | null) => void;
   onClose: () => void;
-  onSave: () => void;
 }
 
 export default function EditProfileModal({
@@ -47,12 +51,18 @@ export default function EditProfileModal({
   setBio,
   setType,
   onClose,
-  onSave,
 }: EditProfileModalProps) {
   const dispatch = useAppDispatch();
 
-  // 🖼️ local temporary avatar (only stored for this modal session)
   const [tempAvatarUri, setTempAvatarUri] = useState<string | null>(null);
+  
+  const { roles } = useUser();
+  const isPlacemaker = roles.includes("placemaker") || roles.includes("admin");
+
+  const [expertise, setExpertise] = useState<string[]>(profile?.expertise ?? []);
+  const [needs, setNeeds] = useState<string[]>(profile?.needs ?? []);
+  const [assetTypes, setAssetTypes] = useState<string[]>(profile?.asset_types ?? []);
+  const [markets, setMarkets] = useState<string[]>(profile?.markets ?? []);
 
   // 👇 Whenever the modal opens, reset all fields to the latest profile data
   useEffect(() => {
@@ -61,6 +71,10 @@ export default function EditProfileModal({
       setName(profile.name ?? "");
       setBio(profile.bio ?? "");
       setType(profile.profile_type ?? null);
+      setExpertise(profile.expertise ?? []);
+      setNeeds(profile.needs ?? []);
+      setAssetTypes(profile.asset_types ?? []);
+      setMarkets(profile.markets ?? []);
     }
   }, [visible, profile, setName, setBio, setType]);
 
@@ -71,27 +85,41 @@ export default function EditProfileModal({
       setName(profile.name ?? "");
       setBio(profile.bio ?? "");
       setType(profile.profile_type ?? null);
+      setExpertise(profile.expertise ?? []);
+      setNeeds(profile.needs ?? []);
+      setAssetTypes(profile.asset_types ?? []);
+      setMarkets(profile.markets ?? []);
     }
     onClose();
   };
 
   // 💾 Save handler: upload avatar (if changed) and run onSave()
   const handleSave = async () => {
-    if (!userId) {
-      onSave();
-      return;
-    }
-
-    if (tempAvatarUri && tempAvatarUri !== profile?.avatar_url) {
-      try {
+    if (!userId) return;
+  
+    try {
+      if (tempAvatarUri && tempAvatarUri !== profile?.avatar_url) {
         await dispatch(uploadAvatar({ userId, fileUri: tempAvatarUri })).unwrap();
-      } catch (err) {
-        console.warn("Avatar upload failed:", err);
       }
+  
+      await dispatch(
+        updateProfile({
+          id: userId,
+          name,
+          bio,
+          profile_type: type,
+          expertise,
+          needs,
+          asset_types: assetTypes,
+          markets,
+        })
+      ).unwrap();
+  
+      onClose();
+    } catch (err) {
+      console.warn("Failed to save profile:", err);
     }
-
-    onSave();
-  };
+  };  
 
   return (
     <Modal visible={visible} animationType="fade" transparent onRequestClose={handleCancel}>
@@ -129,6 +157,19 @@ export default function EditProfileModal({
 
           {/* Profile Type Dropdown */}
           <ProfileTypeDropdown value={type} onSelect={setType} />
+
+          {isPlacemaker && (
+            <>
+              <Text style={styles.modalLabel}>Expertise</Text>
+                <ExpertiseDropdown value={expertise} onChange={setExpertise} />
+              <Text style={styles.modalLabel}>Asset Types</Text>
+                <AssetTypesDropdown value={assetTypes} onChange={setAssetTypes} />
+              <Text style={styles.modalLabel}>Markets</Text>
+                <MarketsDropdown value={markets} onChange={setMarkets} />
+              <Text style={styles.modalLabel}>Needs</Text>
+                <NeedsDropdown value={needs} onChange={setNeeds} />
+            </>
+          )}
 
           {/* Action buttons */}
           <View style={[styles.center, styles.buttonRow]}>

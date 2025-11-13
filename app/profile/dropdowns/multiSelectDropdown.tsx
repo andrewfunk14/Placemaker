@@ -1,4 +1,4 @@
-// learn/tagDropdown.tsx
+// dropdowns/multiSelectDropdown.tsx
 import React, { useState } from "react";
 import {
   View,
@@ -9,45 +9,37 @@ import {
   Pressable,
 } from "react-native";
 import Modal from "react-native-modal";
-import { learnStyles as styles, colors } from "../../styles/learnStyles";
+import { profileStyles as styles, colors } from "../../../styles/profileStyles";
 import { ChevronDown } from "lucide-react-native";
 
-const RESOURCE_TAGS = [
-  "Deal Making",
-  "Design",
-  "Entitlements",
-  "Financing",
-  "Leasing",
-  "Permitting",
-  "Underwriting",
-];
-
-interface ResourceTagDropdownProps {
+interface Props {
+  label?: string;
+  options: string[];
   value: string[];
-  onSelect: (tags: string[]) => void;
+  onChange: (next: string[]) => void;
+  placeholder?: string;
 }
 
-export default function ResourceTagDropdown({
+export default function ProfileMultiSelectDropdown({
+  label,
+  options,
   value,
-  onSelect,
-}: ResourceTagDropdownProps) {
+  onChange,
+  placeholder = "Select",
+}: Props) {
   const [open, setOpen] = useState(false);
   const { height } = Dimensions.get("window");
 
-  const toggleTag = (tag: string) => {
-    if (value.includes(tag)) {
-      onSelect(value.filter((t) => t !== tag));
+  const toggle = (item: string) => {
+    if (value.includes(item)) {
+      onChange(value.filter((v) => v !== item));
     } else {
-      onSelect([...value, tag]);
+      onChange([...value, item]);
     }
   };
 
-  const displayText =
-    value.length > 0 ? value.join(", ") : "Topic Tag(s)";
-
-  const handleClear = () => {
-    onSelect([]);
-  };
+  const displayText = value.length > 0 ? value.join(", ") : placeholder;
+  const handleClear = () => onChange([]);
 
   return (
     <View style={styles.dropdownContainer}>
@@ -65,7 +57,7 @@ export default function ResourceTagDropdown({
         >
           {displayText}
         </Text>
-        <ChevronDown size={24} color="#a0a0a0" strokeWidth={2} />
+        <ChevronDown size={22} color="#fff" strokeWidth={2} />
       </TouchableOpacity>
 
       <Modal
@@ -85,13 +77,13 @@ export default function ResourceTagDropdown({
           ]}
         >
           <FlatList
-            data={RESOURCE_TAGS}
+            data={options}
             keyExtractor={(item) => item}
             renderItem={({ item }) => {
               const selected = value.includes(item);
               return (
                 <Pressable
-                  onPress={() => toggleTag(item)}
+                  onPress={() => toggle(item)}
                   style={[
                     styles.dropdownItem,
                     selected && styles.dropdownItemSelected,
@@ -110,46 +102,20 @@ export default function ResourceTagDropdown({
             }}
           />
 
-          {/* Button row */}
-          <View
-            style={{
-              flexDirection: "row",
-              justifyContent: "space-between",
-              borderTopWidth: 1,
-              borderTopColor: "#333",
-              paddingVertical: 10,
-              paddingHorizontal: 16,
-            }}
-          >
+          {/* Footer buttons */}
+          <View style={styles.dropdownFooter}>
             <TouchableOpacity
               onPress={handleClear}
-              style={{
-                flex: 1,
-                alignItems: "center",
-                justifyContent: "center",
-                marginRight: 8,
-                borderRadius: 10,
-                borderWidth: 1,
-                borderColor: "#555",
-                paddingVertical: 8,
-              }}
+              style={[styles.dropdownFooterButton, styles.dropdownFooterClear]}
             >
-              <Text style={{ color: "#ccc", fontSize: 16, fontWeight: "500" }}>Clear</Text>
+              <Text style={styles.dropdownFooterClearText}>Clear</Text>
             </TouchableOpacity>
 
             <TouchableOpacity
               onPress={() => setOpen(false)}
-              style={{
-                flex: 1,
-                alignItems: "center",
-                justifyContent: "center",
-                backgroundColor: colors.accent,
-                borderRadius: 10,
-                paddingVertical: 10,
-                marginLeft: 8,
-              }}
+              style={[styles.dropdownFooterButton, styles.dropdownFooterDone]}
             >
-              <Text style={{ color: "#000", fontSize: 16, fontWeight: "700" }}>Done</Text>
+              <Text style={styles.dropdownFooterDoneText}>Done</Text>
             </TouchableOpacity>
           </View>
         </View>

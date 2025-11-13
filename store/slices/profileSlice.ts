@@ -11,6 +11,10 @@ export interface Profile {
   bio: string | null;
   avatar_url: string | null;
   updated_at?: string;
+  expertise?: string[] | null;
+  needs?: string[] | null;
+  asset_types?: string[] | null;
+  markets?: string[] | null;
 }
 
 interface ProfileState {
@@ -59,7 +63,10 @@ export const fetchProfile = createAsyncThunk<Profile | null, string>(
     try {
       let { data, error } = await supabase
         .from("profiles")
-        .select("id, name, profile_type, bio, avatar_url, updated_at")
+        .select(`
+          id, name, profile_type, bio, avatar_url, updated_at,
+          expertise, needs, asset_types, markets
+        `)        
         .eq("id", userId)
         .maybeSingle();
 
@@ -84,7 +91,18 @@ export const fetchProfile = createAsyncThunk<Profile | null, string>(
 
 export const updateProfile = createAsyncThunk<
   Profile,
-  { id: string; name?: string | null; profile_type?: string | null; bio?: string | null }
+  {
+    id: string;
+    name?: string | null;
+    profile_type?: string | null;
+    bio?: string | null;
+
+    // new optional arrays
+    expertise?: string[] | null;
+    needs?: string[] | null;
+    asset_types?: string[] | null;
+    markets?: string[] | null;
+  }
 >("profile/updateProfile", async (updates, { rejectWithValue }) => {
   try {
     const { data, error } = await supabase
@@ -94,7 +112,10 @@ export const updateProfile = createAsyncThunk<
         updated_at: new Date().toISOString(),
       })
       .eq("id", updates.id)
-      .select("id, name, profile_type, bio, avatar_url, updated_at")
+      .select(`
+        id, name, profile_type, bio, avatar_url, updated_at,
+        expertise, needs, asset_types, markets
+      `)
       .single();
 
     if (error) throw error;
@@ -117,7 +138,10 @@ export const uploadAvatar = createAsyncThunk<
 
     const { data: prof, error: profErr } = await supabase
       .from("profiles")
-      .select("id,name,avatar_url")
+      .select(`
+        id, name, bio, profile_type, avatar_url, updated_at,
+        expertise, needs, asset_types, markets
+      `)      
       .eq("id", userId)
       .maybeSingle();
     if (profErr) throw profErr;

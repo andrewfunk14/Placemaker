@@ -26,6 +26,7 @@ export const profileStyles = StyleSheet.create({
     alignItems: "center",
     paddingHorizontal: webPad,
     paddingTop: Platform.OS === "web" ? 20 : 16,
+    paddingBottom: 100,
   },
   center: {
     alignItems: "center",
@@ -109,6 +110,28 @@ export const profileStyles = StyleSheet.create({
     alignItems: "center",
     gap: 8,
   },
+  profileDetailsSection: {
+    marginTop: 12,
+    padding: 12,
+    backgroundColor: "rgba(255,255,255,0.03)",
+    borderRadius: 16,
+  },
+  profileDetailBlock: {
+    marginBottom: 12,
+  },
+  profileDetailLabel: {
+    color: "#a0a0a0",
+    fontSize: 14,
+    fontWeight: "600",
+    marginBottom: 2,
+    textTransform: "uppercase",
+    letterSpacing: 0.5,
+  },
+  profileDetailText: {
+    color: "#fff",
+    fontSize: 16,
+    lineHeight: 22,
+  },  
   roleBadge: {
     borderWidth: 2,
     borderRadius: 12,
@@ -223,9 +246,17 @@ export const profileStyles = StyleSheet.create({
     marginBottom: 12,
     fontSize: 18,
   },  
+  modalLabel: {
+    color: "#a0a0a0",
+    fontSize: 14,
+    fontWeight: "600",
+    textTransform: "uppercase",
+    letterSpacing: 0.5,
+    marginTop: 8,
+    marginBottom: 8,
+  },  
   dropdownContainer: {
     width: "100%",
-    marginTop: 4,
   },
   dropdownButton: {
     height: 48,
@@ -364,4 +395,46 @@ export const profileStyles = StyleSheet.create({
     justifyContent: "center",
     marginBottom: 20,
   },  
+  // Dropdowns
+  dropdownFooter: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    borderTopWidth: 1,
+    borderTopColor: "#333",
+    paddingVertical: 10,
+    paddingHorizontal: 16,
+  },
+  dropdownFooterButton: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+    borderRadius: 10,
+    paddingVertical: 10,
+  },
+  dropdownFooterClear: {
+    borderWidth: 1,
+    borderColor: "#555",
+    marginRight: 8,
+  },
+  dropdownFooterDone: {
+    backgroundColor: colors.accent,
+    marginLeft: 8,
+  },
+  dropdownFooterClearText: {
+    color: "#ccc",
+    fontSize: 16,
+    fontWeight: "500",
+  },
+  dropdownFooterDoneText: {
+    color: "#000",
+    fontSize: 16,
+    fontWeight: "700",
+  },
+  dropdownItemSelected: {
+    backgroundColor: colors.translucentLight,
+  },
+  dropdownItemTextSelected: {
+    color: colors.accent,
+    fontWeight: "600",
+  },
 });
