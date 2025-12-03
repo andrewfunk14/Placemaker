@@ -22,17 +22,17 @@ export const fetchUserDetails = createAsyncThunk(
     try {
       const { data, error } = await supabase
         .from("users")
-        .select("id, name, email, role")
+        .select("id, name, email, roles")
         .eq("id", userId)
         .single();
 
       if (error) throw error;
 
-      const roles: UserRole[] = Array.isArray(data.role)
-        ? data.role.filter((r: string) =>
+      const roles: UserRole[] = Array.isArray(data.roles)
+        ? data.roles.filter((r: string) =>
             ["admin","free", "placemaker", "policymaker", "dealmaker", "changemaker"].includes(r)
           )
-        : ["free", ...(data.role ? [data.role] : [])];
+        : ["free", ...(data.roles ? [data.roles] : [])];
 
       return { ...data, roles } as User;
     } catch (error: any) {
@@ -56,17 +56,17 @@ export const signInWithEmail = createAsyncThunk(
 
       const { data: userData, error: userError } = await supabase
         .from("users")
-        .select("id, name, email, role, organization_key, phone_number, hourly_rate")
+        .select("id, name, email, roles")
         .eq("id", authData.user.id)
         .single();
 
       if (userError) throw userError;
 
-      const roles: UserRole[] = Array.isArray(userData.role)
-        ? userData.role.filter((r: string) =>
+      const roles: UserRole[] = Array.isArray(userData.roles)
+        ? userData.roles.filter((r: string) =>
             ["admin","free", "placemaker", "policymaker", "dealmaker", "changemaker"].includes(r)
           )
-        : ["free", ...(userData.role ? [userData.role] : [])];
+        : ["free", ...(userData.roles ? [userData.roles] : [])];
 
       return { ...userData, roles } as User;
     } catch (error: any) {

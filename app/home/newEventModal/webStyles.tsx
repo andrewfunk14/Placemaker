@@ -16,7 +16,7 @@ input.pm-dt {
   width: 100%;
   height: 48px;
   border-radius: 8px;
-  border: 1px solid #555;
+  border: 1px solid gray;
   padding: 12px;
   background: #1a1a1a;
   color: #a0a0a0; 

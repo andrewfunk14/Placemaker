@@ -5,6 +5,8 @@ import navigationReducer from "./slices/navigationSlice";
 import eventsReducer from "./slices/eventsSlice";
 import profileReducer from "./slices/profileSlice";
 import resourcesReducer from "./slices/resourcesSlice";
+import groupsReducer from "./slices/groupsSlice";
+import groupMessagesReducer from "./slices/groupMessagesSlice";
 
 const appReducer = combineReducers({
   auth: authReducer,
@@ -12,6 +14,8 @@ const appReducer = combineReducers({
   events: eventsReducer,
   profile: profileReducer,
   resources: resourcesReducer,
+  groups: groupsReducer,
+  groupMessages: groupMessagesReducer,
 });
 
 const rootReducer = (state: any, action: any) => {
