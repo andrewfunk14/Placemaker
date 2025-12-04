@@ -119,15 +119,7 @@ export default function AvatarManager({
             <RNImage source={{ uri: displayedUri }} style={styles.avatarImage} />
           ) : (
             <View style={[styles.avatarImage, styles.avatarPlaceholder]}>
-              {profile?.avatar_url ? (
-                <RNImage
-                  source={{ uri: profile.avatar_url }}
-                  style={styles.avatarImage}
-                  resizeMode="cover"
-                />
-              ) : (
-                <User2 color={colors.accent} size={80} />
-              )}
+              <User2 color={colors.accent} size={80} />
             </View>
           )}
 

@@ -146,9 +146,12 @@ export const uploadAvatar = createAsyncThunk<
       .maybeSingle();
     if (profErr) throw profErr;
 
-    const folder = slugify(prof?.name || `user-${userId.slice(0, 8)}`);
-    const filename = "avatar.jpg";
-    const path = `${folder}/${filename}`;
+    // const folder = slugify(prof?.name || `user-${userId.slice(0, 8)}`);
+    // const folder = userId;
+    // const filename = "avatar.jpg";
+    // const path = `${folder}/${filename}`;
+    const path = `${userId}/avatar.jpg`;
+
 
     const isDataUrl = fileUri.startsWith("data:");
     const contentType = isDataUrl

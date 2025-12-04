@@ -39,7 +39,6 @@ export default function GroupChat({ groupId }: GroupChatProps) {
       (state) => state.groupMessages.messagesByGroupId[groupId] || []
     ) ?? [];
 
-  /* Auto-scroll to bottom */
   const scrollToBottom = () => {
     scrollRef.current?.scrollToEnd({ animated: true });
   };
@@ -48,12 +47,10 @@ export default function GroupChat({ groupId }: GroupChatProps) {
     setTimeout(scrollToBottom, 40);
   }, [messages]);
 
-  /* INITIAL LOAD */
   useEffect(() => {
     dispatch(fetchGroupMessages(groupId));
   }, [groupId]);
 
-  /* REALTIME SUBSCRIPTION */
   useEffect(() => {
     const channel = supabase
       .channel(`group-messages-${groupId}`)
@@ -68,7 +65,6 @@ export default function GroupChat({ groupId }: GroupChatProps) {
         async (payload) => {
           const newMsg = payload.new as GroupMessage;
 
-          // Fetch profile info
           const { data: profile } = await supabase
             .from("profiles")
             .select("name, avatar_url")
@@ -93,14 +89,12 @@ export default function GroupChat({ groupId }: GroupChatProps) {
     };
   }, [groupId]);
 
-  /* SEND MESSAGE */
   const handleSend = () => {
     if (!text.trim()) return;
     dispatch(sendGroupMessage({ groupId, content: text }));
     setText("");
   };
 
-  /* FORMAT TIME */
   const formatTime = (iso: string) => {
     return new Date(iso).toLocaleTimeString([], {
       hour: "numeric",
@@ -108,7 +102,6 @@ export default function GroupChat({ groupId }: GroupChatProps) {
     });
   };
 
-  /* FORMAT DAY HEADER */
   const formatDayHeader = (iso: string) => {
     const d = new Date(iso);
     return d.toLocaleDateString("en-US", {
@@ -134,14 +127,9 @@ export default function GroupChat({ groupId }: GroupChatProps) {
             onContentSizeChange={scrollToBottom}
           >
             {messages.map((m, i) => {
-              const mine = m.user_id === userId;
 
               const name = m.profiles?.name ?? "Unknown";
               const avatar = m.profiles?.avatar_url ?? null;
-
-              const prev = messages[i - 1];
-              const sameUserAsPrev = prev?.user_id === m.user_id;
-
               const currentDay = formatDayHeader(m.created_at);
               const previousDay =
                 i > 0 ? formatDayHeader(messages[i - 1].created_at) : null;
@@ -150,7 +138,6 @@ export default function GroupChat({ groupId }: GroupChatProps) {
 
               return (
                 <View key={m.id}>
-                  {/* SLACK DAY SEPARATOR */}
                   {showDayHeader && (
                     <View style={styles.dayHeaderWrapper}>
                       <View style={styles.dayHeaderLine} />
@@ -159,15 +146,7 @@ export default function GroupChat({ groupId }: GroupChatProps) {
                     </View>
                   )}
 
-                  {/* MESSAGE ROW */}
                   <View style={styles.messageRow}>
-                    {/* LEFT SPACER for consecutive messages */}
-                    {sameUserAsPrev && (
-                      <View style={{ width: 44, marginRight: 10 }} />
-                    )}
-
-                    {/* AVATAR — show for both me & others, hide only if consecutive */}
-                    {!sameUserAsPrev && (
                       <View style={styles.avatarWrapper}>
                         {avatar ? (
                           <Image source={{ uri: avatar }} style={styles.messageAvatar} />
@@ -179,19 +158,12 @@ export default function GroupChat({ groupId }: GroupChatProps) {
                           </View>
                         )}
                       </View>
-                    )}
 
-                    {/* MESSAGE CONTENT */}
                     <View style={styles.messageContentBlock}>
-                      {/* Username (hide on consecutive) */}
-                      {!sameUserAsPrev && (
                         <Text style={styles.messageSender}>{name}</Text>
-                      )}
 
-                      {/* TEXT — SLACK STYLE (no bubble) */}
                       <Text style={styles.slackMessageText}>{m.content}</Text>
 
-                      {/* TIMESTAMP */}
                       <Text style={styles.messageTimestamp}>
                         {formatTime(m.created_at)}
                       </Text>
@@ -202,7 +174,6 @@ export default function GroupChat({ groupId }: GroupChatProps) {
             })}
           </ScrollView>
 
-          {/* INPUT ROW */}
           <View style={styles.messageInputRow}>
             <TextInput
               value={text}
@@ -214,7 +185,6 @@ export default function GroupChat({ groupId }: GroupChatProps) {
               onKeyPress={(e) => {
                 const key = e.nativeEvent.key;
 
-                // WEB: Enter sends
                 if (Platform.OS === "web") {
                   const shift = (e as any).shiftKey;
                   if (key === "Enter" && !shift) {
@@ -222,8 +192,6 @@ export default function GroupChat({ groupId }: GroupChatProps) {
                     handleSend();
                   }
                 }
-
-                // MOBILE: Enter = newline (default)
               }}
             />
 
