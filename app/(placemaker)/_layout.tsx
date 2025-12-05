@@ -94,6 +94,7 @@ export default function PlacemakerLayout() {
         <View style={styles.content}>
           <Stack screenOptions={{ headerShown: false }}>
             <Stack.Screen name="(tabs)" />
+            <Stack.Screen name="(chat)" options={{ headerShown: false }} />
           </Stack>
         </View>
       </View>
@@ -103,6 +104,7 @@ export default function PlacemakerLayout() {
   return (
     <Stack screenOptions={{ headerShown: false }}>
       <Stack.Screen name="(tabs)" />
+      <Stack.Screen name="(chat)" />
     </Stack>
   );
 }

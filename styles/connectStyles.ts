@@ -560,6 +560,7 @@ export const connectStyles = StyleSheet.create({
   messageInputRow: {
     flexDirection: "row",
     marginTop: 12,
+    marginBottom: Platform.OS === "ios" ? 28 : 20,
   },
   messageInput: {
     flex: 1,

@@ -1,63 +1,51 @@
-// (placemaker)/(tabs)/connect/index.tsx
+// app/(tabs)/(connect)/connect.tsx
 import React, { useEffect, useState, useCallback } from "react";
 import { View, Text, TouchableOpacity, ScrollView } from "react-native";
 import { useAppDispatch, useAppSelector } from "../../../../store/hooks";
-import {
-  fetchMyGroups,
-  fetchGroupMembers,
-} from "../../../../store/slices/groupsSlice";
+import { fetchMyGroups, fetchGroupMembers } from "../../../../store/slices/groupsSlice";
 import { colors, connectStyles as styles } from "../../../../styles/connectStyles";
 import CreateGroupModal from "../../../connect/createGroupModal";
-import GroupChat from "../../../connect/groupChat";
-import { useUser } from "../../../userContext";
-import { ChevronDown, ChevronUp } from "lucide-react-native";
-import { useFocusEffect } from "@react-navigation/native";
 import AddMemberModal from "../../../connect/addMemberModal";
+import { useUser } from "../../../userContext";
+import { useFocusEffect } from "@react-navigation/native";
+import { useRouter } from "expo-router";
 
 export default function ConnectScreen() {
   const dispatch = useAppDispatch();
+  const router = useRouter();
 
-  const authUser = useAppSelector((s) => s.auth.user);
+  const authUser = useAppSelector((state) => state.auth.user);
   const { userId: ctxUserId, roles: ctxRoles } = useUser();
-
-  const userId = authUser?.id ?? ctxUserId ?? null;
+  const userId = authUser?.id ?? ctxUserId;
   const roles = authUser?.roles ?? ctxRoles ?? [];
+  const { groups, loading } = useAppSelector((state) => state.groups);
 
-  const { groups, loading } = useAppSelector((s) => s.groups);
-
+  const [showCreateModal, setShowCreateModal] = useState(false);
   const [showAddMemberModal, setShowAddMemberModal] = useState(false);
   const [addMemberGroup, setAddMemberGroup] = useState<any | null>(null);
   const membersByGroupId = useAppSelector((s) => s.groups.membersByGroupId);
-
-  const [selectedGroupId, setSelectedGroupId] = useState<string | null>(null);
-  const [showCreateModal, setShowCreateModal] = useState(false);
 
   const isAdmin = roles.includes("admin");
   const isPlacemakerPaid = roles.some((r) =>
     ["placemaker", "dealmaker", "changemaker", "policymaker"].includes(r)
   );
 
-  /* INITIAL LOAD */
+  /** Load groups */
   useEffect(() => {
-    if (!userId) return;
-    dispatch(fetchMyGroups({ userId, roles }));
-  }, [userId, roles, dispatch]);
+    if (userId) dispatch(fetchMyGroups({ userId, roles }));
+  }, [userId, roles]);
 
-  /* REFRESH ON FOCUS */
+  /** Refresh when page gains focus */
   useFocusEffect(
     useCallback(() => {
-      if (!userId) return;
-      dispatch(fetchMyGroups({ userId, roles }));
+      if (userId) dispatch(fetchMyGroups({ userId, roles }));
     }, [userId, roles])
   );
 
-  /* LOAD MEMBERS WHEN GROUPS CHANGE */
+  /** Load members for each group */
   useEffect(() => {
     groups.forEach((g) => dispatch(fetchGroupMembers(g.id)));
-  }, [groups, dispatch]);
-
-  const toggleGroup = (id: string) =>
-    setSelectedGroupId((cur) => (cur === id ? null : id));
+  }, [groups]);
 
   return (
     <View style={styles.container}>
@@ -80,70 +68,48 @@ export default function ConnectScreen() {
       )}
 
       {/* GROUP LIST */}
-      <ScrollView
-        style={styles.groupsListScroll}
-        contentContainerStyle={styles.groupsListContent}
-      >
+      <ScrollView style={styles.groupsListScroll} contentContainerStyle={styles.groupsListContent}>
         {loading && <Text style={styles.loadingText}>Loading groups...</Text>}
 
         {!loading && groups.length === 0 && (
           <Text style={styles.emptyText}>No groups yet.</Text>
         )}
 
-        {groups.map((g) => {
-          const isOpen = selectedGroupId === g.id;
-          return (
-            <View key={g.id} style={styles.groupCard}>
-              <View style={styles.groupCardHeader}>
-                {/* LEFT: title + chevron (one big touchable) */}
+        {groups.map((g) => (
+          <TouchableOpacity
+            key={g.id}
+            style={styles.groupCard}
+            onPress={() =>
+              router.push(`/(placemaker)/(chat)/chat?groupId=${g.id}`)
+            }
+          >
+            <View style={styles.groupCardHeader}>
+              <Text style={styles.groupCardTitle}>{g.name}</Text>
+
+              {(isAdmin || g.leader_id === userId) && (
                 <TouchableOpacity
-                  style={styles.headerMainTouchable}
-                  onPress={() => toggleGroup(g.id)}
+                  style={styles.headerSmallFab}
+                  onPress={() => {
+                    setAddMemberGroup(g);
+                    setShowAddMemberModal(true);
+                  }}
                 >
-                  <Text style={styles.groupCardTitle}>{g.name}</Text>
-
-                  {isOpen ? (
-                    <ChevronUp size={22} color={colors.textPrimary} />
-                  ) : (
-                    <ChevronDown size={22} color={colors.textPrimary} />
-                  )}
+                  <Text style={styles.headerSmallFabText}>＋</Text>
                 </TouchableOpacity>
-
-                {/* RIGHT: small + button */}
-                {(isAdmin || g.leader_id === userId) && (
-                  <TouchableOpacity
-                    style={styles.headerSmallFab}
-                    onPress={() => {
-                      setAddMemberGroup(g);
-                      setShowAddMemberModal(true);
-                    }}
-                  >
-                    <Text style={styles.headerSmallFabText}>＋</Text>
-                  </TouchableOpacity>
-                )}
-              </View>
-
-              {isOpen && (
-                <View style={styles.groupCardChat}>                  
-                  <GroupChat groupId={g.id} />
-                </View>
               )}
             </View>
-          );
-        })}
+          </TouchableOpacity>
+        ))}
       </ScrollView>
 
       {/* ADD GROUP BUTTON */}
       {isAdmin && (
-        <TouchableOpacity
-          style={styles.fab}
-          onPress={() => setShowCreateModal(true)}
-        >
+        <TouchableOpacity style={styles.fab} onPress={() => setShowCreateModal(true)}>
           <Text style={styles.fabPlus}>＋</Text>
         </TouchableOpacity>
       )}
 
-      {/* MODAL */}
+      {/* CREATE GROUP MODAL */}
       {isAdmin && (
         <CreateGroupModal
           visible={showCreateModal}
@@ -153,6 +119,8 @@ export default function ConnectScreen() {
           }}
         />
       )}
+
+      {/* ADD MEMBER MODAL */}
       {showAddMemberModal && addMemberGroup && (
         <AddMemberModal
           visible={showAddMemberModal}
@@ -164,7 +132,7 @@ export default function ConnectScreen() {
           groupId={addMemberGroup.id}
           existingMemberIds={
             (membersByGroupId[addMemberGroup.id] ?? []).map((m) => m.user_id)
-          }          
+          }
         />
       )}
     </View>
