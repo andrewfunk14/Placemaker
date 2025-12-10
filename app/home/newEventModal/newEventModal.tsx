@@ -12,7 +12,7 @@ import {
   InputAccessoryView,
   Keyboard,
 } from "react-native";
-import { useAppDispatch } from "../../../store/hooks";
+import { useAppDispatch } from "../../../store/hooks/hooks";
 import { useUser } from "../../userContext";
 import { createEvent, fetchEvents, updateEvent, EventRow } from "../../../store/slices/eventsSlice";
 import { unwrapResult } from "@reduxjs/toolkit";

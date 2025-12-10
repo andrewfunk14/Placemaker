@@ -1,6 +1,14 @@
 // store/slices/groupMessagesSlice.ts
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { supabase } from "../../lib/supabaseClient";
+import { createSelector } from "@reduxjs/toolkit";
+import { RootState } from "../store";
+
+export const selectMessagesByGroupId = (groupId: string) =>
+  createSelector(
+    (state: RootState) => state.groupMessages.messagesByGroupId,
+    (allMessages) => allMessages[groupId] ?? []
+  );
 
 export interface GroupMessage {
   id: string;

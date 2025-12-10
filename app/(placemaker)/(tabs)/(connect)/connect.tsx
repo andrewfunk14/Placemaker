@@ -1,14 +1,15 @@
 // app/(tabs)/(connect)/connect.tsx
 import React, { useEffect, useState, useCallback } from "react";
-import { View, Text, TouchableOpacity, ScrollView } from "react-native";
-import { useAppDispatch, useAppSelector } from "../../../../store/hooks";
+import { View, Text, TouchableOpacity, ScrollView, Image } from "react-native";
+import { useAppDispatch, useAppSelector } from "../../../../store/hooks/hooks";
 import { fetchMyGroups, fetchGroupMembers } from "../../../../store/slices/groupsSlice";
-import { colors, connectStyles as styles } from "../../../../styles/connectStyles";
+import { connectStyles as styles } from "../../../../styles/connectStyles";
 import CreateGroupModal from "../../../connect/createGroupModal";
 import AddMemberModal from "../../../connect/addMemberModal";
 import { useUser } from "../../../userContext";
 import { useFocusEffect } from "@react-navigation/native";
 import { useRouter } from "expo-router";
+import useMatchmaking from "../../../../store/hooks/useMatchmaking";
 
 export default function ConnectScreen() {
   const dispatch = useAppDispatch();
@@ -16,59 +17,46 @@ export default function ConnectScreen() {
 
   const authUser = useAppSelector((state) => state.auth.user);
   const { userId: ctxUserId, roles: ctxRoles } = useUser();
+
   const userId = authUser?.id ?? ctxUserId;
   const roles = authUser?.roles ?? ctxRoles ?? [];
+
   const { groups, loading } = useAppSelector((state) => state.groups);
+  const membersByGroupId = useAppSelector((s) => s.groups.membersByGroupId);
 
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [showAddMemberModal, setShowAddMemberModal] = useState(false);
   const [addMemberGroup, setAddMemberGroup] = useState<any | null>(null);
-  const membersByGroupId = useAppSelector((s) => s.groups.membersByGroupId);
 
   const isAdmin = roles.includes("admin");
   const isPlacemakerPaid = roles.some((r) =>
     ["placemaker", "dealmaker", "changemaker", "policymaker"].includes(r)
   );
 
-  /** Load groups */
+  /** MATCHMAKING HOOK */
+  const { matches, loading: matchmakingLoading } = useMatchmaking(userId);
+
   useEffect(() => {
     if (userId) dispatch(fetchMyGroups({ userId, roles }));
   }, [userId, roles]);
 
-  /** Refresh when page gains focus */
   useFocusEffect(
     useCallback(() => {
       if (userId) dispatch(fetchMyGroups({ userId, roles }));
     }, [userId, roles])
   );
 
-  /** Load members for each group */
+  /** Load group members */
   useEffect(() => {
     groups.forEach((g) => dispatch(fetchGroupMembers(g.id)));
   }, [groups]);
 
   return (
     <View style={styles.container}>
-      {isPlacemakerPaid && (
-        <View style={styles.matchmakingCard}>
-          <View style={styles.matchmakingTextCol}>
-            <Text style={styles.matchmakingTitle}>1:1 Matchmaking</Text>
-            <Text style={styles.matchmakingSubtitle}>
-              Monthly curated introductions for Placemaker members.
-            </Text>
-          </View>
-
-          <TouchableOpacity
-            style={styles.matchmakingButton}
-            onPress={() => console.log("View Matches tapped")}
-          >
-            <Text style={styles.matchmakingButtonText}>View Matches</Text>
-          </TouchableOpacity>
-        </View>
-      )}
-
-      {/* GROUP LIST */}
-      <ScrollView style={styles.groupsListScroll} contentContainerStyle={styles.groupsListContent}>
+      <ScrollView
+        style={styles.groupsListScroll}
+        contentContainerStyle={styles.groupsListContent}
+      >
         {loading && <Text style={styles.loadingText}>Loading groups...</Text>}
 
         {!loading && groups.length === 0 && (
@@ -100,11 +88,67 @@ export default function ConnectScreen() {
             </View>
           </TouchableOpacity>
         ))}
+
+        {isPlacemakerPaid && (
+          <View style={{ marginTop: 24 }}>
+            <Text style={styles.sectionHeader}>Recommended Connections</Text>
+
+            {matchmakingLoading && (
+              <Text style={styles.loadingText}>Finding matches...</Text>
+            )}
+
+            {!matchmakingLoading && matches.length === 0 && (
+              <Text style={styles.emptyText}>No recommended matches yet.</Text>
+            )}
+
+            {matches.map((m) => (
+              <View key={m.id} style={styles.matchCard}>
+                <View style={styles.matchLeft}>
+                  {m.avatar_url ? (
+                    <Image source={{ uri: m.avatar_url }} style={styles.matchAvatar} />
+                  ) : (
+                    <View style={styles.matchAvatarFallback}>
+                      <Text style={styles.matchAvatarInitial}>
+                        {m.name.charAt(0).toUpperCase()}
+                      </Text>
+                    </View>
+                  )}
+
+                  <View style={{ marginLeft: 10 }}>
+                    <Text style={styles.matchName}>{m.name}</Text>
+
+                    <Text style={styles.matchTier}>{m.profile_type?.toUpperCase()}</Text>
+
+                    <Text style={styles.matchSubtitle}>
+                      {m.markets?.slice(0, 2).join(", ") || "No markets"}
+                    </Text>
+                    <Text style={styles.matchSubtitle}>
+                      {m.expertise?.slice(0, 2).join(", ") || "No expertise"}
+                    </Text>
+                  </View>
+                </View>
+
+                <TouchableOpacity
+                  style={styles.matchMessageButton}
+                  onPress={() =>
+                    router.push(
+                      `/(placemaker)/(chat)/dm?userId=${m.id}`
+                    )
+                  }
+                >
+                  <Text style={styles.matchMessageButtonText}>Message</Text>
+                </TouchableOpacity>
+              </View>
+            ))}
+          </View>
+        )}
       </ScrollView>
 
-      {/* ADD GROUP BUTTON */}
       {isAdmin && (
-        <TouchableOpacity style={styles.fab} onPress={() => setShowCreateModal(true)}>
+        <TouchableOpacity
+          style={styles.fab}
+          onPress={() => setShowCreateModal(true)}
+        >
           <Text style={styles.fabPlus}>＋</Text>
         </TouchableOpacity>
       )}
@@ -131,7 +175,9 @@ export default function ConnectScreen() {
           }}
           groupId={addMemberGroup.id}
           existingMemberIds={
-            (membersByGroupId[addMemberGroup.id] ?? []).map((m) => m.user_id)
+            (membersByGroupId[addMemberGroup.id] ?? []).map(
+              (m) => m.user_id
+            )
           }
         />
       )}

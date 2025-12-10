@@ -1,36 +1,32 @@
-// (placemaker)/(chat)/chat.tsx
+// (placemaker)/(chat)/dm.tsx
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import { View, TouchableOpacity, Platform } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import { useAppSelector } from "../../../store/hooks/hooks";
-import GroupChat from "./groupChat";
-import ManualTabBar from "./manualTabBar";
-import { supabase } from "../../../lib/supabaseClient";
 import { useEffect, useState } from "react";
+import { supabase } from "../../../lib/supabaseClient";
+import DirectMessageChat from "./directMessageChat";
+import ManualTabBar from "./manualTabBar";
 
-export default function ChatScreen() {
-  const { groupId } = useLocalSearchParams();
+export default function DirectMessageScreen() {
+  const { userId: partnerId } = useLocalSearchParams<{ userId: string }>();
   const router = useRouter();
 
-  const reduxGroups = useAppSelector((state) => state.groups.groups);
-  const reduxGroup = reduxGroups.find((g) => g.id === groupId);
-
-  const [fallbackName, setFallbackName] = useState<string>("");
+  const [partnerName, setPartnerName] = useState("");
 
   useEffect(() => {
-    if (reduxGroup) return;
+    if (!partnerId) return;
 
     supabase
-      .from("groups")
+      .from("profiles")
       .select("name")
-      .eq("id", groupId as string)
+      .eq("id", partnerId)
       .maybeSingle()
       .then(({ data }) => {
-        if (data?.name) setFallbackName(data.name);
+        if (data?.name) setPartnerName(data.name);
       });
-  }, [reduxGroup, groupId]);
+  }, [partnerId]);
 
-  const title = reduxGroup?.name || fallbackName || "";
+  const title = partnerName || "Message";
 
   return (
     <View style={{ flex: 1 }}>
@@ -56,8 +52,6 @@ export default function ChatScreen() {
               <Ionicons name="chevron-back" size={28} color="#fff" />
             </TouchableOpacity>
           ),
-
-          contentStyle: { flex: 1 },
         }}
       />
 
@@ -68,7 +62,7 @@ export default function ChatScreen() {
           paddingBottom: Platform.OS === "ios" ? 4 : 0,
         }}
       >
-        <GroupChat groupId={groupId as string} />
+        {partnerId && <DirectMessageChat partnerId={partnerId} />}
         {Platform.OS !== "web" && <ManualTabBar />}
       </View>
     </View>

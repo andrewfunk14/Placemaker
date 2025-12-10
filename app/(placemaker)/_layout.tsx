@@ -3,25 +3,28 @@ import { Platform, View, StyleSheet, Image, TouchableOpacity, Text } from "react
 import { useEffect } from "react";
 import { Stack, useRouter, useSegments } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
-import { useAppDispatch, useAppSelector } from "../../store/hooks";
+import { useAppDispatch, useAppSelector } from "../../store/hooks/hooks";
 import { pushPath, resetHistory } from "../../store/slices/navigationSlice";
 import { supabase } from "../../lib/supabaseClient";
 import { signOut } from "../../store/slices/authSlice";
 import { clearProfile } from "../../store/slices/profileSlice";
+import { usePathname } from "expo-router";
 
 export default function PlacemakerLayout() {
   const router = useRouter();
   const segments = useSegments();
-  const history = useAppSelector((s) => s.navigation.history);
-  const currentPath = history[history.length - 1] || "/";
+  const pathname = usePathname();
   const dispatch = useAppDispatch();
 
   useEffect(() => {
     if (segments.length > 0) {
       const path = "/" + segments.join("/");
+  
+      if (path.includes("/(chat)/")) return;
+  
       dispatch(pushPath(path));
     }
-  }, [segments]);
+  }, [segments]);  
 
   const handleLogout = async () => {
     try {
@@ -38,7 +41,6 @@ export default function PlacemakerLayout() {
   if (Platform.OS === "web") {
     return (
       <View style={styles.container}>
-        {/* --- Sidebar --- */}
         <View style={styles.sidebar}>
           <View style={styles.wordmarkContainer}>
             <Image
@@ -48,35 +50,37 @@ export default function PlacemakerLayout() {
             />
           </View>
 
-          {/* --- Nav Links --- */}
           <NavLink
             label="Home"
             icon="home-outline"
-            active={currentPath.startsWith("/(placemaker)/(tabs)/home")}
+            active={pathname.startsWith("/home")}
             onPress={() => router.push("/(placemaker)/(tabs)/home")}
           />
           <NavLink
             label="Learn"
             icon="book-outline"
-            active={currentPath.startsWith("/(placemaker)/(tabs)/(learn)")}
+            active={pathname.startsWith("/learn")}
             onPress={() => router.push("/(placemaker)/(tabs)/(learn)/learn")}
           />
           <NavLink
             label="Build"
             icon="cube-outline"
-            active={currentPath.startsWith("/(placemaker)/(tabs)/(build)")}
+            active={pathname.startsWith("/build")}
             onPress={() => router.push("/(placemaker)/(tabs)/(build)/build")}
           />
           <NavLink
             label="Connect"
             icon="people-outline"
-            active={currentPath.startsWith("/(placemaker)/(tabs)/(connect)")}
+            active={
+              pathname.startsWith("/connect") ||
+              pathname.startsWith("/chat")
+            }            
             onPress={() => router.push("/(placemaker)/(tabs)/(connect)/connect")}
           />
           <NavLink
             label="Profile"
             icon="person-outline"
-            active={currentPath.startsWith("/(placemaker)/(tabs)/profile")}
+            active={pathname.startsWith("/profile")}
             onPress={() => router.push("/(placemaker)/(tabs)/profile")}
           />
 

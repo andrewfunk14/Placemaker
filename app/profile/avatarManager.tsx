@@ -11,7 +11,7 @@ import {
   Image as RNImage,
 } from "react-native";
 import * as ImageManipulator from "expo-image-manipulator";
-import { useAppDispatch } from "../../store/hooks";
+import { useAppDispatch } from "../../store/hooks/hooks";
 import { uploadAvatar, type Profile } from "../../store/slices/profileSlice";
 import { colors, profileStyles as styles } from "../../styles/profileStyles";
 import WebCropper from "./webCropper";

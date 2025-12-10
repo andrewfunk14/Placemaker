@@ -8,7 +8,7 @@ import {
   Alert,
   Platform,
 } from "react-native";
-import { useAppDispatch, useAppSelector } from "../../../store/hooks";
+import { useAppDispatch, useAppSelector } from "../../../store/hooks/hooks";
 import { fetchProfile, updateProfile } from "../../../store/slices/profileSlice";
 import { useUser, type UserRole } from "../../userContext";
 import { profileStyles as styles, colors } from "../../../styles/profileStyles";

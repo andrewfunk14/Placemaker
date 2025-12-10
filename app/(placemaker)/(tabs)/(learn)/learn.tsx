@@ -9,7 +9,7 @@ import {
   RefreshControl,
 } from "react-native";
 import { learnStyles as styles, colors } from "../../../../styles/learnStyles";
-import { useAppDispatch, useAppSelector } from "../../../../store/hooks";
+import { useAppDispatch, useAppSelector } from "../../../../store/hooks/hooks";
 import { fetchResources } from "../../../../store/slices/resourcesSlice";
 import ResourceList from "../../../learn/resourceList";
 import UploadModal from "../../../learn/uploadModal";

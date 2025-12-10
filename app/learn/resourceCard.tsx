@@ -9,7 +9,7 @@ import {
   ScrollView,
 } from "react-native";
 import type { Resource } from "../../store/slices/resourcesSlice";
-import { useAppDispatch } from "../../store/hooks";
+import { useAppDispatch } from "../../store/hooks/hooks";
 import {
   deleteResource,
   fetchResources,

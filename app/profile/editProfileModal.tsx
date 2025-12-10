@@ -15,7 +15,7 @@ import { profileStyles as styles } from "../../styles/profileStyles";
 import AvatarManager from "./avatarManager";
 import ProfileTypeDropdown from "./dropdowns/profileTypeDropdown";
 import type { Profile } from "../../store/slices/profileSlice";
-import { useAppDispatch } from "../../store/hooks";
+import { useAppDispatch } from "../../store/hooks/hooks";
 import { uploadAvatar, updateProfile } from "../../store/slices/profileSlice";
 import ExpertiseDropdown from "./dropdowns/expertiseDropdown";
 import NeedsDropdown from "./dropdowns/needsDropdown";

@@ -7,15 +7,23 @@ export default function ChatLayout() {
       screenOptions={{
         animation: "slide_from_right",
         presentation: "card",
+        headerStyle: { backgroundColor: "#1a1a1a" },
+        headerTintColor: "#fff",
       }}
     >
       <Stack.Screen
         name="chat"
         options={{
           headerShown: true,
-          title: "Message",
-          headerStyle: { backgroundColor: "#000" },
-          headerTintColor: "#fff",
+          title: "Group Chat",
+        }}
+      />
+
+      <Stack.Screen
+        name="dm"
+        options={{
+          headerShown: true,
+          title: "Direct Message",
         }}
       />
     </Stack>

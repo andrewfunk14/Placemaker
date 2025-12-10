@@ -12,7 +12,7 @@ import {
   ScrollView,
   Alert,
 } from "react-native";
-import { useAppDispatch } from "../../store/hooks";
+import { useAppDispatch } from "../../store/hooks/hooks";
 import { uploadResource } from "../../store/slices/resourcesSlice";
 import { learnStyles as styles, colors } from "../../styles/learnStyles";
 import ResourceTagDropdown from "./tagDropdown";

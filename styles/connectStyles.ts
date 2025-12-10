@@ -93,43 +93,116 @@ export const connectStyles = StyleSheet.create({
   },
 
   // MATCHMAKING CARD -------------------------------------------
-  matchmakingCard: {
+  sectionHeader: {
+    color: "#fff",
+    fontSize: 22,
+    fontWeight: "700",
+    marginBottom: 12,
+    marginLeft: 4,
+  },
+  
+  matchCard: {
+    backgroundColor: "#1f1f1f",
+    padding: 12,
+    borderRadius: 10,
+    marginBottom: 10,
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    marginBottom: 10,
-    paddingVertical: 10,
-    paddingHorizontal: 14,
-    borderRadius: 12,
-    backgroundColor: colors.translucentLight,
-    borderWidth: 1,
-    borderColor: colors.translucentBorder,
   },
-  matchmakingTextCol: {
-    flex: 1,
-    paddingRight: 8,
+  
+  matchLeft: {
+    flexDirection: "row",
+    alignItems: "center",
   },
-  matchmakingTitle: {
-    color: colors.textPrimary,
-    fontSize: 16,
+  
+  matchAvatar: {
+    width: 50,
+    height: 50,
+    borderRadius: 25,
+  },
+  
+  matchAvatarFallback: {
+    width: 50,
+    height: 50,
+    borderRadius: 25,
+    backgroundColor: "#333",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  
+  matchAvatarInitial: {
+    color: "#fff",
+    fontSize: 20,
+    fontWeight: "700",
+  },
+  
+  matchName: {
+    color: "#fff",
+    fontSize: 18,
+    fontWeight: "600",
+  },
+  matchTier: {
+    color: "#FFD21F",
+    fontSize: 14,
     fontWeight: "600",
     marginBottom: 2,
   },
-  matchmakingSubtitle: {
-    color: colors.textSecondary,
-    fontSize: 12,
+  matchSubtitle: {
+    color: "#bbb",
+    fontSize: 14,
+    marginTop: 2,
   },
-  matchmakingButton: {
+  
+  matchMessageButton: {
+    backgroundColor: "#FFD21F",
+    paddingVertical: 6,
     paddingHorizontal: 12,
-    paddingVertical: 8,
-    borderRadius: 999,
-    backgroundColor: colors.accent,
+    borderRadius: 6,
   },
-  matchmakingButtonText: {
+  
+  matchMessageButtonText: {
+    fontWeight: "600",
     color: "#000",
-    fontWeight: "700",
-    fontSize: 13,
-  },
+    fontSize: 16,
+  },  
+  // matchmakingCard: {
+  //   flexDirection: "row",
+  //   alignItems: "center",
+  //   justifyContent: "space-between",
+  //   marginBottom: 10,
+  //   paddingVertical: 10,
+  //   paddingHorizontal: 14,
+  //   borderRadius: 12,
+  //   backgroundColor: colors.translucentLight,
+  //   borderWidth: 1,
+  //   borderColor: colors.translucentBorder,
+  // },
+  // matchmakingTextCol: {
+  //   flex: 1,
+  //   paddingRight: 8,
+  // },
+  // matchmakingTitle: {
+  //   color: colors.textPrimary,
+  //   fontSize: 16,
+  //   fontWeight: "600",
+  //   marginBottom: 2,
+  // },
+  // matchmakingSubtitle: {
+  //   color: colors.textSecondary,
+  //   fontSize: 12,
+  // },
+  // matchmakingButton: {
+  //   paddingHorizontal: 12,
+  //   paddingVertical: 8,
+  //   borderRadius: 999,
+  //   backgroundColor: colors.accent,
+  // },
+  // matchmakingButtonText: {
+  //   color: "#000",
+  //   fontWeight: "700",
+  //   fontSize: 13,
+  // },
 
   // CHAT AREA ---------------------------------------------------
   chatPane: {

@@ -11,7 +11,7 @@ import {
 } from "react-native";
 import { useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
-import { useAppDispatch, useAppSelector } from "../store/hooks";
+import { useAppDispatch, useAppSelector } from "../store/hooks/hooks";
 import { popPath } from "../store/slices/navigationSlice";
 import { resetHistory } from "../store/slices/navigationSlice";
 import { cardShadow } from "../styles/shadow";
@@ -31,9 +31,16 @@ const MobileHeader: React.FC<MobileHeaderProps> = ({
   const dispatch = useAppDispatch();
   const history = useAppSelector((state) => state.navigation.history);
   const [showMenu, setShowMenu] = useState(false);
+
   const handleBack = () => {
+    const prev = history[history.length - 2];
+  
+    if (prev?.includes("/(chat)/")) {
+      router.replace("/(placemaker)/(tabs)/(connect)/connect");
+      return;
+    }
+  
     if (history.length > 1) {
-      const prev = history[history.length - 2];
       if (prev === "/login" || prev === "/(auth)/login") {
         router.replace("/(placemaker)/home");
       } else {

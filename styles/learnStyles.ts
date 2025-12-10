@@ -26,11 +26,10 @@ export const learnStyles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.backgroundMid, 
-    paddingTop: Platform.OS === "web" ? 16 : 12,
+    paddingTop: Platform.OS === "web" ? 12 : 8,
   },
   searchRow: {
     paddingHorizontal: webPad,
-    // marginBottom: 12,
   },
   search: {
     height: 44,

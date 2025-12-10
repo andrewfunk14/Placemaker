@@ -12,14 +12,14 @@ import {
   Platform,
 } from "react-native";
 import { connectStyles as styles, colors } from "../../../styles/connectStyles";
-import { useAppDispatch, useAppSelector } from "../../../store/hooks";
+import { useAppDispatch, useAppSelector } from "../../../store/hooks/hooks";
 import {
   fetchGroupMessages,
   sendGroupMessage,
   messageReceived,
   GroupMessage,
+  selectMessagesByGroupId,
 } from "../../../store/slices/groupMessagesSlice";
-import { useUser } from "../../userContext";
 import { supabase } from "../../../lib/supabaseClient";
 
 interface GroupChatProps {
@@ -28,15 +28,11 @@ interface GroupChatProps {
 
 export default function GroupChat({ groupId }: GroupChatProps) {
   const dispatch = useAppDispatch();
-  const { userId } = useUser();
 
   const scrollRef = useRef<ScrollView>(null);
   const [text, setText] = useState("");
 
-  const messages =
-    useAppSelector(
-      (state) => state.groupMessages.messagesByGroupId[groupId] || []
-    ) ?? [];
+  const messages = useAppSelector(selectMessagesByGroupId(groupId));
 
   const scrollToBottom = () => {
     requestAnimationFrame(() => {
@@ -44,23 +40,19 @@ export default function GroupChat({ groupId }: GroupChatProps) {
     });
   };
 
-  /** Load messages */
   useEffect(() => {
     dispatch(fetchGroupMessages(groupId));
   }, [groupId]);
 
-  /** Scroll when new messages arrive */
   useEffect(() => {
     setTimeout(scrollToBottom, 50);
   }, [messages]);
 
-  /** Keyboard opens → auto-scroll */
   useEffect(() => {
     const showSub = Keyboard.addListener("keyboardDidShow", scrollToBottom);
     return () => showSub.remove();
   }, []);
 
-  /** Realtime listener */
   useEffect(() => {
     const channel = supabase
       .channel(`group-messages-${groupId}`)
@@ -95,7 +87,7 @@ export default function GroupChat({ groupId }: GroupChatProps) {
       .subscribe();
   
     return () => {
-      supabase.removeChannel(channel); // <-- SYNC cleanup
+      supabase.removeChannel(channel);
     };
   }, [groupId]);  
 
@@ -125,7 +117,6 @@ export default function GroupChat({ groupId }: GroupChatProps) {
         keyboardVerticalOffset={Platform.OS === "ios" ? 80 : 0}
       >
           
-          {/* SCROLLING CHAT AREA */}
           <ScrollView
             ref={scrollRef}
             style={styles.messagesList}
@@ -183,7 +174,6 @@ export default function GroupChat({ groupId }: GroupChatProps) {
             })}
           </ScrollView>
     
-          {/* INPUT BAR */}
           <View style={styles.messageInputRow}>
             <TextInput
               value={text}
@@ -210,3 +200,4 @@ export default function GroupChat({ groupId }: GroupChatProps) {
         </KeyboardAvoidingView>
     );    
 }
+

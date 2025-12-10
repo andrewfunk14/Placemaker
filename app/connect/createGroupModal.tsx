@@ -9,7 +9,7 @@ import {
   ScrollView,
 } from "react-native";
 import { connectStyles as styles, colors } from "../../styles/connectStyles";
-import { useAppDispatch } from "../../store/hooks";
+import { useAppDispatch } from "../../store/hooks/hooks";
 import { createGroup } from "../../store/slices/groupsSlice";
 import { supabase } from "../../lib/supabaseClient";
 import { ChevronDown, ChevronUp } from "lucide-react-native";

@@ -7,7 +7,7 @@ import {
   TextInput,
   Alert,
 } from "react-native";
-import { useAppDispatch, useAppSelector } from "../../../store/hooks";
+import { useAppDispatch, useAppSelector } from "../../../store/hooks/hooks";
 import { fetchEvents, deleteEvent, EventRow } from "../../../store/slices/eventsSlice";
 import { useUser } from "../../userContext";
 import NewEventModal from "../../home/newEventModal/newEventModal";

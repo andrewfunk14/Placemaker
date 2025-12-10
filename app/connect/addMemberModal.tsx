@@ -11,7 +11,7 @@ import {
 } from "react-native";
 import Modal from "react-native-modal";
 import { supabase } from "../../lib/supabaseClient";
-import { useAppDispatch } from "../../store/hooks";
+import { useAppDispatch } from "../../store/hooks/hooks";
 import { inviteUserToGroup } from "../../store/slices/groupsSlice";
 
 // 🔥 Reuse your profile dropdown styles

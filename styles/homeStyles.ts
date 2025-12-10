@@ -24,10 +24,11 @@ export const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.backgroundMid, 
-    paddingTop: Platform.OS === "web" ? 16 : 12,
+    paddingTop: Platform.OS === "web" ? 12 : 8,
   },
   searchRow: {
     paddingHorizontal: webPad,
+    marginBottom: 12,
   },
   search: {
     height: 44,
@@ -44,7 +45,7 @@ export const styles = StyleSheet.create({
   },
   listPad: {
     paddingHorizontal: webPad,
-    paddingVertical: 12,
+    // paddingVertical: 12,
     gap: 12,
     paddingBottom: 100,
   },
