@@ -174,7 +174,7 @@ export default function EventCard({
       {item.description ? (
         <ParsedText
           style={[styles.cardDesc, { flexWrap: "wrap" }]}
-          numberOfLines={Platform.OS === "web" ? undefined : 4}
+          // numberOfLines={Platform.OS === "web" ? undefined : 4}
           ellipsizeMode="tail"
           parse={[
             {
