@@ -21,7 +21,7 @@ export default function ConnectScreen() {
   const userId = authUser?.id ?? ctxUserId;
   const roles = authUser?.roles ?? ctxRoles ?? [];
 
-  const { groups, loading } = useAppSelector((state) => state.groups);
+  const { groups } = useAppSelector((state) => state.groups);
   const membersByGroupId = useAppSelector((s) => s.groups.membersByGroupId);
 
   const [showCreateModal, setShowCreateModal] = useState(false);
@@ -33,8 +33,7 @@ export default function ConnectScreen() {
     ["placemaker", "dealmaker", "changemaker", "policymaker"].includes(r)
   );
 
-  /** MATCHMAKING HOOK */
-  const { matches, loading: matchmakingLoading } = useMatchmaking(userId);
+  const { matches } = useMatchmaking(userId);
 
   useEffect(() => {
     if (userId) dispatch(fetchMyGroups({ userId, roles }));
@@ -46,7 +45,6 @@ export default function ConnectScreen() {
     }, [userId, roles])
   );
 
-  /** Load group members */
   useEffect(() => {
     groups.forEach((g) => dispatch(fetchGroupMembers(g.id)));
   }, [groups]);
@@ -55,14 +53,8 @@ export default function ConnectScreen() {
     <View style={styles.container}>
       <ScrollView
         style={styles.groupsListScroll}
-        contentContainerStyle={styles.groupsListContent}
+        // contentContainerStyle={styles.groupsListContent}
       >
-        {loading && <Text style={styles.loadingText}>Loading groups...</Text>}
-
-        {!loading && groups.length === 0 && (
-          <Text style={styles.emptyText}>No groups yet.</Text>
-        )}
-
         {groups.map((g) => (
           <TouchableOpacity
             key={g.id}
@@ -90,19 +82,18 @@ export default function ConnectScreen() {
         ))}
 
         {isPlacemakerPaid && (
-          <View style={{ marginTop: 24 }}>
-            <Text style={styles.sectionHeader}>Recommended Connections</Text>
-
-            {matchmakingLoading && (
-              <Text style={styles.loadingText}>Finding matches...</Text>
-            )}
-
-            {!matchmakingLoading && matches.length === 0 && (
-              <Text style={styles.emptyText}>No recommended matches yet.</Text>
-            )}
+          <View>
+            <Text style={styles.sectionHeader}>Curated Connections</Text>
 
             {matches.map((m) => (
-              <View key={m.id} style={styles.matchCard}>
+              <TouchableOpacity
+                key={m.id}
+                style={styles.matchCard}
+                activeOpacity={0.8}
+                onPress={() =>
+                  router.push(`/(placemaker)/(chat)/dm?userId=${m.id}`)
+                }
+              >
                 <View style={styles.matchLeft}>
                   {m.avatar_url ? (
                     <Image source={{ uri: m.avatar_url }} style={styles.matchAvatar} />
@@ -114,32 +105,19 @@ export default function ConnectScreen() {
                     </View>
                   )}
 
-                  <View style={{ marginLeft: 10 }}>
+                  <View style={{ marginLeft: 12 }}>
                     <Text style={styles.matchName}>{m.name}</Text>
 
                     <Text style={styles.matchTier}>{m.profile_type?.toUpperCase()}</Text>
 
                     <Text style={styles.matchSubtitle}>
-                      {m.markets?.slice(0, 2).join(", ") || "No markets"}
-                    </Text>
-                    <Text style={styles.matchSubtitle}>
                       {m.expertise?.slice(0, 2).join(", ") || "No expertise"}
                     </Text>
                   </View>
                 </View>
-
-                <TouchableOpacity
-                  style={styles.matchMessageButton}
-                  onPress={() =>
-                    router.push(
-                      `/(placemaker)/(chat)/dm?userId=${m.id}`
-                    )
-                  }
-                >
-                  <Text style={styles.matchMessageButtonText}>Message</Text>
-                </TouchableOpacity>
-              </View>
+              </TouchableOpacity>
             ))}
+
           </View>
         )}
       </ScrollView>
@@ -153,7 +131,6 @@ export default function ConnectScreen() {
         </TouchableOpacity>
       )}
 
-      {/* CREATE GROUP MODAL */}
       {isAdmin && (
         <CreateGroupModal
           visible={showCreateModal}
@@ -164,7 +141,6 @@ export default function ConnectScreen() {
         />
       )}
 
-      {/* ADD MEMBER MODAL */}
       {showAddMemberModal && addMemberGroup && (
         <AddMemberModal
           visible={showAddMemberModal}

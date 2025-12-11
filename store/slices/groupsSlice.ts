@@ -33,7 +33,6 @@ const initialState: GroupsState = {
   error: null,
 };
 
-/* FETCH GROUPS */
 export const fetchMyGroups = createAsyncThunk(
   "groups/fetchMyGroups",
   async ({ userId, roles }: { userId: string; roles: string[] }) => {
@@ -54,7 +53,6 @@ export const fetchMyGroups = createAsyncThunk(
   }
 );
 
-/* FETCH GROUP MEMBERS */
 export const fetchGroupMembers = createAsyncThunk(
   "groups/fetchGroupMembers",
   async (groupId: string) => {
@@ -68,7 +66,6 @@ export const fetchGroupMembers = createAsyncThunk(
   }
 );
 
-/* CREATE GROUP */
 export const createGroup = createAsyncThunk(
   "groups/createGroup",
   async ({ name, leaderId }: { name: string; leaderId: string }, thunkAPI) => {
@@ -106,7 +103,6 @@ export const createGroup = createAsyncThunk(
   }
 );
 
-/* INVITE USER */
 export const inviteUserToGroup = createAsyncThunk(
   "groups/inviteUserToGroup",
   async ({

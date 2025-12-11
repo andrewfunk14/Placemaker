@@ -10,11 +10,9 @@ import {
   KeyboardAvoidingView,
   Platform,
 } from "react-native";
-
 import { useAppDispatch, useAppSelector } from "../../../store/hooks/hooks";
 import { connectStyles as styles, colors } from "../../../styles/connectStyles";
 import { supabase } from "../../../lib/supabaseClient";
-
 import {
   fetchDMs,
   sendDM,
@@ -126,7 +124,7 @@ export default function DirectMessageChat({ partnerId }: { partnerId: string }) 
 
   return (
     <KeyboardAvoidingView
-      style={{ flex: 1, paddingHorizontal: 16 }}
+      style={{ flex: 1, paddingHorizontal: 20 }}
       behavior={Platform.OS === "ios" ? "padding" : undefined}
       keyboardVerticalOffset={Platform.OS === "ios" ? 80 : 0}
     >
@@ -187,7 +185,7 @@ export default function DirectMessageChat({ partnerId }: { partnerId: string }) 
         <TextInput
           value={text}
           onChangeText={setText}
-          placeholder="Message…"
+          placeholder="Type a message…"
           placeholderTextColor={colors.placeholderText}
           keyboardAppearance="dark"
           style={[styles.messageInput, { color: "#fff" }]}

@@ -32,14 +32,13 @@ export default function ResourceList({
     return false;
   });
 
-  if (visibleResources.length === 0) {
-    return (
-      <View>
-        <Text style={styles.empty}>No Resources Found</Text>
-      </View>
-    );
-  }
-  
+  // if (visibleResources.length === 0) {
+  //   return (
+  //     <View>
+  //       <Text style={styles.empty}>No Resources Found</Text>
+  //     </View>
+  //   );
+  // }
 
   return (
     <View>

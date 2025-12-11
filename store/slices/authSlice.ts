@@ -7,7 +7,7 @@ export interface User {
   id: string;
   name?: string;
   email: string;
-  roles: UserRole[]; // ✅ multiple roles
+  roles: UserRole[];
 }
 
 export interface AuthState {

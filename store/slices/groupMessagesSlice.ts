@@ -37,7 +37,6 @@ const initialState: GroupMessagesState = {
   error: null,
 };
 
-/* LOAD initial messages with joined usernames */
 export const fetchGroupMessages = createAsyncThunk(
   "groupMessages/fetch",
   async (groupId: string) => {
@@ -51,7 +50,6 @@ export const fetchGroupMessages = createAsyncThunk(
   }
 );
 
-/* SEND a new message */
 export const sendGroupMessage = createAsyncThunk(
   "groupMessages/sendGroupMessage",
   async (
@@ -67,7 +65,6 @@ export const sendGroupMessage = createAsyncThunk(
       return rejectWithValue("Not authenticated");
     }
 
-    // 1️⃣ Insert the message
     const { data, error } = await supabase
       .from("group_messages")
       .insert({
@@ -82,14 +79,12 @@ export const sendGroupMessage = createAsyncThunk(
       return rejectWithValue(error?.message ?? "Failed to send message");
     }
 
-    // 2️⃣ Fetch THIS user's profile (so the avatar & name appear immediately)
     const { data: profile } = await supabase
       .from("profiles")
       .select("name, avatar_url")
       .eq("id", user.id)
       .maybeSingle();
 
-    // 3️⃣ Return enriched message
     return {
       ...data,
       profiles: {
@@ -106,7 +101,6 @@ const groupMessagesSlice = createSlice({
   reducers: {
     clearGroupMessagesState: () => initialState,
 
-    /* For realtime messages */
     messageReceived: (state, action: PayloadAction<GroupMessage>) => {
       const msg = action.payload;
 

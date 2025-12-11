@@ -44,7 +44,6 @@ export default function CreateGroupModal({
     "admin",
   ];
 
-  /* Load eligible leaders */
   useEffect(() => {
     if (!visible) return;
 
@@ -88,7 +87,6 @@ export default function CreateGroupModal({
     loadUsers();
   }, [visible]);
 
-  /* Reset when closed */
   useEffect(() => {
     if (!visible) {
       setName("");
@@ -153,8 +151,14 @@ export default function CreateGroupModal({
             </TouchableOpacity>
 
             {showDropdown && (
-              <View style={styles.dropdownPanel}>
-                <ScrollView style={styles.dropdownList}>
+              <View
+                style={styles.dropdownPanel}
+                pointerEvents="box-none"
+              >
+                <ScrollView
+                  style={styles.dropdownList}
+                  keyboardShouldPersistTaps="handled"
+                >
                   {users.map((u) => (
                     <TouchableOpacity
                       key={u.id}

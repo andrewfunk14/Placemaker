@@ -1,4 +1,4 @@
-// connect/AddMemberModal.tsx
+// connect/addMemberModal.tsx
 import React, { useEffect, useState } from "react";
 import {
   View,
@@ -13,8 +13,6 @@ import Modal from "react-native-modal";
 import { supabase } from "../../lib/supabaseClient";
 import { useAppDispatch } from "../../store/hooks/hooks";
 import { inviteUserToGroup } from "../../store/slices/groupsSlice";
-
-// 🔥 Reuse your profile dropdown styles
 import { profileStyles as styles, colors } from "../../styles/profileStyles";
 
 interface UserRow {
@@ -44,7 +42,6 @@ export default function AddMemberModal({
   const [search, setSearch] = useState("");
   const { height } = Dimensions.get("window");
 
-  /* Load ALL users when modal opens */
   useEffect(() => {
     if (!visible) return;
 
@@ -74,7 +71,6 @@ export default function AddMemberModal({
     load();
   }, [visible]);
 
-  /* Search Filter */
   useEffect(() => {
     const q = search.toLowerCase();
     setFiltered(
@@ -122,7 +118,6 @@ export default function AddMemberModal({
           { maxHeight: Math.min(height * 0.75, 480) },
         ]}
       >
-        {/* 🔍 SEARCH BAR */}
         <View
           style={{
             paddingHorizontal: 18,
@@ -131,7 +126,7 @@ export default function AddMemberModal({
           }}
         >
           <TextInput
-            placeholder="Search users..."
+            placeholder="Search Users"
             placeholderTextColor="#999"
             value={search}
             onChangeText={setSearch}
@@ -148,7 +143,6 @@ export default function AddMemberModal({
           />
         </View>
 
-        {/* USER LIST */}
         <FlatList
           data={filtered}
           keyExtractor={(item) => item.id}
@@ -180,15 +174,14 @@ export default function AddMemberModal({
                 color: "#999",
                 padding: 20,
                 textAlign: "center",
-                fontSize: 16,
+                fontSize: 20,
               }}
             >
-              No users found
+              No Users Found
             </Text>
           )}
         />
 
-        {/* FOOTER BUTTONS */}
         <View style={styles.dropdownFooter}>
           <TouchableOpacity
             onPress={handleClear}
