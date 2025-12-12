@@ -29,13 +29,6 @@
     "plugins": [
       "expo-router",
       "expo-web-browser"
-    ],
-    "extra": {
-      "SUPABASE_URL": "@SUPABASE_URL",
-      "SUPABASE_ANON_KEY": "@SUPABASE_ANON_KEY",
-      "router": {
-        "origin": false
-      }
-    }
+    ]
   }
 }
