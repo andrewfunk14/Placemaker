@@ -6,6 +6,7 @@ import { store } from "../store/store";
 import { UserProvider } from "./userContext";
 import { Platform } from 'react-native';
 import WebAutofillFix from "../styles/webAutofillFix";
+import "../global.css";
 
 export default function RootLayout() {
   return (

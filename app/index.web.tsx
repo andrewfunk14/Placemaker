@@ -115,8 +115,6 @@ export default function LandingPage() {
         style={StyleSheet.absoluteFillObject}
       />
 
-      {isMobile && <View style={styles.safeAreaTop} />}
-
       {/* Header */}
       <View style={styles.header}>
         <View style={[styles.headerContent, isMobile && styles.headerContentMobile]}>
@@ -331,16 +329,7 @@ const styles = StyleSheet.create({
     flex: 1, 
     backgroundColor: "#0a0a0a",
     cursor: 'auto',
-  },
-  safeAreaTop: {
-    position: "absolute",
-    top: 0,
-    left: 0,
-    right: 0,
-    height: 40,
-    backgroundColor: "#222222",
-    zIndex: 999,
-  },  
+  }, 
   header: {
     position: "absolute",
     top: windowWidth > 1024 ? 20 : 8,

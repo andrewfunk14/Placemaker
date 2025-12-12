@@ -24,7 +24,9 @@
       "edgeToEdgeEnabled": true
     },
     "web": {
-      "favicon": "./assets/icon.png"
+      "favicon": "./assets/icon.png",
+      "themeColor": "#0d0d0d",
+      "backgroundColor": "#0d0d0d"
     },
     "plugins": [
       "expo-router",
