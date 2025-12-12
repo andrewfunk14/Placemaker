@@ -11,11 +11,9 @@
     ],
     "rewrites": [
       {
-        "source": "/(.*)",
+        "source": "/:path*",
         "destination": "/index.html"
       }
-    ],
-    "ignoreCommand": "echo 'Build ignored' && exit 0"
+    ]
   }
-  
   
