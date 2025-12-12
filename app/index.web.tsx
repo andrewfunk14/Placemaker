@@ -146,7 +146,7 @@ export default function LandingPage() {
                   }
                 }}
               >
-                <Text style={styles.signupText}>Sign Up</Text>
+                {/* <Text style={styles.signupText}>Sign Up</Text> */}
               </TouchableOpacity>
               <TouchableOpacity
                 onPress={() => {
