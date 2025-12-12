@@ -115,6 +115,8 @@ export default function LandingPage() {
         style={StyleSheet.absoluteFillObject}
       />
 
+      {isMobile && <View style={styles.safeAreaTop} />}
+
       {/* Header */}
       <View style={styles.header}>
         <View style={[styles.headerContent, isMobile && styles.headerContentMobile]}>
@@ -169,8 +171,8 @@ export default function LandingPage() {
           )}
         </View>
 
-        {isMobile && menuOpen && (
-          <View style={styles.mobileMenu}>
+        {/* {isMobile && menuOpen && (
+          <View style={styles.mobileMenu}> */}
             {/* <TouchableOpacity
               onPress={() => {
                 scrollToSection("whatWeDoSection");
@@ -195,16 +197,16 @@ export default function LandingPage() {
             >
               <Text style={styles.mobileMenuItem}>Log In</Text>
             </TouchableOpacity> */}
-            <TouchableOpacity
+            {/* <TouchableOpacity
               onPress={() => {
                 router.push("/(auth)/signup");
                 setMenuOpen(false);
               }}
             >
               <Text style={styles.mobileMenuSignup}>Sign Up</Text>
-            </TouchableOpacity>
-          </View>
-        )}
+            </TouchableOpacity> */}
+          {/* </View>
+        )} */}
       </View>
 
       <ScrollView ref={scrollViewRef} style={{ flex: 1 }}>
@@ -317,6 +319,9 @@ export default function LandingPage() {
           <Text style={styles.footerText}>© {new Date().getFullYear()} Placemaker. All rights reserved.</Text>
         </View>
       </ScrollView>
+
+      {isMobile && <View style={styles.safeAreaBottom} />}
+
     </View>
   );
 }
@@ -327,6 +332,15 @@ const styles = StyleSheet.create({
     backgroundColor: "#0a0a0a",
     cursor: 'auto',
   },
+  safeAreaTop: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    height: 40,
+    backgroundColor: "#222222",
+    zIndex: 999,
+  },  
   header: {
     position: "absolute",
     top: windowWidth > 1024 ? 20 : 8,
@@ -516,6 +530,15 @@ const styles = StyleSheet.create({
     color: "#666", 
     fontSize: 14 
   },
+  safeAreaBottom: {
+    position: "absolute",
+    left: 0,
+    right: 0,
+    bottom: 0,
+    height: "env(safe-area-inset-bottom)" as any,
+    backgroundColor: "#0d0d0d",
+    zIndex: 1,
+  },  
   icon: { 
     marginBottom: 12 
   },
