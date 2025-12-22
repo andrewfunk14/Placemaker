@@ -8,6 +8,7 @@ import resourcesReducer from "./slices/resourcesSlice";
 import groupsReducer from "./slices/groupsSlice";
 import groupMessagesReducer from "./slices/groupMessagesSlice";
 import dmReducer from "./slices/dmSlice";
+import projectsReducer from "./slices/projectsSlice";
 
 const appReducer = combineReducers({
   auth: authReducer,
@@ -18,6 +19,7 @@ const appReducer = combineReducers({
   groups: groupsReducer,
   groupMessages: groupMessagesReducer,
   dm: dmReducer,
+  projects: projectsReducer,
 });
 
 const rootReducer = (state: any, action: any) => {

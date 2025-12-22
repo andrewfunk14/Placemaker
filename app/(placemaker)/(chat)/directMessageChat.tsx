@@ -95,14 +95,6 @@ export default function DirectMessageChat({ partnerId }: { partnerId: string }) 
 
   useEffect(scrollToBottom, [messages]);
 
-  if (!myId || !threadId) {
-    return (
-      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-        <Text style={{ color: "#fff" }}>Loading chat...</Text>
-      </View>
-    );
-  }
-
   const handleSend = () => {
     if (!text.trim()) return;
 

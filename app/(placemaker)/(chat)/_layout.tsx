@@ -16,7 +16,6 @@ export default function ChatLayout() {
         name="chat"
         options={{
           headerShown: true,
-          title: "Group Chat",
         }}
       />
 
@@ -24,7 +23,6 @@ export default function ChatLayout() {
         name="dm"
         options={{
           headerShown: true,
-          title: "Direct Message",
         }}
       />
     </Stack>

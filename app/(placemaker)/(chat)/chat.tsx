@@ -30,7 +30,7 @@ export default function ChatScreen() {
       });
   }, [reduxGroup, groupId]);
 
-  const title = reduxGroup?.name || fallbackName || "";
+  const title = reduxGroup?.name || fallbackName;
 
   return (
     <View style={{ flex: 1 }}>

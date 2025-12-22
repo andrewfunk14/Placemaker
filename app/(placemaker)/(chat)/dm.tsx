@@ -26,7 +26,7 @@ export default function DirectMessageScreen() {
       });
   }, [partnerId]);
 
-  const title = partnerName || "Message";
+  const title = partnerName;
 
   return (
     <View style={{ flex: 1 }}>
