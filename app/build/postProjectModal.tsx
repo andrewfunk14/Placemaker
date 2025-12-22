@@ -88,14 +88,18 @@ export default function PostProjectModal({
     >
       <View style={styles.modalOverlay}>
         <View style={styles.modalCard}>
+          {/* Header */}
+          <View style={styles.modalHeader}>
+            <Text style={styles.modalTitle}>New Project</Text>
+          </View>
+
+          {/* Form */}
           <ScrollView
             keyboardShouldPersistTaps="handled"
             contentContainerStyle={styles.modalScrollContent}
           >
-            <Text style={styles.cardTitle}>Share a project</Text>
-
             <TextInput
-              placeholder="Project title"
+              placeholder="Title"
               placeholderTextColor={styles.placeholderColor?.color || "#a0a0a0"}
               style={styles.input}
               value={title}
@@ -137,33 +141,50 @@ export default function PostProjectModal({
             </View>
 
             <TextInput
-              placeholder="Description"
+              placeholder="Description (optional)"
               placeholderTextColor={styles.placeholderColor?.color || "#a0a0a0"}
               style={[styles.input, styles.textarea]}
               value={description}
               onChangeText={setDescription}
               multiline
             />
-
-            <TouchableOpacity
-              onPress={handlePost}
-              disabled={submitting}
-              style={[styles.button, submitting && styles.buttonDisabled]}
-            >
-              {submitting ? (
-                <ActivityIndicator />
-              ) : (
-                <Text style={styles.buttonText}>Post</Text>
-              )}
-            </TouchableOpacity>
-
-            {error && <Text style={styles.errorText}>{error}</Text>}
           </ScrollView>
 
+          {/* Footer: error + buttons row like screenshot */}
           <View style={styles.modalFooter}>
-            <TouchableOpacity onPress={handleClose}>
-              <Text style={styles.modalCloseText}>Close</Text>
-            </TouchableOpacity>
+            {error ? (
+              <Text style={[styles.errorText, { flex: 1, marginRight: 12 }]}>
+                {error}
+              </Text>
+            ) : (
+              <View style={{ flex: 1 }} />
+            )}
+
+            <View style={styles.modalButtonRow}>
+              <TouchableOpacity
+                onPress={handleClose}
+                disabled={submitting}
+                style={[styles.modalButton, styles.modalButtonSecondary]}
+              >
+                <Text style={styles.modalButtonSecondaryText}>Cancel</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                onPress={handlePost}
+                disabled={submitting}
+                style={[
+                  styles.modalButton,
+                  styles.modalButtonPrimary,
+                  submitting && styles.buttonDisabled,
+                ]}
+              >
+                {submitting ? (
+                  <ActivityIndicator />
+                ) : (
+                  <Text style={styles.modalButtonPrimaryText}>Submit</Text>
+                )}
+              </TouchableOpacity>
+            </View>
           </View>
         </View>
       </View>

@@ -149,59 +149,111 @@ export const colors = {
     },
     // Modal
     modalOverlay: {
-      flex: 1,
-      backgroundColor: colors.modalBackdrop,
-      justifyContent: "center",
-      paddingHorizontal: 16,
-    },
-    modalCard: {
-      backgroundColor: colors.backgroundMid,
-      borderRadius: 24,
-      borderWidth: 1,
-      borderColor: colors.translucentBorder,
-      overflow: "hidden",
-      maxHeight: "90%",
-    },
-    modalScrollContent: {
-      padding: 16,
-      paddingBottom: 24,
-    },
-  
-    cardTitle: {
-      fontSize: 18,
-      fontWeight: "700",
-      color: colors.textPrimary,
-      marginBottom: 12,
-    },
-    lockedText: {
-      fontSize: 12,
-      color: colors.textMuted,
-      marginBottom: 10,
-    },
-    disabledSection: {
-      opacity: 0.45,
-    },
-  
-    input: {
-      borderWidth: 1,
-      borderColor: colors.translucentBorder,
-      borderRadius: 16,
-      paddingHorizontal: 14,
-      paddingVertical: Platform.OS === "web" ? 10 : 12,
-      marginBottom: 12,
-      fontSize: 14,
-      color: colors.textPrimary,
-      backgroundColor: colors.backgroundDark,
-    },
-    textarea: {
-      minHeight: 120,
-      textAlignVertical: "top",
-    },
-  
-    // little helper for accessing placeholder color in component
-    placeholderColor: {
-      color: colors.placeholderText,
-    },
+        flex: 1,
+        backgroundColor: colors.modalBackdrop,
+        justifyContent: "center",
+        paddingHorizontal: 16,
+      },
+      modalCard: {
+        alignSelf: "center",
+        position: "relative",
+        zIndex: 1,
+        width: "100%",
+        maxWidth: 500,
+        borderRadius: 16,
+        padding: 16,
+        backgroundColor: colors.backgroundDark,
+        borderWidth: 2,
+        borderColor: colors.border,
+      },
+      modalHeader: {
+        paddingHorizontal: 16,
+        paddingTop: 16,
+        paddingBottom: 8,
+        alignItems: "center",
+      },
+      modalTitle: {
+        fontSize: 20,
+        fontWeight: "800",
+        color: colors.accent,
+      },
+      modalScrollContent: {
+        padding: 16,
+        paddingBottom: 24,
+      },
+    
+      input: {
+        borderWidth: 1,
+        borderColor: colors.translucentBorder,
+        borderRadius: 16,
+        paddingHorizontal: 14,
+        paddingVertical: Platform.OS === "web" ? 10 : 12,
+        marginBottom: 12,
+        fontSize: 14,
+        color: colors.textPrimary,
+        backgroundColor: colors.backgroundDark,
+      },
+      textarea: {
+        minHeight: 120,
+        textAlignVertical: "top",
+      },
+      placeholderColor: {
+        color: colors.placeholderText,
+      },
+    
+      // status pills already defined earlier; keep as-is
+      // statusRow, statusOption, statusOptionSelected, statusOptionText, statusOptionTextSelected...
+    
+      modalFooter: {
+        borderTopWidth: 1,
+        borderTopColor: colors.translucentBorder,
+        paddingHorizontal: 16,
+        paddingVertical: 10,
+        flexDirection: "row",
+        alignItems: "center",
+        backgroundColor: colors.backgroundDark,
+      },
+      modalButtonRow: {
+        flexDirection: "row",
+        justifyContent: "flex-end",
+        alignItems: "center",
+        columnGap: 12,
+      },
+      modalButton: {
+        paddingVertical: 10,
+        paddingHorizontal: 22,
+        borderRadius: 999,
+        alignItems: "center",
+        justifyContent: "center",
+      },
+      modalButtonSecondary: {
+        borderWidth: 1,
+        borderColor: colors.accent,
+        backgroundColor: "transparent",
+      },
+      modalButtonSecondaryText: {
+        color: colors.accent,
+        fontWeight: "600",
+        fontSize: 14,
+      },
+      modalButtonPrimary: {
+        backgroundColor: colors.accent,
+      },
+      modalButtonPrimaryText: {
+        color: colors.backgroundDark,
+        fontWeight: "700",
+        fontSize: 14,
+      },
+    
+      buttonDisabled: {
+        opacity: 0.5,
+      },
+    
+      errorText: {
+        color: colors.danger,
+        fontSize: 12,
+        marginTop: 0,
+      },
   
     label: {
       fontSize: 12,
@@ -244,29 +296,10 @@ export const colors = {
       alignItems: "center",
       backgroundColor: colors.accent,
     },
-    buttonDisabled: {
-      opacity: 0.5,
-    },
     buttonText: {
       color: colors.backgroundDark,
       fontWeight: "700",
       fontSize: 15,
-    },
-  
-    errorText: {
-      color: colors.danger,
-      fontSize: 12,
-      marginTop: 8,
-    },
-  
-    modalFooter: {
-      borderTopWidth: 1,
-      borderTopColor: colors.translucentBorder,
-      paddingHorizontal: 16,
-      paddingVertical: 10,
-      flexDirection: "row",
-      justifyContent: "flex-end",
-      backgroundColor: colors.backgroundDark,
     },
     modalCloseText: {
       color: colors.textMuted,
