@@ -34,7 +34,6 @@ export default function ProfileScreen() {
 
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [editName, setEditName] = useState("");
-  const [editBio, setEditBio] = useState("");
   const [editType, setEditType] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
 
@@ -45,7 +44,6 @@ export default function ProfileScreen() {
       .unwrap()
       .then((p) => {
         setEditName(p?.name ?? "");
-        setEditBio(p?.bio ?? "");
         setEditType(p?.profile_type ?? null);
       })
       .catch(console.error);
@@ -60,7 +58,6 @@ export default function ProfileScreen() {
         updateProfile({
           id: userId,
           name: editName.trim(),
-          bio: editBio.trim(),
           profile_type: editType,
         })
       ).unwrap();
@@ -71,7 +68,7 @@ export default function ProfileScreen() {
     } finally {
       setSaving(false);
     }
-  }, [dispatch, userId, editName, editBio, editType]);
+  }, [dispatch, userId, editName, editType]);
 
   return (
     <View style={{ flex: 1, backgroundColor: colors.backgroundMid }}>
@@ -167,11 +164,9 @@ export default function ProfileScreen() {
           userId={userId}
           authUser={authUser}
           name={editName}
-          bio={editBio}
           type={editType}
           saving={saving}
           setName={setEditName}
-          setBio={setEditBio}
           setType={setEditType}
           onClose={() => setEditModalOpen(false)}
         />

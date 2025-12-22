@@ -8,7 +8,6 @@ export interface Profile {
   id: string;
   name: string | null;
   profile_type: string | null;
-  bio: string | null;
   avatar_url: string | null;
   updated_at?: string;
   expertise?: string[] | null;
@@ -64,7 +63,7 @@ export const fetchProfile = createAsyncThunk<Profile | null, string>(
       let { data, error } = await supabase
         .from("profiles")
         .select(`
-          id, name, profile_type, bio, avatar_url, updated_at,
+          id, name, profile_type, avatar_url, updated_at,
           expertise, needs, asset_types, markets
         `)        
         .eq("id", userId)
@@ -95,9 +94,6 @@ export const updateProfile = createAsyncThunk<
     id: string;
     name?: string | null;
     profile_type?: string | null;
-    bio?: string | null;
-
-    // new optional arrays
     expertise?: string[] | null;
     needs?: string[] | null;
     asset_types?: string[] | null;
@@ -113,7 +109,7 @@ export const updateProfile = createAsyncThunk<
       })
       .eq("id", updates.id)
       .select(`
-        id, name, profile_type, bio, avatar_url, updated_at,
+        id, name, profile_type, avatar_url, updated_at,
         expertise, needs, asset_types, markets
       `)
       .single();
@@ -139,7 +135,7 @@ export const uploadAvatar = createAsyncThunk<
     const { data: prof, error: profErr } = await supabase
       .from("profiles")
       .select(`
-        id, name, bio, profile_type, avatar_url, updated_at,
+        id, name, profile_type, avatar_url, updated_at,
         expertise, needs, asset_types, markets
       `)      
       .eq("id", userId)
@@ -221,7 +217,7 @@ export const uploadAvatar = createAsyncThunk<
         updated_at: new Date().toISOString(),
       })
       .eq("id", userId)
-      .select("id, name, bio, profile_type, avatar_url, updated_at")
+      .select("id, name, profile_type, avatar_url, updated_at")
       .single();
     if (error) throw error;
 

@@ -9,6 +9,7 @@ export default function ChatLayout() {
         presentation: "card",
         headerStyle: { backgroundColor: "#1a1a1a" },
         headerTintColor: "#fff",
+        headerShadowVisible: false,
       }}
     >
       <Stack.Screen

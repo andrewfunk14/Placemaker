@@ -124,14 +124,14 @@ export default function DirectMessageChat({ partnerId }: { partnerId: string }) 
 
   return (
     <KeyboardAvoidingView
-      style={{ flex: 1, paddingHorizontal: 20 }}
+      style={{ flex: 1 }}
       behavior={Platform.OS === "ios" ? "padding" : undefined}
       keyboardVerticalOffset={Platform.OS === "ios" ? 80 : 0}
     >
       <ScrollView
         ref={scrollRef}
         style={styles.messagesList}
-        contentContainerStyle={{ paddingVertical: 12 }}
+        contentContainerStyle={{ paddingVertical: 12, paddingHorizontal: 16 }}
       >
         {messages.map((m, i) => {
           const mine = m.sender_id === myId;
@@ -155,23 +155,32 @@ export default function DirectMessageChat({ partnerId }: { partnerId: string }) 
                   { justifyContent: mine ? "flex-end" : "flex-start" },
                 ]}
               >
+                {/* Avatar only for the other person */}
                 {!mine && partner?.avatar_url && (
-                  <Image
-                    source={{ uri: partner.avatar_url }}
-                    style={styles.messageAvatar}
-                  />
+                  <Image source={{ uri: partner.avatar_url }} style={styles.messageAvatar} />
                 )}
 
-                <View style={styles.messageContentBlock}>
-                  {!mine && (
-                    <Text style={styles.messageSender}>
-                      {partner?.name ?? "User"}
-                    </Text>
-                  )}
+                <View
+                  style={[
+                    styles.messageBubble,
+                    mine ? styles.myMessageBubble : styles.theirMessageBubble,
+                  ]}
+                >
+                  <Text
+                    style={[
+                      styles.messageText,
+                      // mine ? styles.myMessageText : styles.theirMessageText,
+                    ]}
+                  >
+                    {m.content}
+                  </Text>
 
-                  <Text style={styles.slackMessageText}>{m.content}</Text>
-
-                  <Text style={styles.messageTimestamp}>
+                  <Text
+                    style={[
+                      styles.messageTimestamp,
+                      mine ? styles.myMessageTimestamp : styles.theirMessageTimestamp,
+                    ]}
+                  >
                     {formatTime(m.created_at)}
                   </Text>
                 </View>

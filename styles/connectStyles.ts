@@ -47,7 +47,7 @@ export const connectStyles = StyleSheet.create({
   },
   groupCardHeader: {
     paddingHorizontal: 16,
-    paddingVertical: 14,
+    paddingVertical: 12,
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
@@ -59,9 +59,9 @@ export const connectStyles = StyleSheet.create({
   },
   headerSmallFab: {
     backgroundColor: colors.accent,
-    width: 26,
-    height: 26,
-    borderRadius: 13,
+    width: 30,
+    height: 30,
+    borderRadius: 16,
     justifyContent: "center",
     alignItems: "center",
     marginLeft: 8,
@@ -300,7 +300,7 @@ export const connectStyles = StyleSheet.create({
   messageRow: {
     flexDirection: "row",
     alignItems: "flex-start",
-    marginBottom: 12,
+    marginVertical: 8,
   },
   avatarWrapper: {
     marginRight: 12,
@@ -324,7 +324,37 @@ export const connectStyles = StyleSheet.create({
     color: "#fff",
     fontWeight: "600",
     fontSize: 16,
+  },  
+  messageBubble: {
+    maxWidth: "80%",
+    borderRadius: 18,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    flexShrink: 1,
   },
+  myMessageBubble: {
+    backgroundColor: "#0A84FF",
+    borderBottomRightRadius: 2,
+    alignSelf: "flex-end",
+  },
+  theirMessageBubble: {
+    backgroundColor: "#2a2a2a",
+    borderBottomLeftRadius: 2,
+    alignSelf: "flex-start",
+  },
+  messageText: {
+    fontSize: 16,
+    marginBottom: 4,
+    color: "#fff",
+  },
+  myMessageTimestamp: {
+    color: "#ddd",
+    alignSelf: "flex-end",
+  },
+  theirMessageTimestamp: {
+    color: "#ddd",
+    alignSelf: "flex-start",
+  },  
   messageContentBlock: {
     flexShrink: 1,
     paddingTop: 4,
@@ -349,6 +379,7 @@ export const connectStyles = StyleSheet.create({
     flexDirection: "row",
     marginTop: 12,
     marginBottom: Platform.OS === "ios" ? 28 : 20,
+    paddingHorizontal: 16,
   },
   messageInput: {
     flex: 1,

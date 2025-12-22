@@ -112,7 +112,7 @@ export default function GroupChat({ groupId }: GroupChatProps) {
 
     return (
       <KeyboardAvoidingView
-        style={{ flex: 1, paddingHorizontal: 16 }}
+        style={{ flex: 1 }}
         behavior={Platform.OS === "ios" ? "padding" : undefined}
         keyboardVerticalOffset={Platform.OS === "ios" ? 80 : 0}
       >
@@ -126,6 +126,7 @@ export default function GroupChat({ groupId }: GroupChatProps) {
             contentContainerStyle={{
               paddingBottom: 12,
               paddingTop: 12,
+              paddingHorizontal: 16,
             }}
           >
             {messages.map((m, i) => {

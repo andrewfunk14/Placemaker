@@ -29,11 +29,9 @@ interface EditProfileModalProps {
   userId: string | null;
   authUser: any;
   name: string;
-  bio: string;
   type: string | null;
   saving: boolean;
   setName: (v: string) => void;
-  setBio: (v: string) => void;
   setType: (v: string | null) => void;
   onClose: () => void;
 }
@@ -44,11 +42,9 @@ export default function EditProfileModal({
   userId,
   authUser,
   name,
-  bio,
   type,
   saving,
   setName,
-  setBio,
   setType,
   onClose,
 }: EditProfileModalProps) {
@@ -69,21 +65,19 @@ export default function EditProfileModal({
     if (visible && profile) {
       setTempAvatarUri(profile.avatar_url ?? null);
       setName(profile.name ?? "");
-      setBio(profile.bio ?? "");
       setType(profile.profile_type ?? null);
       setExpertise(profile.expertise ?? []);
       setNeeds(profile.needs ?? []);
       setAssetTypes(profile.asset_types ?? []);
       setMarkets(profile.markets ?? []);
     }
-  }, [visible, profile, setName, setBio, setType]);
+  }, [visible, profile, setName, setType]);
 
   // ❌ Cancel handler: discard changes & revert to saved values
   const handleCancel = () => {
     if (profile) {
       setTempAvatarUri(profile.avatar_url ?? null);
       setName(profile.name ?? "");
-      setBio(profile.bio ?? "");
       setType(profile.profile_type ?? null);
       setExpertise(profile.expertise ?? []);
       setNeeds(profile.needs ?? []);
@@ -106,7 +100,6 @@ export default function EditProfileModal({
         updateProfile({
           id: userId,
           name,
-          bio,
           profile_type: type,
           expertise,
           needs,
