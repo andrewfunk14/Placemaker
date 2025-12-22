@@ -1,25 +1,28 @@
 // lib/supabaseClient.ts
-
-// development
 import { createClient } from "@supabase/supabase-js";
+import Constants from "expo-constants";
 
-const supabaseUrl = process.env.EXPO_PUBLIC_SUPABASE_URL ?? "";
-const supabaseAnonKey = process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY ?? "";
+type ExtraConfig = {
+  SUPABASE_URL?: string;
+  SUPABASE_ANON_KEY?: string;
+};
+
+const extra = (Constants.expoConfig?.extra ?? {}) as ExtraConfig;
+
+const supabaseUrl =
+  process.env.EXPO_PUBLIC_SUPABASE_URL ??
+  extra.SUPABASE_URL ??
+  "";
+
+const supabaseAnonKey =
+  process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY ??
+  extra.SUPABASE_ANON_KEY ??
+  "";
 
 if (!supabaseUrl || !supabaseAnonKey) {
-  console.warn("Supabase ENV vars are missing. Did you set EXPO_PUBLIC_SUPABASE_URL and EXPO_PUBLIC_SUPABASE_ANON_KEY in .env?");
+  console.warn(
+    "Missing Supabase Keys"
+  );
 }
 
 export const supabase = createClient(supabaseUrl, supabaseAnonKey);
-
-
-// // production
-// import { createClient } from "@supabase/supabase-js";
-// import Constants from "expo-constants";
-
-// const extra = Constants.expoConfig?.extra ?? {};
-
-// export const supabase = createClient(
-//   extra.SUPABASE_URL ?? "",
-//   extra.SUPABASE_ANON_KEY ?? ""
-// );
