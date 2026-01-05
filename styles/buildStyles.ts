@@ -107,8 +107,8 @@ export const buildStyles = StyleSheet.create({
     borderRadius: 16,
     padding: 10,
     borderWidth: 1,
-    borderColor: colors.translucentBorder,
-    // borderColor: colors.accent,
+    // borderColor: colors.translucentBorder,
+    borderColor: colors.accent,
     width: "100%",
   },  
   projectHeader: {
