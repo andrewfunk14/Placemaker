@@ -1,24 +1,34 @@
-// components/build/postProjectModal.tsx
-import React, { useState } from "react";
+// build/postProjectModal.tsx
+import React, { useState, useRef, } from "react";
 import {
   View,
   Text,
   TextInput,
   TouchableOpacity,
-  ActivityIndicator,
   Modal,
   ScrollView,
+  Pressable,
+  KeyboardAvoidingView,
+  Platform,
 } from "react-native";
 import { ProjectStatus } from "../../store/slices/projectsSlice";
 import { buildStyles as styles } from "../../styles/buildStyles";
+import ProjectFileUpload from "./projectFileUpload";
 
 const STATUSES: ProjectStatus[] = ["idea", "in progress", "completed"];
+
+const STATUS_COLORS: Record<ProjectStatus, string> = {
+    idea: "#3B82F6",
+    "in progress": "#FBBF24",
+    completed: "#22C55E",
+  };
 
 export type ProjectFormValues = {
   title: string;
   description?: string;
   location?: string;
   status: ProjectStatus;
+  files?: string[];
 };
 
 interface PostProjectModalProps {
@@ -36,6 +46,7 @@ export default function PostProjectModal({
   const [location, setLocation] = useState("");
   const [description, setDescription] = useState("");
   const [status, setStatus] = useState<ProjectStatus>("idea");
+  const [files, setFiles] = useState<string[]>([]);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -44,10 +55,13 @@ export default function PostProjectModal({
     setLocation("");
     setDescription("");
     setStatus("idea");
+    setFiles([]);
     setError(null);
   };
 
   const handlePost = async () => {
+    if (submitting) return;
+
     if (!title.trim()) {
       setError("Please add a project title.");
       return;
@@ -62,6 +76,7 @@ export default function PostProjectModal({
         location: location.trim() || undefined,
         description: description.trim() || undefined,
         status,
+        files: files.length ? files : undefined,
       });
 
       setSubmitting(false);
@@ -74,120 +89,146 @@ export default function PostProjectModal({
   };
 
   const handleClose = () => {
-    if (!submitting) {
-      onClose();
-    }
+    if (!submitting) onClose();
   };
 
-  return (
-    <Modal
-      visible={visible}
-      transparent
-      animationType="slide"
-      onRequestClose={handleClose}
-    >
-      <View style={styles.modalOverlay}>
-        <View style={styles.modalCard}>
-          {/* Header */}
-          <View style={styles.modalHeader}>
-            <Text style={styles.modalTitle}>New Project</Text>
-          </View>
+  const formatStatusLabel = (status: ProjectStatus) => {
+    if (status === "in progress") return "In Progress";
+    return status.charAt(0).toUpperCase() + status.slice(1);
+  };
+  
+  const locationRef = useRef<TextInput>(null);
 
-          {/* Form */}
-          <ScrollView
-            keyboardShouldPersistTaps="handled"
-            contentContainerStyle={styles.modalScrollContent}
-          >
+  return (
+    <Modal visible={visible} animationType="fade" transparent onRequestClose={handleClose}>
+      <Pressable
+        style={[
+          styles.modalBackdrop,
+          submitting && { backgroundColor: "rgba(0,0,0,0.6)" },
+        ]}
+        disabled={submitting}
+        onPress={handleClose}
+      />
+  
+      <KeyboardAvoidingView
+        behavior={Platform.OS === "ios" ? "padding" : undefined}
+        style={styles.modalCardWrap}
+      >
+        <ScrollView
+          keyboardShouldPersistTaps="handled"
+          contentContainerStyle={styles.modalScrollContent}
+        >
+          <View style={styles.modalCard}>
+            {/* Header */}
+            <Text style={styles.modalTitle}>New Project</Text>
+  
+            {/* Title */}
             <TextInput
               placeholder="Title"
-              placeholderTextColor={styles.placeholderColor?.color || "#a0a0a0"}
+              placeholderTextColor="#a0a0a0"
               style={styles.input}
               value={title}
               onChangeText={setTitle}
+              returnKeyType="next"
+              onSubmitEditing={() => locationRef.current?.focus()}
             />
-
+  
+            {/* Location */}
             <TextInput
+              ref={locationRef}
               placeholder="Location"
-              placeholderTextColor={styles.placeholderColor?.color || "#a0a0a0"}
+              placeholderTextColor="#a0a0a0"
               style={styles.input}
               value={location}
               onChangeText={setLocation}
+              returnKeyType="done"
             />
+  
+            {/* Status */}
+            <View style={styles.modalStatusRow}>
+                {STATUSES.map((s) => {
+                    const selected = s === status;
+                    const color =
+                    STATUS_COLORS[s as ProjectStatus] ?? "#9CA3AF";
 
-            <Text style={styles.label}>Status</Text>
-            <View style={styles.statusRow}>
-              {STATUSES.map((s) => {
-                const selected = s === status;
-                return (
-                  <TouchableOpacity
-                    key={s}
-                    onPress={() => setStatus(s)}
-                    style={[
-                      styles.statusOption,
-                      selected && styles.statusOptionSelected,
-                    ]}
-                  >
-                    <Text
-                      style={[
-                        styles.statusOptionText,
-                        selected && styles.statusOptionTextSelected,
-                      ]}
+                    return (
+                    <TouchableOpacity
+                        key={s}
+                        onPress={() => setStatus(s)}
+                        style={[
+                        styles.statusOption,
+                        {
+                            borderColor: selected
+                            ? `${color}55`
+                            : styles.statusOption.borderColor,
+                            backgroundColor: selected
+                            ? `${color}20`
+                            : "transparent",
+                        },
+                        ]}
                     >
-                      {s}
-                    </Text>
-                  </TouchableOpacity>
-                );
-              })}
+                        <Text
+                        style={[
+                            styles.statusOptionText,
+                            selected && {
+                            color,
+                            fontWeight: "600",
+                            },
+                        ]}
+                        >
+                        {formatStatusLabel(s)}
+                        </Text>
+                    </TouchableOpacity>
+                    );
+                })}
             </View>
 
+  
+            {/* Description */}
             <TextInput
-              placeholder="Description (optional)"
-              placeholderTextColor={styles.placeholderColor?.color || "#a0a0a0"}
-              style={[styles.input, styles.textarea]}
+              placeholder="Caption (optional)"
+              placeholderTextColor="#a0a0a0"
+              style={[styles.input, styles.inputMultiline]}
               value={description}
               onChangeText={setDescription}
               multiline
             />
-          </ScrollView>
-
-          {/* Footer: error + buttons row like screenshot */}
-          <View style={styles.modalFooter}>
-            {error ? (
-              <Text style={[styles.errorText, { flex: 1, marginRight: 12 }]}>
-                {error}
-              </Text>
-            ) : (
-              <View style={{ flex: 1 }} />
-            )}
-
-            <View style={styles.modalButtonRow}>
+  
+            {/* Files */}
+            <View style={{ marginTop: 8 }}>
+              <ProjectFileUpload
+                initialFiles={files}
+                onChange={setFiles}
+                editable={!submitting}
+              />
+            </View>
+  
+            {/* Footer buttons */}
+            <View style={styles.buttonRow}>
               <TouchableOpacity
                 onPress={handleClose}
+                style={[styles.button, styles.buttonGhost]}
                 disabled={submitting}
-                style={[styles.modalButton, styles.modalButtonSecondary]}
               >
-                <Text style={styles.modalButtonSecondaryText}>Cancel</Text>
+                <Text style={styles.buttonGhostText}>Cancel</Text>
               </TouchableOpacity>
-
+  
               <TouchableOpacity
                 onPress={handlePost}
-                disabled={submitting}
                 style={[
-                  styles.modalButton,
-                  styles.modalButtonPrimary,
+                  styles.button,
                   submitting && styles.buttonDisabled,
                 ]}
+                disabled={submitting}
               >
-                {submitting ? (
-                  <ActivityIndicator />
-                ) : (
-                  <Text style={styles.modalButtonPrimaryText}>Submit</Text>
-                )}
+                <Text style={styles.buttonText}>
+                  {submitting ? "Submitting…" : "Submit"}
+                </Text>
               </TouchableOpacity>
             </View>
           </View>
-        </View>
-      </View>
+        </ScrollView>
+      </KeyboardAvoidingView>
     </Modal>
-  );
+  );  
 }

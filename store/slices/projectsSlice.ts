@@ -1,8 +1,13 @@
-// store/slices/projectsSlice.ts
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import { supabase } from "../../lib/supabaseClient";
 
 export type ProjectStatus = "idea" | "in progress" | "completed";
+
+export interface Creator {
+  id: string;
+  name: string | null;
+  avatar_url: string | null;
+}
 
 export interface Project {
   id: string;
@@ -13,6 +18,8 @@ export interface Project {
   status: ProjectStatus;
   created_at: string;
   updated_at: string;
+  files?: string[] | null;
+  creator?: Creator | null;
 }
 
 export interface ProjectsState {
@@ -27,57 +34,140 @@ const initialState: ProjectsState = {
   error: null,
 };
 
-export const fetchProjects = createAsyncThunk(
-  "projects/fetchProjects",
-  async (_, { rejectWithValue }) => {
-    const { data, error } = await supabase
-      .from("projects")
-      .select("*")
-      .order("created_at", { ascending: false });
+const STORAGE_BUCKET = "projects";
 
-    if (error) {
-      return rejectWithValue(error.message);
-    }
+/**
+ * Normalize Supabase join (array → object)
+ */
+function normalizeCreator(
+  creator: Creator[] | Creator | null | undefined
+): Creator | null {
+  if (!creator) return null;
+  return Array.isArray(creator) ? creator[0] ?? null : creator;
+}
 
-    return data as Project[];
+// GET /projects
+export const fetchProjects = createAsyncThunk<
+  Project[],
+  void,
+  { rejectValue: string }
+>("projects/fetchProjects", async (_, { rejectWithValue }) => {
+  const { data, error } = await supabase
+    .from("projects")
+    .select(`
+      id,
+      created_by,
+      title,
+      description,
+      location,
+      status,
+      created_at,
+      updated_at,
+      files,
+      creator:profiles (
+        id,
+        name,
+        avatar_url
+      )
+    `)
+    .order("created_at", { ascending: false });
+
+  if (error || !data) {
+    return rejectWithValue(error?.message ?? "Failed to load projects.");
   }
-);
 
-export const createProject = createAsyncThunk(
-  "projects/createProject",
-  async (
-    payload: {
-      title: string;
-      description?: string;
-      location?: string;
-      status?: ProjectStatus;
-    },
-    { rejectWithValue }
-  ) => {
-    const { data: userData, error: userError } = await supabase.auth.getUser();
-    if (userError || !userData?.user) {
-      return rejectWithValue("You must be logged in to create a project.");
-    }
+  return data.map((p) => ({
+    ...p,
+    creator: normalizeCreator(p.creator),
+  }));
+});
 
-    const { data, error } = await supabase
-      .from("projects")
-      .insert({
-        created_by: userData.user.id,
-        title: payload.title,
-        description: payload.description ?? null,
-        location: payload.location ?? null,
-        status: payload.status ?? "idea",
-      })
-      .select("*")
-      .single();
-
-    if (error) {
-      return rejectWithValue(error.message);
-    }
-
-    return data as Project;
+// POST /projects
+export const createProject = createAsyncThunk<
+  Project,
+  {
+    title: string;
+    description?: string;
+    location?: string;
+    status?: ProjectStatus;
+    files?: string[];
+  },
+  { rejectValue: string }
+>("projects/createProject", async (payload, { rejectWithValue }) => {
+  const { data: userData, error: userError } = await supabase.auth.getUser();
+  if (userError || !userData?.user) {
+    return rejectWithValue("You must be logged in to create a project.");
   }
-);
+
+  const { title, description, location, status = "idea", files } = payload;
+
+  const { data, error } = await supabase
+    .from("projects")
+    .insert({
+      created_by: userData.user.id,
+      title,
+      description: description ?? null,
+      location: location ?? null,
+      status,
+      files: files ?? null,
+    })
+    .select(`
+      id,
+      created_by,
+      title,
+      description,
+      location,
+      status,
+      created_at,
+      updated_at,
+      files,
+      creator:profiles (
+        id,
+        name,
+        avatar_url
+      )
+    `)
+    .single();
+
+  if (error || !data) {
+    return rejectWithValue(error?.message ?? "Failed to create project.");
+  }
+
+  return {
+    ...data,
+    creator: normalizeCreator(data.creator),
+  };
+});
+
+// DELETE /projects
+export const deleteProject = createAsyncThunk<
+  string,
+  { id: string; files?: string[] | null },
+  { rejectValue: string }
+>("projects/deleteProject", async ({ id, files }, { rejectWithValue }) => {
+  try {
+    const { error } = await supabase.from("projects").delete().eq("id", id);
+    if (error) return rejectWithValue(error.message);
+
+    if (files?.length) {
+      const paths = files
+        .map((url) => {
+          const marker = "/object/public/";
+          const idx = url.indexOf(marker);
+          return idx === -1 ? null : url.slice(idx + marker.length).split("/").slice(1).join("/");
+        })
+        .filter(Boolean) as string[];
+
+      if (paths.length) {
+        await supabase.storage.from(STORAGE_BUCKET).remove(paths);
+      }
+    }
+
+    return id;
+  } catch (err: any) {
+    return rejectWithValue(err?.message ?? "Failed to delete project.");
+  }
+});
 
 const projectsSlice = createSlice({
   name: "projects",
@@ -85,7 +175,6 @@ const projectsSlice = createSlice({
   reducers: {},
   extraReducers: (builder) => {
     builder
-      // fetchProjects
       .addCase(fetchProjects.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -99,23 +188,15 @@ const projectsSlice = createSlice({
       )
       .addCase(fetchProjects.rejected, (state, action) => {
         state.loading = false;
-        state.error =
-          (action.payload as string) || "Failed to load projects.";
+        state.error = action.payload ?? "Failed to load projects.";
       })
-      // createProject
-      .addCase(createProject.pending, (state) => {
-        state.error = null;
+      .addCase(createProject.fulfilled, (state, action) => {
+        state.projects.unshift(action.payload);
       })
-      .addCase(
-        createProject.fulfilled,
-        (state, action: PayloadAction<Project>) => {
-          // Add new project at the top
-          state.projects.unshift(action.payload);
-        }
-      )
-      .addCase(createProject.rejected, (state, action) => {
-        state.error =
-          (action.payload as string) || "Failed to create project.";
+      .addCase(deleteProject.fulfilled, (state, action) => {
+        state.projects = state.projects.filter(
+          (p) => p.id !== action.payload
+        );
       });
   },
 });

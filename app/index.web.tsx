@@ -122,7 +122,7 @@ export default function LandingPage() {
             <Image
               source={require("../assets/dark-wordmark.svg")}
               style={styles.wordmark}
-              resizeMode="contain"
+              // resizeMode="cover"
             />
           </TouchableOpacity>
           {isMobile ? (

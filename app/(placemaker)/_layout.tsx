@@ -73,7 +73,8 @@ export default function PlacemakerLayout() {
             icon="people-outline"
             active={
               pathname.startsWith("/connect") ||
-              pathname.startsWith("/chat")
+              pathname.startsWith("/chat") ||
+              pathname.startsWith("/dm")
             }            
             onPress={() => router.push("/(placemaker)/(tabs)/(connect)/connect")}
           />
