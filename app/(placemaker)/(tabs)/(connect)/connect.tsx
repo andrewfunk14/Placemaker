@@ -10,6 +10,7 @@ import { useUser } from "../../../userContext";
 import { useFocusEffect } from "@react-navigation/native";
 import { useRouter } from "expo-router";
 import useMatchmaking from "../../../../store/hooks/useMatchmaking";
+import { Send, SendHorizonal, SendHorizontal } from "lucide-react-native";
 
 export default function ConnectScreen() {
   const dispatch = useAppDispatch();
@@ -84,7 +85,7 @@ export default function ConnectScreen() {
         {isPlacemakerPaid && (
           <View>
             <Text style={styles.sectionHeader}>Curated Connections</Text>
-
+            
             {matches.map((m) => (
               <TouchableOpacity
                 key={m.id}
@@ -94,6 +95,7 @@ export default function ConnectScreen() {
                   router.push(`/(placemaker)/(chat)/dm?userId=${m.id}`)
                 }
               >
+                {/* LEFT SIDE */}
                 <View style={styles.matchLeft}>
                   {m.avatar_url ? (
                     <Image source={{ uri: m.avatar_url }} style={styles.matchAvatar} />
@@ -107,14 +109,29 @@ export default function ConnectScreen() {
 
                   <View style={{ marginLeft: 12 }}>
                     <Text style={styles.matchName}>{m.name}</Text>
-
-                    <Text style={styles.matchTier}>{m.profile_type?.toUpperCase()}</Text>
-
+                    <Text style={styles.matchTier}>
+                      {m.profile_type?.toUpperCase()}
+                    </Text>
                     <Text style={styles.matchSubtitle}>
                       {m.expertise?.slice(0, 2).join(", ") || "No expertise"}
                     </Text>
                   </View>
                 </View>
+
+                {/* RIGHT SIDE */}
+                <TouchableOpacity
+                  onPress={() =>
+                    router.push(`/(placemaker)/(chat)/dm?userId=${m.id}`)
+                  }
+                  hitSlop={10}
+                  style={styles.matchMessageButton}
+                >
+                  <Send
+                    size={28}
+                    strokeWidth={2.5}
+                    color={styles.matchMessageIcon?.color ?? "#fff"}
+                  />
+                </TouchableOpacity>
               </TouchableOpacity>
             ))}
 

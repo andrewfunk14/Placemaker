@@ -98,6 +98,11 @@ export default function ProjectCard({
             </View>
         </View>
 
+        {project.description ? (
+          <Text style={styles.projectCaption}>
+            {project.description}
+          </Text>
+        ) : null}
 
         {/* Media */}
         {firstFile ? (
@@ -107,13 +112,6 @@ export default function ProjectCard({
               style={styles.projectMediaImage}
             />
           </View>
-        ) : null}
-
-        {/* Caption */}
-        {project.description ? (
-          <Text style={styles.projectCaption}>
-            {project.description}
-          </Text>
         ) : null}
 
       </View>

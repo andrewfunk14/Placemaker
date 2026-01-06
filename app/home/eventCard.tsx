@@ -82,7 +82,7 @@ export default function EventCard({
           hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
           activeOpacity={0.7}
         >
-          <Pencil color={colors.accent} size={28} />
+          <Pencil color={"#000"} size={28} strokeWidth={2.5}/>
         </TouchableOpacity>
       ) : (
         <View style={styles.creatorTopRightWrap} pointerEvents="none">

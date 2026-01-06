@@ -85,7 +85,7 @@ export default function ProfileScreen() {
             style={styles.editTopRightBtn}
             activeOpacity={0.7}
           >
-            <Pencil color={colors.accent} size={32} />
+            <Pencil color={"#000"} size={28} strokeWidth={2.5}/>
           </TouchableOpacity>
           
           <View style={styles.header}>

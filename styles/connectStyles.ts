@@ -39,8 +39,9 @@ export const connectStyles = StyleSheet.create({
   // },
   groupCard: {
     borderRadius: 12,
-    borderWidth: 1,
-    borderColor: colors.accent,
+    borderWidth: 2,
+    borderColor: colors.translucentBorder,
+    // borderColor: colors.accent,
     marginBottom: 12,
     paddingHorizontal: 0,
     overflow: "hidden",
@@ -81,11 +82,12 @@ export const connectStyles = StyleSheet.create({
     marginLeft: 4,
   },
   matchCard: {
-    backgroundColor: "#1f1f1f",
+    // backgroundColor: "#1f1f1f",
     padding: 12,
     borderRadius: 12,
-    // borderWidth: 1,
+    borderWidth: 2,
     // borderColor: colors.accent,
+    borderColor: colors.translucentBorder,
     marginBottom: 12,
     flexDirection: "row",
     alignItems: "center",
@@ -94,6 +96,18 @@ export const connectStyles = StyleSheet.create({
   matchLeft: {
     flexDirection: "row",
     alignItems: "center",
+    flex: 1,
+  },
+  matchMessageButton: {
+    padding: 12,
+    marginLeft: 12,
+    // borderRadius: 999,
+    // backgroundColor: "rgba(255,255,255,0.08)",
+    // alignItems: "center",
+    // justifyContent: "center",
+  },
+  matchMessageIcon: {
+    color: colors.accent
   },
   matchAvatar: {
     width: 50,
