@@ -59,10 +59,6 @@ export const learnStyles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "rgba(255,255,255,0.15)",
   },
-  tagPillActive: {
-    backgroundColor: colors.accent,
-    borderWidth: 0,
-  },
   tagText: {
     color: "#fff",
     fontWeight: "500",

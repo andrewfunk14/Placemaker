@@ -39,9 +39,9 @@ export const connectStyles = StyleSheet.create({
   // },
   groupCard: {
     borderRadius: 12,
-    borderWidth: 2,
-    borderColor: colors.translucentBorder,
-    // borderColor: colors.accent,
+    borderWidth: 1,
+    // borderColor: colors.translucentBorder,
+    borderColor: colors.textPrimary,
     marginBottom: 12,
     paddingHorizontal: 0,
     overflow: "hidden",
@@ -56,12 +56,12 @@ export const connectStyles = StyleSheet.create({
   groupCardTitle: {
     color: colors.textPrimary,
     fontSize: 20,
-    fontWeight: "700",
+    fontWeight: "600",
   },
   headerSmallFab: {
     backgroundColor: colors.accent,
-    width: 30,
-    height: 30,
+    width: 32,
+    height: 32,
     borderRadius: 16,
     justifyContent: "center",
     alignItems: "center",
@@ -74,7 +74,7 @@ export const connectStyles = StyleSheet.create({
     marginTop: -1,
   },
   sectionHeader: {
-    color: "#fff",
+    color: colors.textPrimary,
     fontSize: 28,
     textAlign: 'center',
     fontWeight: "700",
@@ -129,7 +129,7 @@ export const connectStyles = StyleSheet.create({
   },
   matchName: {
     color: "#fff",
-    fontSize: 18,
+    fontSize: 20,
     fontWeight: "600",
     marginBottom: 2,
   },
@@ -141,7 +141,7 @@ export const connectStyles = StyleSheet.create({
   },
   matchSubtitle: {
     color: "#bbb",
-    fontSize: 14,
+    fontSize: 16,
   },
   fab: {
     position: "absolute",

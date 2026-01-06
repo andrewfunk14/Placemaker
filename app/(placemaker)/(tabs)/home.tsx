@@ -28,7 +28,8 @@ export default function Home() {
   const [query, setQuery] = useState("");
 
   const myId = userId ?? null;
-  const canCreate = roles.includes("placemaker");
+  const isPlacemakerCreator =
+    roles?.includes("placemaker") || roles?.includes("admin");
 
   const formatEventDateTime = useCallback(
     (iso: string) => `${formatEventDate(iso)} • ${formatEventTime(iso)}`,
@@ -103,13 +104,15 @@ export default function Home() {
         />
       </View>
 
-      <TouchableOpacity
-        style={[styles.fab, !canCreate && { opacity: 0.4 }]}
-        onPress={canCreate ? () => setShowNew(true) : undefined}
-        accessibilityLabel="Create event"
-      >
-        <Text style={styles.fabPlus}>＋</Text>
-      </TouchableOpacity>
+      {isPlacemakerCreator && (
+        <TouchableOpacity
+          style={styles.fab}
+          onPress={() => setShowNew(true)}
+          accessibilityLabel="Create event"
+        >
+          <Text style={styles.fabPlus}>＋</Text>
+        </TouchableOpacity>
+      )}
 
       <NewEventModal
         visible={showNew || !!selectedEvent}

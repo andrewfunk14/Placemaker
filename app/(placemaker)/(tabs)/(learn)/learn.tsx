@@ -39,6 +39,10 @@ export default function LearnScreen() {
     user?.roles?.some((r) =>
       ["admin", "placemaker", "dealmaker", "changemaker", "policymaker"].includes(r)
     ) ?? false;
+  
+  const canUploadResource = isPaidUser || isAdmin;
+
+  const TAG_ACTIVE_COLOR = colors.accent;
 
   const allTags = useMemo(() => {
     const tagSet = new Set<string>();
@@ -113,10 +117,25 @@ export default function LearnScreen() {
               return (
                 <TouchableOpacity
                   key={tag}
-                  style={[styles.tagPill, active && styles.tagPillActive]}
                   onPress={() => toggleTag(tag)}
+                  style={[
+                    styles.tagPill,
+                    active && {
+                      backgroundColor: `${colors.accent}20`,
+                      borderColor: `${colors.accent}55`,
+                      borderWidth: 2,
+                    },
+                  ]}
                 >
-                  <Text style={[styles.tagText, active && styles.tagTextActive]}>
+                  <Text
+                    style={[
+                      styles.tagText,
+                      active && {
+                        color: colors.accent,
+                        fontWeight: "600",
+                      },
+                    ]}
+                  >
                     #{tag}
                   </Text>
                 </TouchableOpacity>
@@ -139,15 +158,16 @@ export default function LearnScreen() {
         <ResourceList resources={filtered} user={user} />
       </ScrollView>
 
-      <TouchableOpacity
-        onPress={() => {
-          if (isPaidUser) setShowUpload(true);
-        }}
-        style={[styles.fab, !isPaidUser && { opacity: 0.4 }]}
-        activeOpacity={isPaidUser ? 0.7 : 1}
-      >
-        <Text style={styles.fabPlus}>＋</Text>
-      </TouchableOpacity>
+      {canUploadResource && (
+        <TouchableOpacity
+          onPress={() => setShowUpload(true)}
+          style={styles.fab}
+          activeOpacity={0.7}
+          accessibilityLabel="Upload resource"
+        >
+          <Text style={styles.fabPlus}>＋</Text>
+        </TouchableOpacity>
+      )}
 
       {showUpload && (
         <UploadModal

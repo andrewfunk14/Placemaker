@@ -101,7 +101,7 @@ export default function ProfileScreen() {
                 </View>
 
                 {profile?.profile_type?.trim() ? (
-                  <Text style={styles.subtitle}>{profile.profile_type}</Text>
+                  <Text style={styles.subtitle}>{profile.profile_type?.toUpperCase()}</Text>
                 ) : null}
 
                 {/* Show badges only on web inside header */}

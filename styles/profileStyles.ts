@@ -91,9 +91,9 @@ export const profileStyles = StyleSheet.create({
     marginTop: Platform.OS === "web" ? 4 : 0,
   },
   subtitle: {
-    color: colors.textSecondary,
-    fontSize: Platform.OS === "web" ? 30 : 28,
-    fontWeight: "500",
+    color: colors.accent,
+    fontSize: Platform.OS === "web" ? 24 : 20,
+    fontWeight: "600",
     marginBottom: Platform.OS === "web" ? 12 : 0,
   },  
   badgeRow: {

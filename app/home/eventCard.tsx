@@ -139,9 +139,9 @@ export default function EventCard({
           marginBottom: 4,
         }}
       >
-        <Text style={styles.cardMeta}>{dateLabel}</Text>
+        <Text style={styles.cardDate}>{dateLabel}</Text>
         <Text style={styles.cardDot}> • </Text>
-        <Text style={styles.cardMeta}>{timeLabel}</Text>
+        <Text style={styles.cardTime}>{timeLabel}</Text>
       </View>
 
       {isUrl ? (

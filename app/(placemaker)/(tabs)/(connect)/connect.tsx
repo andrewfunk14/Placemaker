@@ -10,7 +10,7 @@ import { useUser } from "../../../userContext";
 import { useFocusEffect } from "@react-navigation/native";
 import { useRouter } from "expo-router";
 import useMatchmaking from "../../../../store/hooks/useMatchmaking";
-import { Send, SendHorizonal, SendHorizontal } from "lucide-react-native";
+import { ArrowRight, Send,  } from "lucide-react-native";
 
 export default function ConnectScreen() {
   const dispatch = useAppDispatch();
@@ -67,7 +67,7 @@ export default function ConnectScreen() {
             <View style={styles.groupCardHeader}>
               <Text style={styles.groupCardTitle}>{g.name}</Text>
 
-              {(isAdmin || g.leader_id === userId) && (
+              {(isAdmin || g.leader_id === userId) ? (
                 <TouchableOpacity
                   style={styles.headerSmallFab}
                   onPress={() => {
@@ -77,7 +77,32 @@ export default function ConnectScreen() {
                 >
                   <Text style={styles.headerSmallFabText}>＋</Text>
                 </TouchableOpacity>
+              ) : (
+                <TouchableOpacity
+                  style={styles.headerSmallFab}
+                  onPress={() =>
+                    router.push(`/(placemaker)/(chat)/chat?groupId=${g.id}`)
+                  }
+                >
+                  <ArrowRight
+                    size={24}
+                    strokeWidth={3}
+                    color="#000"
+                  />
+                </TouchableOpacity>
               )}
+
+              {/* {(isAdmin || g.leader_id === userId) && (
+                <TouchableOpacity
+                  style={styles.headerSmallFab}
+                  onPress={() => {
+                    setAddMemberGroup(g);
+                    setShowAddMemberModal(true);
+                  }}
+                >
+                  <Text style={styles.headerSmallFabText}>＋</Text>
+                </TouchableOpacity>
+              )} */}
             </View>
           </TouchableOpacity>
         ))}
@@ -113,7 +138,7 @@ export default function ConnectScreen() {
                       {m.profile_type?.toUpperCase()}
                     </Text>
                     <Text style={styles.matchSubtitle}>
-                      {m.expertise?.slice(0, 2).join(", ") || "No expertise"}
+                      {m.expertise?.slice(0, 3).join(", ") || "No expertise"}
                     </Text>
                   </View>
                 </View>

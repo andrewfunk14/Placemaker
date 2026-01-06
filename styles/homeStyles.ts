@@ -123,7 +123,7 @@ export const styles = StyleSheet.create({
     color: colors.textPrimary,
     fontSize: Platform.OS === "web" ? 30 : 28,
     fontWeight: "600",
-    marginBottom: 8,
+    marginBottom: 4,
   },
   cardMetaRow: {
     flexDirection: "row",
@@ -131,13 +131,21 @@ export const styles = StyleSheet.create({
     alignItems: "center",
     marginBottom: 8,
   },
-  cardMeta: {
-    color: colors.textSecondary,
+  cardDate: {
+    color: colors.accent,
+    fontSize: 22,
+  },
+  cardTime: {
+    color: colors.accent,
     fontSize: 22,
   },
   cardDot: { 
-    color: colors.textSecondary, 
+    color: colors.accent, 
     fontSize: 20,
+  },
+  cardMeta: {
+    color: colors.textSecondary,
+    fontSize: 22,
   },
   cardDesc: {
     color: colors.textPrimary,

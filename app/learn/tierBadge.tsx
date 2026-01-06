@@ -7,7 +7,7 @@ interface TierBadgeProps {
 }
 
 const TIER_COLORS = {
-  free: "#9CA3AF", 
+  free: "#9CA3AF",
   paid: "#FBBF24",
 };
 
