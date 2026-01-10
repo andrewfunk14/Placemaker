@@ -129,13 +129,9 @@ const Signup = () => {
             <View style={[s.card, cardShadow()]}>
               <View style={s.wordmarkContainer}>
                 <Image
-                  source={
-                    Platform.OS === "web"
-                      ? require("../../assets/dark-wordmark.svg")
-                      : require("../../assets/dark-wordmark.png")
-                  }
+                  source={require("../../assets/dark-wordmark.png")}
                   style={s.wordmark}
-                  resizeMode="cover"
+                  // resizeMode="cover"
                 />
               </View>
   

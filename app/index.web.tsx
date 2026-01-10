@@ -119,8 +119,30 @@ export default function LandingPage() {
       <View style={styles.header}>
         <View style={[styles.headerContent, isMobile && styles.headerContentMobile]}>
           <TouchableOpacity onPress={() => scrollToSection("heroSection")}>
+          {/* <View style={{ flexDirection: "row", alignItems: "flex-end" }}>
+            <Text
+              style={{
+                fontFamily: "PoppinsBold",
+                fontSize: 24,
+              }}
+            >
+              <Text style={{ color: "#FFD21F" }}>place</Text>
+              <Text style={{ color: "#FFFFFF" }}>maker</Text>
+            </Text>
+
+            <View
+              style={{
+                width: 5,
+                height: 5,
+                // marginLeft: 4,
+                marginBottom: 9, // aligns to baseline
+                backgroundColor: "#FFFFFF",
+                borderRadius: 1, // optional: keep it slightly sharp
+              }}
+            />
+          </View> */}
             <Image
-              source={require("../assets/dark-wordmark.svg")}
+              source={require("../assets/dark-wordmark.png")}
               style={styles.wordmark}
               // resizeMode="cover"
             />

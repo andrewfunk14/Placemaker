@@ -44,7 +44,7 @@ export default function PlacemakerLayout() {
         <View style={styles.sidebar}>
           <View style={styles.wordmarkContainer}>
             <Image
-              source={require("../../assets/dark-wordmark.svg")}
+              source={require("../../assets/dark-wordmark.png")}
               style={styles.wordmark}
               resizeMode="cover"
             />

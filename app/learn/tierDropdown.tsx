@@ -13,7 +13,7 @@ import { ChevronDown } from "lucide-react-native";
 
 const TIER_OPTIONS = [
   { label: "Free", value: "free" },
-  { label: "Placemaker+", value: "paid" },
+  { label: "Placemaker", value: "paid" },
 ];
 
 interface ResourceTierDropdownProps {

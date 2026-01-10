@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "placemaker",
+    "name": "Placemaker",
     "slug": "placemaker",
     "scheme": "placemaker",
     "version": "1.0.0",
@@ -11,10 +11,15 @@
     "splash": {
       "image": "./assets/splash-icon.png",
       "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "backgroundColor": "#000000"
     },
     "ios": {
-      "supportsTablet": true
+      "bundleIdentifier": "com.joinplacemaker.app",
+      "buildNumber": "1",
+      "supportsTablet": true,
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false
+      }
     },
     "android": {
       "adaptiveIcon": {
@@ -31,6 +36,14 @@
     "plugins": [
       "expo-router",
       "expo-web-browser"
-    ]
+    ],
+    "extra": {
+      "router": {
+        "origin": false
+      },
+      "eas": {
+        "projectId": "41e04d16-d8ae-425e-bfa3-5d14b2457f10"
+      }
+    }
   }
 }

@@ -198,7 +198,7 @@ export const learnStyles = StyleSheet.create({
   },
   cardDescription: {
     color: colors.textPrimary,
-    fontSize: Platform.OS === "web" ? 18 : 15,
+    fontSize: Platform.OS === "web" ? 18 : 16,
     lineHeight: 20,
     opacity: 0.95,
     marginTop: 6,

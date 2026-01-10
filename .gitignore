@@ -3,6 +3,7 @@
 # supabaseClient.ts
 deleteUser.ts
 .env
+eas.json
 
 # dependencies
 node_modules/
