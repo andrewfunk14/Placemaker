@@ -19,6 +19,7 @@ import { cardShadow } from "../styles/shadow";
 
 const { width: windowWidth, height: windowHeight } = Dimensions.get("window");
 const isMobile = windowWidth < 768;
+const iconSize = windowWidth < 768 ? 32 : 36;
 
 export default function LandingPage() {
   const router = useRouter();
@@ -55,6 +56,7 @@ export default function LandingPage() {
       if (!name || !email) {
         setMessage("Missing name or email");
         setMessageType("error");
+        setIsLoading(false);
   
         setTimeout(() => {
           setMessage("");
@@ -119,28 +121,6 @@ export default function LandingPage() {
       <View style={styles.header}>
         <View style={[styles.headerContent, isMobile && styles.headerContentMobile]}>
           <TouchableOpacity onPress={() => scrollToSection("heroSection")}>
-          {/* <View style={{ flexDirection: "row", alignItems: "flex-end" }}>
-            <Text
-              style={{
-                fontFamily: "PoppinsBold",
-                fontSize: 24,
-              }}
-            >
-              <Text style={{ color: "#FFD21F" }}>place</Text>
-              <Text style={{ color: "#FFFFFF" }}>maker</Text>
-            </Text>
-
-            <View
-              style={{
-                width: 5,
-                height: 5,
-                // marginLeft: 4,
-                marginBottom: 9, // aligns to baseline
-                backgroundColor: "#FFFFFF",
-                borderRadius: 1, // optional: keep it slightly sharp
-              }}
-            />
-          </View> */}
             <Image
               source={require("../assets/dark-wordmark.png")}
               style={styles.wordmark}
@@ -153,10 +133,10 @@ export default function LandingPage() {
             </TouchableOpacity>
           ) : (
             <View style={styles.navLinks}>
-              {/* <TouchableOpacity onPress={() => scrollToSection("whatWeDoSection")}>
-                <Text style={styles.navText}>What We Do</Text>
+              <TouchableOpacity onPress={() => scrollToSection("aboutSection")}>
+                <Text style={styles.navText}>About</Text>
               </TouchableOpacity>
-              <TouchableOpacity onPress={() => scrollToSection("whoWeServeSection")}>
+              {/* <TouchableOpacity onPress={() => scrollToSection("whoWeServeSection")}>
                 <Text style={styles.navText}>Who We Serve</Text>
               </TouchableOpacity> */}
               <TouchableOpacity
@@ -168,7 +148,7 @@ export default function LandingPage() {
                   }
                 }}
               >
-                {/* <Text style={styles.signupText}>Sign Up</Text> */}
+                <Text style={styles.signupText}>Sign Up</Text>
               </TouchableOpacity>
               <TouchableOpacity
                 onPress={() => {
@@ -181,27 +161,21 @@ export default function LandingPage() {
               >
                 <Text style={styles.loginButton}>Login</Text>
               </TouchableOpacity>
-              {/* <TouchableOpacity onPress={() => router.push("/(auth)/signup")}>
-                <Text style={styles.signupText}>Sign Up</Text>
-              </TouchableOpacity>
-              <TouchableOpacity onPress={() => router.push("/(auth)/login")}>
-                <Text style={styles.loginButton}>Login</Text>
-              </TouchableOpacity> */}
             </View>
           )}
         </View>
 
-        {/* {isMobile && menuOpen && (
-          <View style={styles.mobileMenu}> */}
-            {/* <TouchableOpacity
+        {isMobile && menuOpen && (
+          <View style={styles.mobileMenu}>
+            <TouchableOpacity
               onPress={() => {
-                scrollToSection("whatWeDoSection");
+                scrollToSection("aboutSection");
                 setMenuOpen(false);
               }}
             >
-              <Text style={styles.mobileMenuItem}>What We Do</Text>
+              <Text style={styles.mobileMenuItem}>About</Text>
             </TouchableOpacity>
-            <TouchableOpacity
+            {/* <TouchableOpacity
               onPress={() => {
                 scrollToSection("whoWeServeSection");
                 setMenuOpen(false);
@@ -216,8 +190,8 @@ export default function LandingPage() {
               }}
             >
               <Text style={styles.mobileMenuItem}>Log In</Text>
-            </TouchableOpacity> */}
-            {/* <TouchableOpacity
+            </TouchableOpacity>
+            <TouchableOpacity
               onPress={() => {
                 router.push("/(auth)/signup");
                 setMenuOpen(false);
@@ -225,14 +199,14 @@ export default function LandingPage() {
             >
               <Text style={styles.mobileMenuSignup}>Sign Up</Text>
             </TouchableOpacity> */}
-          {/* </View>
-        )} */}
+          </View>
+        )}
       </View>
 
       <ScrollView ref={scrollViewRef} style={{ flex: 1 }}>
       <View nativeID="heroSection" style={[styles.section, styles.hero]}>
         <Text style={styles.heroTitle}>
-            The Professional Community{"\n"}for Real Estate Development
+            The Professional Community{"\n"}for Real Estate Developers
           </Text>
 
           <Text style={styles.heroSubtitle}>
@@ -275,38 +249,32 @@ export default function LandingPage() {
 
         </View>
 
-        {/* <View id="whatWeDoSection" style={styles.section}>
-          <Text style={styles.sectionTitle}>What We Do</Text>
+        <View id="aboutSection" style={styles.section}>
+          <Text style={styles.sectionTitle}>Our Platform</Text>
           <View style={styles.cardGrid}>
             <View style={styles.card}>
-              <Ionicons name="trending-up-outline" size={32} color="#DC3545" style={styles.icon} />
-              <Text style={styles.cardTitle}>Feature One</Text>
+              <Ionicons name="book-outline" size={iconSize} color="#FFD21F" style={styles.icon} />
+              <Text style={styles.cardTitle}>LEARN</Text>
               <Text style={styles.cardText}>
-                Placeholder text about what Placemaker does. Replace with real feature description.
+                Real estate development during live online learning sessions
               </Text>
             </View>
             <View style={styles.card}>
-              <Ionicons name="construct-outline" size={32} color="#06B6D4" style={styles.icon} />
-              <Text style={styles.cardTitle}>Feature Two</Text>
+              <Ionicons name="cube-outline" size={iconSize} color="#FFD21F" style={styles.icon} />
+              <Text style={styles.cardTitle}>BUILD</Text>
               <Text style={styles.cardText}>
-                Another placeholder description for what we do. This could highlight collaboration or
-                learning.
+                Your career and portfolio alongside supportive peers
               </Text>
             </View>
             <View style={styles.card}>
-              <Ionicons
-                name="shield-checkmark-outline"
-                size={32}
-                color="#F97316"
-                style={styles.icon}
-              />
-              <Text style={styles.cardTitle}>Feature Three</Text>
+              <Ionicons name="people-outline" size={iconSize} color="#FFD21F" style={styles.icon} />
+              <Text style={styles.cardTitle}>CONNECT</Text>
               <Text style={styles.cardText}>
-                More placeholder text about tools, services, or opportunities that Placemaker offers.
+                With valuable contacts through local groups and in-person events
               </Text>
             </View>
           </View>
-        </View> */}
+        </View>
 
         {/* <View id="whoWeServeSection" style={styles.section}>
           <Text style={styles.sectionTitle}>Who We Serve</Text>
@@ -395,7 +363,7 @@ const styles = StyleSheet.create({
   },
   signupText: { 
     color: "#ffd21f", 
-    fontSize: 20 
+    fontSize: 20, 
   },
   loginButton: {
     color: "#000",
@@ -411,26 +379,20 @@ const styles = StyleSheet.create({
     color: "#fff" 
   },
   mobileMenu: {
-    backgroundColor: "#0d0d0d",
-    // paddingVertical: 4,
+    backgroundColor: "#1a1a1a",
     paddingHorizontal: 16,
-    borderTopWidth: 1,
-    borderTopColor: "#333",
+    borderRadius: 8,
   },
   mobileMenuItem: {
     color: "#fff",
     fontWeight: "600",
-    fontSize: 18,
-    paddingVertical: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: "#333",
+    fontSize: 20,
+    paddingVertical: 16,
   },
   mobileMenuSignup: {
-    // backgroundColor: "#ffd21f",
     color: "#ffd21f",
     fontWeight: "600",
     fontSize: 18,
-    // textAlign: "center",
     borderRadius: 6,
     paddingVertical: 12,
     marginBottom: 4,
@@ -442,14 +404,14 @@ const styles = StyleSheet.create({
     padding: isMobile ? 20 : 100,
   },
   heroTitle: {
-    fontSize: isMobile ? 28 : 60,
+    fontSize: isMobile ? 32 : 60,
     fontWeight: "bold",
     color: "#fff",
     textAlign: "center",
     marginBottom: 24,
   },
   heroSubtitle: {
-    fontSize: isMobile ? 16 : 24,
+    fontSize: isMobile ? 18 : 24,
     color: "#ccc",
     textAlign: "center",
     marginBottom: windowWidth > 1024 ? 32 : 28,
@@ -500,10 +462,10 @@ const styles = StyleSheet.create({
     alignItems: "center" 
   },
   sectionTitle: { 
-    fontSize: 32, 
+    fontSize: windowWidth > 768 ? 40 : 32, 
     fontWeight: "bold", 
     color: "#fff", 
-    marginBottom: 32 
+    marginBottom: windowWidth > 768 ? 40 : 16 
   },
   cardGrid: {
     flexDirection: windowWidth > 768 ? "row" : "column",
@@ -511,26 +473,27 @@ const styles = StyleSheet.create({
     gap: 20,
     flexWrap: "wrap",
     maxWidth: 1000,
+    marginBottom: windowWidth > 768 ? 40 : 0,
   },
   card: {
-    backgroundColor: "#111",
     borderRadius: 12,
-    padding: 20,
+    padding: windowWidth > 768 ? 32 : 20,
     flex: 1,
     minWidth: windowWidth > 768 ? 280 : "100%",
     maxWidth: 320,
     ...cardShadow,
+    borderWidth: 2,
+    borderColor: "rgba(255,255,255,0.12)",
   },
   cardTitle: { 
-    fontSize: 20, 
+    fontSize: windowWidth > 768 ? 28 : 24, 
     fontWeight: "bold", 
     color: "#fff", 
-    marginBottom: 10 
+    marginBottom: windowWidth > 768 ? 16 : 8, 
   },
   cardText: { 
-    fontSize: 16, 
+    fontSize: windowWidth > 768 ? 24 : 20, 
     color: "#aaa", 
-    lineHeight: 22 
   },
   footer: { 
     padding: 20, 
@@ -552,6 +515,6 @@ const styles = StyleSheet.create({
     zIndex: 1,
   },  
   icon: { 
-    marginBottom: 12 
+    marginBottom: windowWidth > 768 ? 12 : 8, 
   },
 });

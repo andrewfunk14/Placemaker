@@ -192,7 +192,7 @@ const Signup = () => {
                 disabled={isLoading}
               >
                 <Text style={s.primaryBtnText}>
-                  {isLoading ? "Signing up..." : "Sign Up"}
+                  {isLoading ? "Signing up..." : "Create Account"}
                 </Text>
               </TouchableOpacity>
   
