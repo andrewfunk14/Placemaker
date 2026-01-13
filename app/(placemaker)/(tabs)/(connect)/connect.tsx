@@ -37,12 +37,12 @@ export default function ConnectScreen() {
   const { matches } = useMatchmaking(userId);
 
   useEffect(() => {
-    if (userId) dispatch(fetchMyGroups({ userId, roles }));
+    if (userId) dispatch(fetchMyGroups({ roles }));
   }, [userId, roles]);
 
   useFocusEffect(
     useCallback(() => {
-      if (userId) dispatch(fetchMyGroups({ userId, roles }));
+      if (userId) dispatch(fetchMyGroups({ roles }));
     }, [userId, roles])
   );
 
@@ -91,18 +91,6 @@ export default function ConnectScreen() {
                   />
                 </TouchableOpacity>
               )}
-
-              {/* {(isAdmin || g.leader_id === userId) && (
-                <TouchableOpacity
-                  style={styles.headerSmallFab}
-                  onPress={() => {
-                    setAddMemberGroup(g);
-                    setShowAddMemberModal(true);
-                  }}
-                >
-                  <Text style={styles.headerSmallFabText}>＋</Text>
-                </TouchableOpacity>
-              )} */}
             </View>
           </TouchableOpacity>
         ))}
@@ -178,7 +166,7 @@ export default function ConnectScreen() {
           visible={showCreateModal}
           onClose={() => {
             setShowCreateModal(false);
-            if (userId) dispatch(fetchMyGroups({ userId, roles }));
+            if (userId) dispatch(fetchMyGroups({ roles }));
           }}
         />
       )}

@@ -35,21 +35,49 @@ const initialState: GroupsState = {
 
 export const fetchMyGroups = createAsyncThunk(
   "groups/fetchMyGroups",
-  async ({ userId, roles }: { userId: string; roles: string[] }) => {
+  async ({ roles }: { roles: string[] }) => {
     const isAdmin = roles.includes("admin");
 
+    // 🔐 ADMINS: direct groups query
     if (isAdmin) {
-      const { data } = await supabase.from("groups").select("*").order("name");
+      const { data, error } = await supabase
+        .from("groups")
+        .select("*")
+        .order("name");
+
+      if (error) throw error;
       return data ?? [];
     }
 
-    const { data } = await supabase
-      .from("groups")
-      .select("*, group_members!inner(user_id)")
-      .eq("group_members.user_id", userId)
-      .order("name");
+    // 👥 MEMBERS + LEADERS: membership-first query
+    const { data, error } = await supabase
+      .from("group_members")
+      .select(`
+        role,
+        groups (
+          id,
+          name,
+          created_by,
+          leader_id,
+          created_at,
+          updated_at
+        )
+      `)
+      .order("created_at");
 
-    return data ?? [];
+    if (error) throw error;
+
+    // ✅ Deduplicate groups by ID (critical)
+    const unique = new Map<string, Group>();
+
+    (data ?? []).forEach((row: any) => {
+      const g = row.groups;
+      if (g?.id) {
+        unique.set(g.id, g);
+      }
+    });
+
+    return Array.from(unique.values());
   }
 );
 
@@ -103,26 +131,35 @@ export const createGroup = createAsyncThunk(
   }
 );
 
+
 export const inviteUserToGroup = createAsyncThunk(
   "groups/inviteUserToGroup",
-  async ({
-    groupId,
-    userId,
-    role = "member",
-  }: {
-    groupId: string;
-    userId: string;
-    role?: "member" | "leader" | "admin";
-  }) => {
-    const { data } = await supabase
+  async (
+    {
+      groupId,
+      userId,
+      role = "member",
+    }: {
+      groupId: string;
+      userId: string;
+      role?: "member" | "leader" | "admin";
+    },
+    { rejectWithValue }
+  ) => {
+    const { data, error } = await supabase
       .from("group_members")
       .insert({ group_id: groupId, user_id: userId, role })
       .select("*")
       .single();
 
+    if (error || !data) {
+      return rejectWithValue(error?.message ?? "Failed to add member");
+    }
+
     return data as GroupMember;
   }
 );
+
 
 const groupsSlice = createSlice({
   name: "groups",
@@ -153,11 +190,18 @@ const groupsSlice = createSlice({
 
       .addCase(inviteUserToGroup.fulfilled, (s, a) => {
         const m = a.payload;
+        if (!m) return;
+      
         const arr =
           s.membersByGroupId[m.group_id] ??
           (s.membersByGroupId[m.group_id] = []);
+      
         arr.push(m);
-      });
+      })
+
+      .addCase(inviteUserToGroup.rejected, (s, a) => {
+        s.error = a.payload as string;
+      });      
   },
 });
 
