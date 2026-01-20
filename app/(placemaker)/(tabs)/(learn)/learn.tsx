@@ -102,6 +102,7 @@ export default function LearnScreen() {
           style={styles.search}
           placeholder="Search Resources"
           placeholderTextColor={colors.placeholderText}
+          keyboardAppearance="dark"
           value={search}
           onChangeText={setSearch}
         />

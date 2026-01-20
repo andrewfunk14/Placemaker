@@ -125,7 +125,7 @@ export default function AvatarManager({
 
           {/* "Edit" overlay */}
           {inModal && (
-            <View style={styles.avatarOverlay} pointerEvents="none">
+            <View style={styles.avatarOverlay}>
               <Text style={styles.avatarOverlayText}>Edit</Text>
             </View>
           )}

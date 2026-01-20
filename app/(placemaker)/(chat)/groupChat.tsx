@@ -114,7 +114,7 @@ export default function GroupChat({ groupId }: GroupChatProps) {
       <KeyboardAvoidingView
         style={{ flex: 1 }}
         behavior={Platform.OS === "ios" ? "padding" : undefined}
-        keyboardVerticalOffset={Platform.OS === "ios" ? 80 : 0}
+        keyboardVerticalOffset={Platform.OS === "ios" ? 88 : 0}
       >
           
           <ScrollView
@@ -181,8 +181,17 @@ export default function GroupChat({ groupId }: GroupChatProps) {
               onChangeText={setText}
               placeholder="Type a message…"
               placeholderTextColor={colors.placeholderText}
-              style={styles.messageInput}
               keyboardAppearance="dark"
+              style={[
+                styles.messageInput,
+                {
+                  color: "#fff",
+                  borderWidth: 1,
+                  borderColor: colors.translucentBorder,
+                  borderRadius: 8,
+                  paddingHorizontal: 12,
+                },
+              ]}                  
               onKeyPress={(e) => {
                 if (Platform.OS === "web") {
                   const shift = (e as any).shiftKey;

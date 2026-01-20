@@ -27,6 +27,7 @@ export default function WebTime({ startTime, setStartTime }: Props) {
     <View style={[styles.center]}>
       <input
         type="time"
+        step={300}
         className="pm-dt"
         value={startTime ? `${pad(startTime.h)}:${pad(startTime.m)}` : ""}
         onChange={handleTimeChange}
@@ -36,3 +37,4 @@ export default function WebTime({ startTime, setStartTime }: Props) {
     </View>
   );
 }
+

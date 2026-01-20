@@ -1,6 +1,6 @@
 // app/(tabs)/(connect)/connect.tsx
 import React, { useEffect, useState, useCallback } from "react";
-import { View, Text, TouchableOpacity, ScrollView, Image } from "react-native";
+import { View, Text, TouchableOpacity, ScrollView, Image, Platform } from "react-native";
 import { useAppDispatch, useAppSelector } from "../../../../store/hooks/hooks";
 import { fetchMyGroups, fetchGroupMembers } from "../../../../store/slices/groupsSlice";
 import { connectStyles as styles } from "../../../../styles/connectStyles";
@@ -60,9 +60,16 @@ export default function ConnectScreen() {
           <TouchableOpacity
             key={g.id}
             style={styles.groupCard}
-            onPress={() =>
-              router.push(`/(placemaker)/(chat)/chat?groupId=${g.id}`)
-            }
+            onPress={() => {
+              if (Platform.OS === "web") {
+                (document.activeElement as HTMLElement | null)?.blur();
+              }
+            
+              router.push(`/(placemaker)/(chat)/chat?groupId=${g.id}`);
+            }}            
+            // onPress={() =>
+            //   router.push(`/(placemaker)/(chat)/chat?groupId=${g.id}`)
+            // }
           >
             <View style={styles.groupCardHeader}>
               <Text style={styles.groupCardTitle}>{g.name}</Text>
@@ -104,9 +111,16 @@ export default function ConnectScreen() {
                 key={m.id}
                 style={styles.matchCard}
                 activeOpacity={0.8}
-                onPress={() =>
+                onPress={() => {
+                  if (Platform.OS === "web") {
+                    (document.activeElement as HTMLElement | null)?.blur();
+                  }
+                
                   router.push(`/(placemaker)/(chat)/dm?userId=${m.id}`)
-                }
+                }}    
+                // onPress={() =>
+                  // router.push(`/(placemaker)/(chat)/dm?userId=${m.id}`)
+                // }
               >
                 {/* LEFT SIDE */}
                 <View style={styles.matchLeft}>

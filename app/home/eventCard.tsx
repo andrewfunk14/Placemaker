@@ -85,7 +85,7 @@ export default function EventCard({
           <Pencil color={"#000"} size={28} strokeWidth={2.5}/>
         </TouchableOpacity>
       ) : (
-        <View style={styles.creatorTopRightWrap} pointerEvents="none">
+        <View style={styles.creatorTopRightWrap}>
           {avatarUrl ? (
             <Image
               source={{ uri: avatarUrl }}

@@ -1,5 +1,6 @@
 // styles/buildStyles.ts
 import { StyleSheet, Platform } from "react-native";
+import { cardShadow } from "../styles/shadow";
 
 export const colors = {
   backgroundDark: "#0d0d0d",
@@ -30,7 +31,7 @@ export const buildStyles = StyleSheet.create({
   },
   searchRow: {
     paddingHorizontal: webPad,
-    marginBottom: 12,
+    marginBottom: Platform.OS === "web" ? 8 : 12,
   },
   search: {
     height: 44,
@@ -90,10 +91,8 @@ export const buildStyles = StyleSheet.create({
     backgroundColor: colors.accent,
     alignItems: "center",
     justifyContent: "center",
-    shadowColor: "#000",
-    shadowOpacity: 0.35,
-    shadowRadius: 8,
     elevation: 6,
+    ...cardShadow,
   },
   fabPlus: {
     fontSize: 32,
@@ -135,6 +134,7 @@ export const buildStyles = StyleSheet.create({
     width: 50,
     height: 50,
     borderRadius: 25,
+    resizeMode: "cover",
   },
   projectAvatarFallback: {
     width: 50,

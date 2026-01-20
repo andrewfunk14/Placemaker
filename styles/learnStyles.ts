@@ -1,5 +1,6 @@
 // store/styles/learnStyles.ts
 import { StyleSheet, Platform } from "react-native";
+import { cardShadow } from "../styles/shadow";
 
 export const colors = {
   backgroundDark: "#0d0d0d",
@@ -82,10 +83,8 @@ export const learnStyles = StyleSheet.create({
     backgroundColor: colors.accent,
     justifyContent: "center",
     alignItems: "center",
-    shadowColor: "#000",
-    shadowOpacity: 0.35,
-    shadowRadius: 8,
     elevation: 6,
+    ...cardShadow,
   },
   fabPlus: {
     fontSize: 32,
@@ -132,6 +131,7 @@ export const learnStyles = StyleSheet.create({
     position: "absolute",
     top: 12,
     right: 12,
+    pointerEvents: "none"
   },
   creatorTopRightAvatar: {
     width: 56,

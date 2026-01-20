@@ -52,7 +52,7 @@ export default function ProjectCard({
                 <Image
                   source={{ uri: avatarUrl }}
                   style={styles.projectAvatarImage}
-                  resizeMode="cover"
+                  // resizeMode="cover"
                 />
               ) : (
                 <View style={styles.projectAvatarFallback}>

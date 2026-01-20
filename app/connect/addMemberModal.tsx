@@ -120,8 +120,8 @@ export default function AddMemberModal({
       >
         <View
           style={{
-            paddingHorizontal: 18,
-            paddingTop: 14,
+            paddingHorizontal: 12,
+            paddingTop: 12,
             paddingBottom: 4,
           }}
         >
@@ -138,7 +138,7 @@ export default function AddMemberModal({
               borderRadius: 12,
               fontSize: 16,
               borderWidth: 1,
-              borderColor: "#333",
+              borderColor: "#fff",
             }}
           />
         </View>

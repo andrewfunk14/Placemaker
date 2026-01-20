@@ -118,7 +118,7 @@ export default function DirectMessageChat({ partnerId }: { partnerId: string }) 
     <KeyboardAvoidingView
       style={{ flex: 1 }}
       behavior={Platform.OS === "ios" ? "padding" : undefined}
-      keyboardVerticalOffset={Platform.OS === "ios" ? 80 : 0}
+      keyboardVerticalOffset={Platform.OS === "ios" ? 88 : 0}
     >
       <ScrollView
         ref={scrollRef}
@@ -147,11 +147,6 @@ export default function DirectMessageChat({ partnerId }: { partnerId: string }) 
                   { justifyContent: mine ? "flex-end" : "flex-start" },
                 ]}
               >
-                {/* Avatar only for the other person */}
-                {!mine && partner?.avatar_url && (
-                  <Image source={{ uri: partner.avatar_url }} style={styles.messageAvatar} />
-                )}
-
                 <View
                   style={[
                     styles.messageBubble,
@@ -189,7 +184,16 @@ export default function DirectMessageChat({ partnerId }: { partnerId: string }) 
           placeholder="Type a message…"
           placeholderTextColor={colors.placeholderText}
           keyboardAppearance="dark"
-          style={[styles.messageInput, { color: "#fff" }]}
+          style={[
+            styles.messageInput,
+            {
+              color: "#fff",
+              borderWidth: 1,
+              borderColor: colors.translucentBorder,
+              borderRadius: 8,
+              paddingHorizontal: 12,
+            },
+          ]}          
           onKeyPress={(e) => {
             if (Platform.OS === "web") {
               if (e.nativeEvent.key === "Enter" && !(e as any).shiftKey) {

@@ -86,6 +86,7 @@ export default function BuildScreen() {
           style={styles.search}
           placeholder="Search Projects"
           placeholderTextColor="#a0a0a0"
+          keyboardAppearance="dark"
           value={search}
           onChangeText={setSearch}
         />

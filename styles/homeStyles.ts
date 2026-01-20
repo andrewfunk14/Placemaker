@@ -1,5 +1,6 @@
 // styles/homeStyles.ts
 import { Platform, StyleSheet } from "react-native";
+import { cardShadow } from "../styles/shadow";
 
 export const colors = {
   backgroundDark: "#0d0d0d",
@@ -86,6 +87,7 @@ export const styles = StyleSheet.create({
     position: "absolute",
     top: 12,
     right: 12,
+    pointerEvents: "box-none",
   },
   creatorTopRightAvatar: {
     width: 56,
@@ -175,10 +177,8 @@ export const styles = StyleSheet.create({
     backgroundColor: colors.accent,
     alignItems: "center",
     justifyContent: "center",
-    shadowColor: "#000",
-    shadowOpacity: 0.35,
-    shadowRadius: 8,
     elevation: 6,
+    ...cardShadow,
   },
   fabPlus: {
     fontSize: 32,
@@ -277,6 +277,10 @@ export const styles = StyleSheet.create({
     paddingHorizontal: 16, 
     zIndex: 2 
   },
+  eventModalScrollContent: {
+    flexGrow: 1,
+    justifyContent: "center",
+  },  
   modalTitleText: {
     color: colors.accent,
     textAlign: "center",

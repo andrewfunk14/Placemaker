@@ -98,7 +98,7 @@ export default function ResourceCard({ resource, user }: ResourceCardProps) {
           <Pencil color={"#000"} size={28} strokeWidth={2.5}/>
         </TouchableOpacity>
       ) : isAdmin ? (
-        <View style={styles.creatorTopRightWrap} pointerEvents="none">
+        <View style={styles.creatorTopRightWrap}>
           {typeof resource.uploaded_by === "object" && resource.uploaded_by?.avatar_url ? (
             <Image
               source={{ uri: resource.uploaded_by.avatar_url }}
@@ -112,7 +112,7 @@ export default function ResourceCard({ resource, user }: ResourceCardProps) {
           )}
         </View>    
       ) : (
-        <View style={styles.creatorTopRightWrap} pointerEvents="none">
+        <View style={styles.creatorTopRightWrap}>
           {typeof resource.uploaded_by === "object" && resource.uploaded_by?.avatar_url ? (
             <Image
               source={{ uri: resource.uploaded_by.avatar_url }}

@@ -9,7 +9,7 @@ import {
   Pressable,
   KeyboardAvoidingView,
   Modal,
-  InputAccessoryView,
+  ScrollView,
   Keyboard,
 } from "react-native";
 import { useAppDispatch } from "../../../store/hooks/hooks";
@@ -231,13 +231,23 @@ export default function NewEventModal({ visible, onClose, event, currentUserId }
 
   return (
     <Modal visible={visible} animationType="fade" transparent onRequestClose={close}>
-      <View style={styles.modalRoot}>
-        <Pressable style={styles.backdrop} onPress={close} />
-        <WebStyles />
+      <Pressable
+        style={styles.backdrop}
+        onPress={() => {
+          Keyboard.dismiss();
+          close();
+        }}
+      />        
+      <WebStyles />
         <KeyboardAvoidingView
           behavior={Platform.OS === "ios" ? "padding" : undefined}
           style={styles.eventModalCardWrap}
         >
+          <ScrollView
+            contentContainerStyle={styles.eventModalScrollContent}
+            keyboardShouldPersistTaps="handled"
+          >
+
           <View style={styles.eventModalCard}>
             <Text style={styles.modalTitleText}>
               {mode === "edit" ? "Edit Event" : "New Event"}
@@ -311,29 +321,8 @@ export default function NewEventModal({ visible, onClose, event, currentUserId }
               multiline
               numberOfLines={4}
               textAlignVertical="top"
-              inputAccessoryViewID="done-bar"
               keyboardAppearance="dark"
             />
-
-            {Platform.OS === "ios" && (
-              <InputAccessoryView nativeID="done-bar">
-                <View
-                  style={{
-                    backgroundColor: "#222",
-                    padding: 12,
-                    borderTopWidth: 0.2,
-                    borderTopColor: "#0d0d0d",
-                    alignItems: "flex-end",
-                  }}
-                >
-                  <TouchableOpacity onPress={() => Keyboard.dismiss()}>
-                    <Text style={{ color: "#2e78b7", fontWeight: "600", fontSize: 20 }}>
-                      Done
-                    </Text>
-                  </TouchableOpacity>
-                </View>
-              </InputAccessoryView>
-            )}
 
             {/* Actions */}
             <View style={styles.row}>
@@ -349,8 +338,9 @@ export default function NewEventModal({ visible, onClose, event, currentUserId }
               </TouchableOpacity>
             </View>
           </View>
-        </KeyboardAvoidingView>
-      </View>
+        </ScrollView>
+      </KeyboardAvoidingView>
     </Modal>
   );
 }
+

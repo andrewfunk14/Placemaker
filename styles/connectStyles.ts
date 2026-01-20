@@ -1,5 +1,6 @@
 // styles/connectStyles.ts
 import { StyleSheet, Platform } from "react-native";
+import { cardShadow } from "../styles/shadow";
 
 export const colors = {
   backgroundDark: "#0d0d0d",
@@ -153,10 +154,8 @@ export const connectStyles = StyleSheet.create({
     backgroundColor: colors.accent,
     alignItems: "center",
     justifyContent: "center",
-    shadowColor: "#000",
-    shadowOpacity: 0.35,
-    shadowRadius: 8,
     elevation: 6,
+    ...cardShadow,
   },
   fabPlus: {
     fontSize: 32,
@@ -237,6 +236,7 @@ export const connectStyles = StyleSheet.create({
     zIndex: 9999,
     elevation: 20,
     overflow: "hidden",
+    pointerEvents: "box-none",
   },
   dropdownList: {
     flex: 1,
@@ -399,18 +399,21 @@ export const connectStyles = StyleSheet.create({
     flex: 1,
     backgroundColor: colors.translucentLight,
     color: colors.textPrimary,
-    padding: 10,
+    padding: 12,
     borderRadius: 8,
   },
   sendButton: {
     marginLeft: 8,
     paddingHorizontal: 16,
-    paddingVertical: 10,
+    paddingVertical: 8,
     backgroundColor: colors.accent,
     borderRadius: 8,
+    justifyContent: "center",
+    alignItems: "center",
   },
   sendButtonText: {
     color: "#000",
     fontWeight: "700",
+    fontSize: 16,
   },
 });

@@ -1,5 +1,6 @@
 // styles/profileStyles.ts
 import { Platform, StyleSheet } from "react-native";
+import { cardShadow } from "../styles/shadow";
 
 export const colors = {
   backgroundDark: "#0d0d0d",
@@ -158,6 +159,7 @@ export const profileStyles = StyleSheet.create({
     backgroundColor: "rgba(0,0,0,0.6)",
     justifyContent: "center",
     alignItems: "center",
+    pointerEvents: "none"
   },
   avatarOverlayText: {
     color: "#fff",
@@ -289,10 +291,8 @@ export const profileStyles = StyleSheet.create({
     backgroundColor: colors.backgroundMid,
     borderRadius: 16,
     borderWidth: 1,
-    shadowColor: "#000",
-    shadowOpacity: 0.4,
-    shadowRadius: 12,
     elevation: 8,
+    ...cardShadow,
   },
   dropdownItem: {
     paddingVertical: 14,

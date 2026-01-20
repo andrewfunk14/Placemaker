@@ -153,7 +153,6 @@ export default function CreateGroupModal({
             {showDropdown && (
               <View
                 style={styles.dropdownPanel}
-                pointerEvents="box-none"
               >
                 <ScrollView
                   style={styles.dropdownList}

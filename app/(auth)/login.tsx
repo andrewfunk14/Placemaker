@@ -66,8 +66,16 @@ const Login = () => {
           await setRoles(profileData.roles);
         }
 
-        router.push('/(placemaker)/home');
-    }
+        // ✅ FIX: clear focus BEFORE navigation
+        Keyboard.dismiss();
+
+        if (Platform.OS === "web") {
+          (document.activeElement as HTMLElement | null)?.blur();
+        }
+
+        // Use replace to avoid back-nav to login
+        router.replace("/(placemaker)/home");
+      }
     } catch (error: any) {
       setErrorMessage("Email or Password is incorrect");
     } finally {
