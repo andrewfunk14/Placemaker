@@ -358,7 +358,7 @@ const styles = StyleSheet.create({
     alignItems: "center" 
   },
   navText: { 
-    color: "#fff", 
+    color: "#f5f5f5", 
     fontSize: 20 
   },
   signupText: { 
@@ -376,7 +376,7 @@ const styles = StyleSheet.create({
   },
   menuIcon: { 
     fontSize: 28, 
-    color: "#fff" 
+    color: "#f5f5f5" 
   },
   mobileMenu: {
     backgroundColor: "#1a1a1a",
@@ -384,7 +384,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
   },
   mobileMenuItem: {
-    color: "#fff",
+    color: "#f5f5f5",
     fontWeight: "600",
     fontSize: 20,
     paddingVertical: 16,
@@ -406,7 +406,7 @@ const styles = StyleSheet.create({
   heroTitle: {
     fontSize: isMobile ? 32 : 60,
     fontWeight: "bold",
-    color: "#fff",
+    color: "#f5f5f5",
     textAlign: "center",
     marginBottom: 24,
   },
@@ -425,7 +425,7 @@ const styles = StyleSheet.create({
   input: {
     flex: 1,
     backgroundColor: "rgba(255,255,255,0.1)",
-    color: "#fff",
+    color: "#f5f5f5",
     borderRadius: 6,
     paddingHorizontal: 12,
     paddingVertical: 12,
@@ -464,7 +464,7 @@ const styles = StyleSheet.create({
   sectionTitle: { 
     fontSize: windowWidth > 768 ? 40 : 32, 
     fontWeight: "bold", 
-    color: "#fff", 
+    color: "#f5f5f5", 
     marginBottom: windowWidth > 768 ? 40 : 16 
   },
   cardGrid: {
@@ -488,7 +488,7 @@ const styles = StyleSheet.create({
   cardTitle: { 
     fontSize: windowWidth > 768 ? 28 : 24, 
     fontWeight: "bold", 
-    color: "#fff", 
+    color: "#f5f5f5", 
     marginBottom: windowWidth > 768 ? 16 : 8, 
   },
   cardText: { 

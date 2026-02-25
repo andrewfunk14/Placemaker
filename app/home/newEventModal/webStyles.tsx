@@ -37,7 +37,7 @@ input.pm-dt[value=""]::-webkit-datetime-edit {
 
 /* ✅ Always show readable gray selected text when filled */
 input.pm-dt:not([value=""])::-webkit-datetime-edit {
-  color: #ffffff !important;
+  color: #f5f5f5 !important;
 }
 
 /* ✅ Custom placeholder */

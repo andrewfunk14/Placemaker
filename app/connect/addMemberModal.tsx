@@ -132,13 +132,13 @@ export default function AddMemberModal({
             onChangeText={setSearch}
             style={{
               backgroundColor: "#1c1c1e",
-              color: "#fff",
+              color: "#f5f5f5",
               paddingHorizontal: 14,
               paddingVertical: 10,
               borderRadius: 12,
               fontSize: 16,
               borderWidth: 1,
-              borderColor: "#fff",
+              borderColor: "#f5f5f5",
             }}
           />
         </View>

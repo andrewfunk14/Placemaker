@@ -156,7 +156,7 @@ export default function ConnectScreen() {
                   <Send
                     size={28}
                     strokeWidth={2.5}
-                    color={styles.matchMessageIcon?.color ?? "#fff"}
+                    color={styles.matchMessageIcon?.color ?? "#f5f5f5"}
                   />
                 </TouchableOpacity>
               </TouchableOpacity>

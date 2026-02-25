@@ -133,7 +133,7 @@ export default function AvatarManager({
           {/* Uploading spinner */}
           {avatarUploading && (
             <View style={styles.avatarLoadingOverlay}>
-              <ActivityIndicator color="#fff" />
+              <ActivityIndicator color="#f5f5f5" />
             </View>
           )}
         </View>

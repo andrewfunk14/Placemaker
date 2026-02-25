@@ -53,7 +53,7 @@ export default function ProfileTypeDropdown({
         >
           {value && value.trim() !== "" ? value : "Select Role"}
         </Text>
-        <ChevronDown size={22} color="#fff" strokeWidth={2} />
+        <ChevronDown size={22} color="#f5f5f5" strokeWidth={2} />
       </TouchableOpacity>
 
       <Modal

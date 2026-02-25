@@ -187,7 +187,7 @@ export default function DirectMessageChat({ partnerId }: { partnerId: string }) 
           style={[
             styles.messageInput,
             {
-              color: "#fff",
+              color: "#f5f5f5",
               borderWidth: 1,
               borderColor: colors.translucentBorder,
               borderRadius: 8,

@@ -71,7 +71,7 @@ const MobileHeader: React.FC<MobileHeaderProps> = ({
       <View style={styles.headerContainer}>
         <View style={styles.leftContainer}>
           <TouchableOpacity onPress={handleBack} style={styles.backButton}>
-            <Ionicons name="chevron-back" size={40} color="#fff" />
+            <Ionicons name="chevron-back" size={40} color="#f5f5f5" />
           </TouchableOpacity>
         </View>
 
@@ -91,7 +91,7 @@ const MobileHeader: React.FC<MobileHeaderProps> = ({
             {profileImageUrl ? (
               <Image source={{ uri: profileImageUrl }} style={styles.profileImage} />
             ) : (
-              <Ionicons name="person-circle-outline" size={50} color="#fff" />
+              <Ionicons name="person-circle-outline" size={50} color="#f5f5f5" />
             )}
           </TouchableOpacity>
         </View>

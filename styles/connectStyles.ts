@@ -6,7 +6,7 @@ export const colors = {
   backgroundDark: "#0d0d0d",
   backgroundMid: "#1a1a1a",
   border: "#ffd21f",
-  textPrimary: "#ffffff",
+  textPrimary: "#f5f5f5",
   textSecondary: "#ccc",
   textMuted: "#cfcfcf",
   placeholderText: "#a0a0a0",
@@ -124,12 +124,12 @@ export const connectStyles = StyleSheet.create({
     justifyContent: "center",
   },
   matchAvatarInitial: {
-    color: "#fff",
+    color: "#f5f5f5",
     fontSize: 24,
     fontWeight: "700",
   },
   matchName: {
-    color: "#fff",
+    color: "#f5f5f5",
     fontSize: 20,
     fontWeight: "600",
     marginBottom: 2,
@@ -195,7 +195,7 @@ export const connectStyles = StyleSheet.create({
     borderRadius: 8,
     paddingHorizontal: 12,
     backgroundColor: colors.backgroundMid,
-    color: "#ffffff",
+    color: "#f5f5f5",
     marginTop: 16,
     marginBottom: 12,
     fontSize: 18,
@@ -335,7 +335,7 @@ export const connectStyles = StyleSheet.create({
     alignItems: "center",
   },
   fallbackText: {
-    color: "#fff",
+    color: "#f5f5f5",
     fontWeight: "600",
     fontSize: 16,
   },  
@@ -359,7 +359,7 @@ export const connectStyles = StyleSheet.create({
   messageText: {
     fontSize: 16,
     marginBottom: 4,
-    color: "#fff",
+    color: "#f5f5f5",
   },
   myMessageTimestamp: {
     color: "#ddd",

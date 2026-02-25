@@ -127,7 +127,7 @@ function NavLink({
 }) {
   return (
     <TouchableOpacity style={[styles.link, active && styles.activeLink]} onPress={onPress}>
-      <Ionicons name={icon} size={28} color={active ? "#FFD21F" : "#fff"} />
+      <Ionicons name={icon} size={28} color={active ? "#FFD21F" : "#f5f5f5"} />
       <Text style={[styles.linkText, active && styles.activeLinkText]}>{label}</Text>
     </TouchableOpacity>
   );
@@ -161,7 +161,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 8 
   },
   linkText: { 
-    color: "#fff", 
+    color: "#f5f5f5", 
     fontSize: 26, 
     marginLeft: 12 
   },

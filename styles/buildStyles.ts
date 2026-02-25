@@ -6,7 +6,7 @@ export const colors = {
   backgroundDark: "#0d0d0d",
   backgroundMid: "#1a1a1a",
   border: "#ffd21f",
-  textPrimary: "#ffffff",
+  textPrimary: "#f5f5f5",
   textSecondary: "#ccc",
   textMuted: "#cfcfcf",
   placeholderText: "#a0a0a0",
@@ -31,7 +31,7 @@ export const buildStyles = StyleSheet.create({
   },
   searchRow: {
     paddingHorizontal: webPad,
-    marginBottom: Platform.OS === "web" ? 8 : 12,
+    // marginBottom: Platform.OS === "web" ? 8 : 12,
   },
   search: {
     height: 44,
@@ -56,6 +56,7 @@ export const buildStyles = StyleSheet.create({
     flexDirection: "row",
     flexWrap: "wrap",
     alignItems: "flex-start",
+    marginTop: Platform.OS === "web" ? 8 : 12,
   },
   gridItem1: {
     flexBasis: "100%",
@@ -253,7 +254,7 @@ export const buildStyles = StyleSheet.create({
   },
   filePreviewName: {
     flex: 1,
-    color: "#fff",
+    color: "#f5f5f5",
     fontSize: 18,
     marginRight: 6,
     maxWidth: 120,
@@ -298,7 +299,7 @@ export const buildStyles = StyleSheet.create({
     borderRadius: 8,
     paddingHorizontal: 12,
     backgroundColor: colors.backgroundMid,
-    color: "#ffffff",
+    color: "#f5f5f5",
     marginBottom: Platform.OS === "web" ? 16 : 12,
     fontSize: 18,
   },

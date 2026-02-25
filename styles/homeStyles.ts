@@ -5,7 +5,7 @@ import { cardShadow } from "../styles/shadow";
 export const colors = {
   backgroundDark: "#0d0d0d",
   backgroundMid: "#1a1a1a",
-  textPrimary: "#ffffff",
+  textPrimary: "#f5f5f5",
   textSecondary: "#ccc",
   textMuted: "#cfcfcf",
   placeholderText: "#a0a0a0",
@@ -28,7 +28,7 @@ export const styles = StyleSheet.create({
   },
   searchRow: {
     paddingHorizontal: webPad,
-    marginBottom: 12,
+    // marginBottom: 12,
   },
   search: {
     height: 44,
@@ -295,7 +295,7 @@ export const styles = StyleSheet.create({
     borderRadius: 8,
     paddingHorizontal: 12,
     backgroundColor: colors.backgroundMid,
-    color: "#ffffff",
+    color: "#f5f5f5",
     marginBottom: 12,
     fontSize: 18,
   },

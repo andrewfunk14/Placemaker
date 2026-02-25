@@ -4,7 +4,7 @@ import { Platform, StyleSheet } from "react-native";
 const colors = {
   bg: "#0d0d0d",
   brand: "#ffd21f",
-  text: "#ffffff",
+  text: "#f5f5f5",
   placeholderText: "#a0a0a0",
   border: "#ffd21f",
   inputBg: "#1c1c1c",

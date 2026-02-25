@@ -8,7 +8,7 @@ export default function ChatLayout() {
         animation: "slide_from_right",
         presentation: "card",
         headerStyle: { backgroundColor: "#1a1a1a" },
-        headerTintColor: "#fff",
+        headerTintColor: "#f5f5f5",
         headerShadowVisible: false,
       }}
     >

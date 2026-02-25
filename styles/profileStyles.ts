@@ -5,7 +5,7 @@ import { cardShadow } from "../styles/shadow";
 export const colors = {
   backgroundDark: "#0d0d0d",
   backgroundMid: "#1a1a1a",
-  textPrimary: "#ffffff",
+  textPrimary: "#f5f5f5",
   textSecondary: "#ccc",
   textMuted: "#cfcfcf",
   placeholderText: "#a0a0a0",
@@ -130,7 +130,7 @@ export const profileStyles = StyleSheet.create({
     letterSpacing: 0.5,
   },
   profileDetailText: {
-    color: "#fff",
+    color: "#f5f5f5",
     fontSize: 16,
     lineHeight: 22,
   },  
@@ -162,7 +162,7 @@ export const profileStyles = StyleSheet.create({
     pointerEvents: "none"
   },
   avatarOverlayText: {
-    color: "#fff",
+    color: "#f5f5f5",
     fontSize: 20,
     fontWeight: "600",
   },
@@ -242,7 +242,7 @@ export const profileStyles = StyleSheet.create({
     borderRadius: 8,
     paddingHorizontal: 12,
     backgroundColor: colors.backgroundMid,
-    color: "#ffffff",
+    color: "#f5f5f5",
     marginTop: 16,
     marginBottom: 12,
     fontSize: 18,
@@ -265,7 +265,7 @@ export const profileStyles = StyleSheet.create({
     borderColor: "gray",
     borderRadius: 8,
     backgroundColor: colors.backgroundMid,
-    color: "#ffffff",
+    color: "#f5f5f5",
     paddingHorizontal: 12,
     flexDirection: "row",
     alignItems: "center",
