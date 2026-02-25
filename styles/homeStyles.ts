@@ -28,7 +28,7 @@ export const styles = StyleSheet.create({
   },
   searchRow: {
     paddingHorizontal: webPad,
-    // marginBottom: 12,
+    marginBottom: 12,
   },
   search: {
     height: 44,

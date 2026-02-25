@@ -56,7 +56,7 @@ export const buildStyles = StyleSheet.create({
     flexDirection: "row",
     flexWrap: "wrap",
     alignItems: "flex-start",
-    marginTop: Platform.OS === "web" ? 8 : 12,
+    marginTop: 4,
   },
   gridItem1: {
     flexBasis: "100%",
@@ -75,6 +75,7 @@ export const buildStyles = StyleSheet.create({
   },
   mobileList: {
     marginHorizontal: 12,
+    marginTop: 12,
     gap: 12,
   },
   errorText: {
