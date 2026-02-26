@@ -1,29 +1,11 @@
 // styles/connectStyles.ts
 import { StyleSheet, Platform } from "react-native";
-import { cardShadow } from "../styles/shadow";
+import { colors, webPad, globalStyles as g } from "./globalStyles";
 
-export const colors = {
-  backgroundDark: "#0d0d0d",
-  backgroundMid: "#1a1a1a",
-  border: "#ffd21f",
-  textPrimary: "#f5f5f5",
-  textSecondary: "#ccc",
-  textMuted: "#cfcfcf",
-  placeholderText: "#a0a0a0",
-  accent: "#ffd21f",
-  danger: "#ff4d4f",
-  success: "#4CAF50",
-  link: "#2e78b7",
-  translucentLight: "rgba(255,255,255,0.06)",
-  translucentBorder: "rgba(255,255,255,0.12)",
-  badgeBg: "rgba(255,210,31,0.15)",
-  modalBackdrop: "rgba(0,0,0,0.6)",
-};
+export { colors };
 
-const webPad = Platform.select({ web: 24, default: 16 }) as number;
-
-export const connectStyles = StyleSheet.create({
-// connect.tsx
+const uniqueStyles = StyleSheet.create({
+  // connect.tsx
   container: {
     flex: 1,
     backgroundColor: colors.backgroundMid,
@@ -33,15 +15,10 @@ export const connectStyles = StyleSheet.create({
   },
   groupsListScroll: {
     flex: 1,
-    // marginTop: 8,
   },
-  // groupsListContent: {
-  //   paddingBottom: 80,
-  // },
   groupCard: {
     borderRadius: 12,
     borderWidth: 1,
-    // borderColor: colors.translucentBorder,
     borderColor: colors.textPrimary,
     marginBottom: 12,
     paddingHorizontal: 0,
@@ -77,17 +54,15 @@ export const connectStyles = StyleSheet.create({
   sectionHeader: {
     color: colors.textPrimary,
     fontSize: 28,
-    textAlign: 'center',
+    textAlign: "center",
     fontWeight: "700",
     marginBottom: 12,
     marginLeft: 4,
   },
   matchCard: {
-    // backgroundColor: "#1f1f1f",
     padding: 12,
     borderRadius: 12,
     borderWidth: 2,
-    // borderColor: colors.accent,
     borderColor: colors.translucentBorder,
     marginBottom: 12,
     flexDirection: "row",
@@ -102,13 +77,9 @@ export const connectStyles = StyleSheet.create({
   matchMessageButton: {
     padding: 12,
     marginLeft: 12,
-    // borderRadius: 999,
-    // backgroundColor: "rgba(255,255,255,0.08)",
-    // alignItems: "center",
-    // justifyContent: "center",
   },
   matchMessageIcon: {
-    color: colors.accent
+    color: colors.accent,
   },
   matchAvatar: {
     width: 50,
@@ -144,25 +115,8 @@ export const connectStyles = StyleSheet.create({
     color: "#bbb",
     fontSize: 16,
   },
-  fab: {
-    position: "absolute",
-    right: 18,
-    bottom: 18,
-    width: 64,
-    height: 64,
-    borderRadius: 9999,
-    backgroundColor: colors.accent,
-    alignItems: "center",
-    justifyContent: "center",
-    elevation: 6,
-    ...cardShadow,
-  },
-  fabPlus: {
-    fontSize: 32,
-    fontWeight: "900",
-    color: "#000",
-  }, 
-// createGroupModal.tsx 
+
+  // createGroupModal.tsx
   modalBackdrop: {
     flex: 1,
     backgroundColor: colors.modalBackdrop,
@@ -204,7 +158,7 @@ export const connectStyles = StyleSheet.create({
     position: "relative",
     width: "100%",
     zIndex: 2000,
-  },  
+  },
   dropdownButton: {
     height: 48,
     borderWidth: 1,
@@ -244,7 +198,7 @@ export const connectStyles = StyleSheet.create({
   userRow: {
     paddingVertical: 10,
     paddingHorizontal: 12,
-    borderRadius: 6,   
+    borderRadius: 6,
   },
   userName: {
     color: colors.textPrimary,
@@ -264,16 +218,6 @@ export const connectStyles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
-  buttonGhost: {
-    backgroundColor: "transparent",
-    borderWidth: 2,
-    borderColor: colors.accent,
-  },
-  buttonGhostText: {
-    color: colors.accent,
-    fontSize: 18,
-    fontWeight: "600",
-  },
   buttonPrimary: {
     borderRadius: 10,
     paddingVertical: 10,
@@ -284,15 +228,20 @@ export const connectStyles = StyleSheet.create({
     color: "#000",
     fontSize: 18,
     fontWeight: "600",
-  },  
-// groupChat.tsx & directMessageChat.tsx
+  },
+  buttonGhostText: {
+    color: colors.accent,
+    fontSize: 18,
+    fontWeight: "600",
+  },
+
+  // groupChat.tsx & directMessageChat.tsx
   messagesList: {
     flex: 1,
   },
   dayHeaderWrapper: {
     flexDirection: "row",
     alignItems: "center",
-    // marginVertical: 20,
   },
   dayHeaderLine: {
     flex: 1,
@@ -338,23 +287,6 @@ export const connectStyles = StyleSheet.create({
     color: "#f5f5f5",
     fontWeight: "600",
     fontSize: 16,
-  },  
-  messageBubble: {
-    maxWidth: "80%",
-    borderRadius: 18,
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    flexShrink: 1,
-  },
-  myMessageBubble: {
-    backgroundColor: "#0A84FF",
-    borderBottomRightRadius: 2,
-    alignSelf: "flex-end",
-  },
-  theirMessageBubble: {
-    backgroundColor: "#2a2a2a",
-    borderBottomLeftRadius: 2,
-    alignSelf: "flex-start",
   },
   messageText: {
     fontSize: 16,
@@ -368,26 +300,26 @@ export const connectStyles = StyleSheet.create({
   theirMessageTimestamp: {
     color: "#ddd",
     alignSelf: "flex-start",
-  },  
+  },
   messageContentBlock: {
     flexShrink: 1,
     paddingTop: 4,
   },
   messageSender: {
-    color: "#ccc",
-    fontSize: 12,
-    marginBottom: 3,
-  },   
+    color: colors.textSecondary,
+    fontSize: 18,
+    fontWeight: 'bold',
+  },
   slackMessageText: {
     color: "#ddd",
     fontSize: 16,
-    lineHeight: 20,
+    lineHeight: 24,
   },
   messageTimestamp: {
-    color: "#888",
-    fontSize: 11,
-    marginTop: 4,
-    alignSelf: "flex-start",
+    color: colors.placeholderText,
+    fontSize: 13,
+    marginTop: 8,
+    alignSelf: 'center',
   },
   messageInputRow: {
     flexDirection: "row",
@@ -417,3 +349,5 @@ export const connectStyles = StyleSheet.create({
     fontSize: 16,
   },
 });
+
+export const connectStyles = { ...g, ...uniqueStyles };

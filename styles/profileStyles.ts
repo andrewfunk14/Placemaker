@@ -1,25 +1,11 @@
 // styles/profileStyles.ts
 import { Platform, StyleSheet } from "react-native";
 import { cardShadow } from "../styles/shadow";
+import { colors, webPad, globalStyles as g } from "./globalStyles";
 
-export const colors = {
-  backgroundDark: "#0d0d0d",
-  backgroundMid: "#1a1a1a",
-  textPrimary: "#f5f5f5",
-  textSecondary: "#ccc",
-  textMuted: "#cfcfcf",
-  placeholderText: "#a0a0a0",
-  accent: "#ffd21f",
-  danger: "#ff4d4f",
-  translucentLight: "rgba(255,255,255,0.06)",
-  translucentBorder: "rgba(255,255,255,0.12)",
-  badgeBg: "rgba(255,210,31,0.15)",
-  modalBackdrop: "rgba(0,0,0,0.6)",
-};
+export { colors };
 
-const webPad = Platform.select({ web: 24, default: 16 }) as number;
-
-export const profileStyles = StyleSheet.create({
+const uniqueStyles = StyleSheet.create({
   container: {
     flexGrow: 1,
     backgroundColor: colors.backgroundMid,
@@ -40,7 +26,6 @@ export const profileStyles = StyleSheet.create({
     width: "100%",
     borderRadius: 16,
     borderWidth: 2,
-    // borderColor: colors.accent,
     borderColor: colors.translucentBorder,
     padding: 16,
     backgroundColor: colors.backgroundMid,
@@ -78,10 +63,7 @@ export const profileStyles = StyleSheet.create({
     zIndex: 10,
     elevation: 10,
     borderRadius: 9999,
-    // backgroundColor: colors.translucentLight,
     backgroundColor: colors.accent,
-    // borderWidth: 1,
-    // borderColor: colors.translucentBorder,
     padding: 16,
     ...(Platform.OS === "web" && { cursor: "pointer" }),
   },
@@ -96,7 +78,7 @@ export const profileStyles = StyleSheet.create({
     fontSize: Platform.OS === "web" ? 24 : 20,
     fontWeight: "600",
     marginBottom: Platform.OS === "web" ? 12 : 0,
-  },  
+  },
   badgeRow: {
     flexDirection: "row",
     flexWrap: "wrap",
@@ -133,7 +115,7 @@ export const profileStyles = StyleSheet.create({
     color: "#f5f5f5",
     fontSize: 16,
     lineHeight: 22,
-  },  
+  },
   roleBadge: {
     borderWidth: 2,
     borderRadius: 12,
@@ -146,7 +128,7 @@ export const profileStyles = StyleSheet.create({
     fontWeight: "600",
     letterSpacing: 0.2,
     textTransform: "capitalize",
-  }, 
+  },
   avatarContainerClickable: {
     ...(Platform.OS === "web" && { cursor: "pointer" }),
   },
@@ -159,7 +141,7 @@ export const profileStyles = StyleSheet.create({
     backgroundColor: "rgba(0,0,0,0.6)",
     justifyContent: "center",
     alignItems: "center",
-    pointerEvents: "none"
+    pointerEvents: "none",
   },
   avatarOverlayText: {
     color: "#f5f5f5",
@@ -246,7 +228,7 @@ export const profileStyles = StyleSheet.create({
     marginTop: 16,
     marginBottom: 12,
     fontSize: 18,
-  },  
+  },
   modalLabel: {
     color: "#a0a0a0",
     fontSize: 14,
@@ -255,7 +237,7 @@ export const profileStyles = StyleSheet.create({
     letterSpacing: 0.5,
     marginTop: 8,
     marginBottom: 8,
-  },  
+  },
   dropdownContainer: {
     width: "100%",
   },
@@ -331,26 +313,17 @@ export const profileStyles = StyleSheet.create({
     color: "#000",
     fontSize: 18,
     fontWeight: "600",
-  },  
-  buttonGhost: {
-    backgroundColor: "transparent",
-    borderWidth: 2,
-    borderColor: colors.accent,
   },
   buttonGhostText: {
     color: colors.accent,
     fontSize: 18,
     fontWeight: "600",
   },
-  modalBackdrop: {
-    ...StyleSheet.absoluteFillObject,
-    backgroundColor: colors.modalBackdrop,
-  },
   modalCardWrap: {
     flex: 1,
     justifyContent: "center",
     paddingHorizontal: 16,
-  },  
+  },
   modalCard: {
     alignSelf: "center",
     width: "100%",
@@ -393,7 +366,8 @@ export const profileStyles = StyleSheet.create({
     alignSelf: "center",
     justifyContent: "center",
     marginBottom: 20,
-  },  
+  },
+
   // Dropdowns
   dropdownFooter: {
     flexDirection: "row",
@@ -437,3 +411,5 @@ export const profileStyles = StyleSheet.create({
     fontWeight: "600",
   },
 });
+
+export const profileStyles = { ...g, ...uniqueStyles };

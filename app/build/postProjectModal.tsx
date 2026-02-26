@@ -14,6 +14,7 @@ import {
 import { ProjectStatus } from "../../store/slices/projectsSlice";
 import { buildStyles as styles } from "../../styles/buildStyles";
 import ProjectFileUpload from "./projectFileUpload";
+import { supabase } from "../../lib/supabaseClient";
 
 const STATUSES: ProjectStatus[] = ["idea", "in progress", "completed"];
 
@@ -88,8 +89,23 @@ export default function PostProjectModal({
     }
   };
 
-  const handleClose = () => {
-    if (!submitting) onClose();
+  const handleClose = async () => {
+    if (submitting) return;
+    if (files.length > 0) {
+      const paths = files
+        .map((url) => {
+          const marker = "/object/public/";
+          const idx = url.indexOf(marker);
+          if (idx === -1) return null;
+          return url.slice(idx + marker.length).split("/").slice(1).join("/");
+        })
+        .filter(Boolean) as string[];
+      if (paths.length > 0) {
+        await supabase.storage.from("projects").remove(paths);
+      }
+    }
+    resetForm();
+    onClose();
   };
 
   const formatStatusLabel = (status: ProjectStatus) => {

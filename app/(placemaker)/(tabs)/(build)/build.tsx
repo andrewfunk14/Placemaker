@@ -13,6 +13,7 @@ import { useAppDispatch, useAppSelector } from "../../../../store/hooks/hooks";
 import {
   fetchProjects,
   createProject,
+  Project,
   ProjectStatus,
 } from "../../../../store/slices/projectsSlice";
 import { useUser } from "../../../userContext";
@@ -63,7 +64,7 @@ export default function BuildScreen() {
     const q = search.trim().toLowerCase();
     if (!q) return projects;
 
-    return projects.filter((project) => {
+    return projects.filter((project: Project) => {
       const title = project.title?.toLowerCase() ?? "";
       const creatorName =
         project.creator?.name?.toLowerCase() ?? "";

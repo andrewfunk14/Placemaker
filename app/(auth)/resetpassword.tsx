@@ -141,14 +141,14 @@ const ResetPassword = () => {
       } else {
         router.replace('/login');
       }
-          } catch (error: any) {
-            if (
-              error.message.includes('New password should be different')
-            ) {
-              setErrorMessage('Your new password must be different from the old one');
-            } else {
-              setErrorMessage('Failed to reset password. Please try again.');
-            }            
+      } catch (error: any) {
+        if (
+          error.message.includes('New password should be different')
+        ) {
+          setErrorMessage('Your new password must be different from the old one');
+        } else {
+          setErrorMessage('Failed to reset password. Please try again.');
+        }            
     } finally {
       setIsLoading(false);
     }
@@ -205,34 +205,46 @@ const ResetPassword = () => {
                 value={confirmPassword}
                 returnKeyType="done"
                 onChangeText={setConfirmPassword}
+                onSubmitEditing={handleResetPassword}
                 keyboardAppearance="dark"
               />
-  
-              <TouchableOpacity
-                style={[s.primaryBtn, isLoading && { opacity: 0.7 }]}
+
+              <Pressable
+                style={(state: any) => [
+                  s.primaryBtn,
+                  state.hovered && { opacity: 0.8 },
+                  state.pressed && { opacity: 0.8 },
+                ]}
                 onPress={handleResetPassword}
                 disabled={isLoading}
               >
                 <Text style={s.primaryBtnText}>
                   {isLoading ? "Resetting..." : "Reset Password"}
                 </Text>
-              </TouchableOpacity>
+              </Pressable>
   
               {!!errorMessage && <Text style={s.error}>{errorMessage}</Text>}
-  
-              <TouchableOpacity
-                style={s.ghostBtn}
-                onPress={(e) => {
-                  if (Platform.OS === "web") {
-                    (e.currentTarget as unknown as HTMLElement).blur();
-                  }
-                  router.push("/login");
-                }}
-              >
-                <Text style={s.link}>
-                  Back to <Text style={[s.link, { fontWeight: "bold" }]}>Login</Text>
-                </Text>
-              </TouchableOpacity>
+
+                <View style={s.footerRow}>
+                  <Pressable
+                    onPress={(e) => {
+                      if (Platform.OS === "web") {
+                        (e.currentTarget as unknown as HTMLElement).blur();
+                      }
+                      router.push("/login");
+                    }}
+                    style={(state) => {
+                      const hovered = (state as any).hovered;
+                      return [
+                        hovered && Platform.OS === "web" && { opacity: 0.8 },
+                      ];
+                    }}
+                  >
+                  <Text style={s.link}>
+                    Back to <Text style={[s.link, { fontWeight: "bold" }]}>Login</Text>
+                  </Text>                  
+                </Pressable>
+              </View>
             </View>
           </ScrollView>
         </KeyboardAvoidingView>

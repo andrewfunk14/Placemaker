@@ -1,81 +1,34 @@
 // styles/buildStyles.ts
-import { StyleSheet, Platform } from "react-native";
-import { cardShadow } from "../styles/shadow";
+import { StyleSheet } from "react-native";
+import { colors, globalStyles as g } from "./globalStyles";
 
-export const colors = {
-  backgroundDark: "#0d0d0d",
-  backgroundMid: "#1a1a1a",
-  border: "#ffd21f",
-  textPrimary: "#f5f5f5",
-  textSecondary: "#ccc",
-  textMuted: "#cfcfcf",
-  placeholderText: "#a0a0a0",
-  accent: "#ffd21f",
-  danger: "#ff4d4f",
-  success: "#4CAF50",
-  link: "#2e78b7",
-  translucentLight: "rgba(255,255,255,0.06)",
-  translucentBorder: "rgba(255,255,255,0.12)",
-  badgeBg: "rgba(255,210,31,0.15)",
-  modalBackdrop: "rgba(0,0,0,0.6)",
-};
+export { colors };
 
-const webPad = Platform.select({ web: 24, default: 16 }) as number;
-
-export const buildStyles = StyleSheet.create({
+const uniqueStyles = StyleSheet.create({
   // build.tsx
-  container: {
-    flex: 1,
-    backgroundColor: colors.backgroundMid,
-    paddingTop: Platform.OS === "web" ? 12 : 8,
-  },
-  searchRow: {
-    paddingHorizontal: webPad,
-    // marginBottom: Platform.OS === "web" ? 8 : 12,
-  },
-  search: {
-    height: 44,
-    borderRadius: 10,
-    paddingHorizontal: 12,
-    borderWidth: 1,
-    borderColor: colors.textPrimary,
-    backgroundColor: colors.translucentLight,
-    color: colors.textPrimary,
-    fontSize: 16,
-    paddingVertical: 2,
-  },
-  empty: {
-    color: colors.textPrimary,
-    opacity: 0.7,
-    textAlign: "center",
-    marginTop: 16,
-    fontSize: 24,
-  },
   webGrid: {
     paddingHorizontal: 16,
     flexDirection: "row",
     flexWrap: "wrap",
     alignItems: "flex-start",
-    marginTop: 4,
   },
   gridItem1: {
     flexBasis: "100%",
     maxWidth: "100%",
-    padding: 8,
+    paddingHorizontal: 8,
   },
   gridItem2: {
     flexBasis: "50%",
     maxWidth: "50%",
-    padding: 8,
+    paddingHorizontal: 8,
   },
   gridItem3: {
     flexBasis: "33.3333%",
     maxWidth: "33.3333%",
-    padding: 8,
+    paddingHorizontal: 8,
   },
   mobileList: {
-    marginHorizontal: 12,
-    marginTop: 12,
+    paddingHorizontal: 16,
     gap: 12,
   },
   errorText: {
@@ -83,35 +36,15 @@ export const buildStyles = StyleSheet.create({
     fontSize: 12,
     marginTop: 0,
   },
-  fab: {
-    position: "absolute",
-    right: 18,
-    bottom: 18,
-    width: 64,
-    height: 64,
-    borderRadius: 9999,
-    backgroundColor: colors.accent,
-    alignItems: "center",
-    justifyContent: "center",
-    elevation: 6,
-    ...cardShadow,
-  },
-  fabPlus: {
-    fontSize: 32,
-    fontWeight: "900",
-    color: "#000",
-  },
 
-  //projectCard.tsx
+  // projectCard.tsx
   projectCard: {
-    // backgroundColor: colors.backgroundMid,
     borderRadius: 16,
     padding: 10,
     borderWidth: 2,
     borderColor: colors.translucentBorder,
-    // borderColor: colors.accent,
     width: "100%",
-  },  
+  },
   projectHeader: {
     flexDirection: "row",
     alignItems: "center",
@@ -150,7 +83,7 @@ export const buildStyles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "600",
     color: "#555",
-  },  
+  },
   projectHeaderText: {
     flex: 1,
   },
@@ -167,7 +100,7 @@ export const buildStyles = StyleSheet.create({
   },
   statusRow: {
     flexDirection: "row",
-  },  
+  },
   statusPill: {
     flexDirection: "row",
     alignItems: "center",
@@ -177,7 +110,7 @@ export const buildStyles = StyleSheet.create({
     borderWidth: 2,
     borderColor: colors.border,
     backgroundColor: colors.badgeBg,
-  },  
+  },
   statusText: {
     fontSize: 18,
     fontWeight: "600",
@@ -189,11 +122,11 @@ export const buildStyles = StyleSheet.create({
     fontSize: 18,
     marginHorizontal: 4,
     color: colors.textSecondary,
-  },  
+  },
   projectMetaInline: {
     fontSize: 16,
     color: colors.textSecondary,
-  },  
+  },
   projectMedia: {
     marginTop: 10,
     width: "100%",
@@ -216,105 +149,14 @@ export const buildStyles = StyleSheet.create({
     color: colors.textPrimary,
   },
 
-  // projectFileUpload.tsx
-  fileUploadButton: {
-    paddingVertical: 4,
-    paddingHorizontal: 16,
-    alignSelf: "center",
-    alignItems: "center",
-    justifyContent: "center",
-    borderRadius: 12,
-  },
-  uploadFileButtonContent: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    gap: 8,
-  },
-  uploadFileText: {
-    color: colors.link,
-    fontSize: 26,
-    fontWeight: "500",
-  },
-  filePreviewCard: {
-    flexDirection: "row",
-    alignItems: "center",
-    backgroundColor: colors.backgroundMid,
-    borderRadius: 10,
-    padding: 8,
-    marginRight: 8,
-    marginTop: 12,
-    borderWidth: 1,
-    borderColor: "gray",
-  },
-  modalPreviewImage: {
-    width: 32,
-    height: 32,
-    borderRadius: 4,
-    marginRight: 6,
-  },
-  filePreviewName: {
-    flex: 1,
-    color: "#f5f5f5",
-    fontSize: 18,
-    marginRight: 6,
-    maxWidth: 120,
-  },
-
   // postProjectModal.tsx
-  modalBackdrop: {
-    ...StyleSheet.absoluteFillObject,
-    backgroundColor: colors.modalBackdrop,
-  },
-  modalCardWrap: {
-    flex: 1,
-    justifyContent: "center",
-    paddingHorizontal: 20,
-  },
-  modalScrollContent: {
-    flexGrow: 1,
-    justifyContent: "center",
-  },
-  modalCard: {
-    alignSelf: "center",
-    width: "100%",
-    maxWidth: 420,
-    borderRadius: 16,
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    backgroundColor: colors.backgroundDark,
-    borderWidth: 2,
-    borderColor: colors.border,
-  },
-  modalTitle: {
-    color: colors.accent,
-    textAlign: "center",
-    fontSize: 28,
-    fontWeight: "600",
-    marginBottom: 12,
-  },
-  input: {
-    height: 48,
-    borderColor: "gray",
-    borderWidth: 1,
-    borderRadius: 8,
-    paddingHorizontal: 12,
-    backgroundColor: colors.backgroundMid,
-    color: "#f5f5f5",
-    marginBottom: Platform.OS === "web" ? 16 : 12,
-    fontSize: 18,
-  },
-  inputMultiline: {
-    height: 110,
-    paddingTop: 12,
-  },
   modalStatusRow: {
     flexDirection: "row",
     flexWrap: "wrap",
     gap: 10,
     marginBottom: 16,
     marginTop: 4,
-  },  
+  },
   statusOption: {
     flex: 1,
     borderWidth: 2,
@@ -337,37 +179,6 @@ export const buildStyles = StyleSheet.create({
     color: colors.textPrimary,
     fontWeight: "600",
   },
-buttonRow: {
-    flexDirection: "row",
-    justifyContent: "center",
-    gap: 16,
-    marginBottom: 4,
-    marginTop: 16,
-  },
-  button: {
-    backgroundColor: colors.accent,
-    paddingVertical: 10,
-    paddingHorizontal: 16,
-    borderRadius: 10,
-  },
-  buttonDisabled: {
-    opacity: 0.5,
-  },  
-  buttonText: { 
-    color: "#000", 
-    fontSize: 20, 
-    fontWeight: "600",
-    textAlign: "center", 
-  },
-  buttonGhost: {
-    backgroundColor: "transparent",
-    borderWidth: 2,
-    borderColor: colors.accent,
-  },
-  buttonGhostText: { 
-    color: colors.accent,
-    fontSize: 20, 
-    fontWeight: "600",
-    textAlign: "center",  
-  },
 });
+
+export const buildStyles = { ...g, ...uniqueStyles };

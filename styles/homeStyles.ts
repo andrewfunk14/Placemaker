@@ -1,51 +1,16 @@
 // styles/homeStyles.ts
-import { Platform, StyleSheet } from "react-native";
-import { cardShadow } from "../styles/shadow";
+import { StyleSheet, Platform } from "react-native";
+import { colors, webPad, globalStyles as g } from "./globalStyles";
 
-export const colors = {
-  backgroundDark: "#0d0d0d",
-  backgroundMid: "#1a1a1a",
-  textPrimary: "#f5f5f5",
-  textSecondary: "#ccc",
-  textMuted: "#cfcfcf",
-  placeholderText: "#a0a0a0",
-  accent: "#ffd21f",
-  danger: "#ff4d4f",
-  success: "#4CAF50",
-  translucentLight: "rgba(255,255,255,0.06)",
-  translucentBorder: "rgba(255,255,255,0.12)",
-  badgeBg: "rgba(255,210,31,0.15)",
-  modalBackdrop: "rgba(0,0,0,0.6)",
-};
+export { colors };
 
-const webPad = Platform.select({ web: 24, default: 16 }) as number;
-
-export const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: colors.backgroundMid, 
-    paddingTop: Platform.OS === "web" ? 12 : 8,
-  },
-  searchRow: {
-    paddingHorizontal: webPad,
-    marginBottom: 12,
-  },
-  search: {
-    height: 44,
-    borderRadius: 10,
-    paddingHorizontal: 12,
-    borderWidth: 1,
-    borderColor: colors.textPrimary,
-    backgroundColor: colors.translucentLight,
-    color: colors.textPrimary,
-    fontSize: 16,
-  },
+const uniqueStyles = StyleSheet.create({
+  // home.tsx
   content: {
     flex: 1,
   },
   listPad: {
     paddingHorizontal: webPad,
-    // paddingVertical: 12,
     gap: 12,
     paddingBottom: 100,
   },
@@ -56,7 +21,6 @@ export const styles = StyleSheet.create({
     borderRadius: 16,
     padding: 12,
     borderWidth: 2,
-    // borderColor: colors.accent,
     borderColor: colors.translucentBorder,
   },
   badge: {
@@ -76,10 +40,7 @@ export const styles = StyleSheet.create({
     zIndex: 10,
     elevation: 10,
     borderRadius: 9999,
-    // backgroundColor: colors.translucentLight,
     backgroundColor: colors.accent,
-    // borderWidth: 1,
-    // borderColor: colors.translucentBorder,
     padding: 12,
     ...(Platform.OS === "web" && { cursor: "pointer" }),
   },
@@ -89,38 +50,11 @@ export const styles = StyleSheet.create({
     right: 12,
     pointerEvents: "box-none",
   },
-  creatorTopRightAvatar: {
-    width: 56,
-    height: 56,
-    borderRadius: 9999,
-    borderWidth: 1,
-    borderColor: colors.translucentBorder,
-    backgroundColor: colors.translucentLight,
-  },
-  creatorTopRightFallback: {
-    width: 56,
-    height: 56,
-    borderRadius: 9999,
-    borderWidth: 1,
-    borderColor: colors.translucentBorder,
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: "rgba(255,255,255,0.06)",
-  },
-  creatorAvatarImage: {
-    width: 30,
-    height: 30,
-    borderRadius: 15,
-  },
-  deleteCircle: {
-    marginLeft: Platform.OS === "web" ? 12 : 8,
-    ...(Platform.OS === "web" && { cursor: "pointer" }),
-  },
   badgeRow: {
     flexDirection: "row",
     alignItems: "center",
     marginBottom: 8,
-  },  
+  },
   cardTitle: {
     color: colors.textPrimary,
     fontSize: Platform.OS === "web" ? 30 : 28,
@@ -141,8 +75,8 @@ export const styles = StyleSheet.create({
     color: colors.accent,
     fontSize: 22,
   },
-  cardDot: { 
-    color: colors.accent, 
+  cardDot: {
+    color: colors.accent,
     fontSize: 20,
   },
   cardMeta: {
@@ -157,45 +91,7 @@ export const styles = StyleSheet.create({
     marginTop: 8,
   },
 
-  // EMPTY STATE
-  empty: {
-    color: colors.textPrimary,
-    opacity: 0.7,
-    textAlign: "center",
-    marginTop: 16,
-    fontSize: 24,
-  },
-
-  // FAB BUTTON
-  fab: {
-    position: "absolute",
-    right: 18,
-    bottom: 18,
-    width: 64,
-    height: 64,
-    borderRadius: 9999,
-    backgroundColor: colors.accent,
-    alignItems: "center",
-    justifyContent: "center",
-    elevation: 6,
-    ...cardShadow,
-  },
-  fabPlus: {
-    fontSize: 32,
-    fontWeight: "900",
-    color: "#000",
-  },
-
-  // MODAL STYLES
-  modalBackdrop: {
-    ...StyleSheet.absoluteFillObject,
-    backgroundColor: colors.modalBackdrop,
-  },
-  modalCardWrap: {
-    flex: 1,
-    justifyContent: "center",
-    paddingHorizontal: 20,
-  },
+  // MODAL STYLES (delete confirm)
   modalCard: {
     alignSelf: "center",
     width: "100%",
@@ -240,26 +136,26 @@ export const styles = StyleSheet.create({
     borderWidth: 2,
     borderColor: colors.accent,
   },
-  modalBtnGhostText: { 
-    color: colors.accent 
+  modalBtnGhostText: {
+    color: colors.accent,
   },
   modalBtnDanger: {
     backgroundColor: "transparent",
     borderWidth: 2,
     borderColor: colors.danger,
   },
-  modalBtnDangerText: { 
-    color: colors.danger 
+  modalBtnDangerText: {
+    color: colors.danger,
   },
-  
+
   // EVENT MODAL
-  modalRoot: { 
-    flex: 1, 
-    justifyContent: "center" 
+  modalRoot: {
+    flex: 1,
+    justifyContent: "center",
   },
-  backdrop: { 
-    ...StyleSheet.absoluteFillObject, 
-    zIndex: 1 
+  backdrop: {
+    ...StyleSheet.absoluteFillObject,
+    zIndex: 1,
   },
   eventModalCard: {
     alignSelf: "center",
@@ -271,16 +167,16 @@ export const styles = StyleSheet.create({
     borderWidth: 2,
     borderColor: colors.accent,
   },
-  eventModalCardWrap: { 
-    flex: 1, 
-    justifyContent: "center", 
-    paddingHorizontal: 16, 
-    zIndex: 2 
+  eventModalCardWrap: {
+    flex: 1,
+    justifyContent: "center",
+    paddingHorizontal: 16,
+    zIndex: 2,
   },
   eventModalScrollContent: {
     flexGrow: 1,
     justifyContent: "center",
-  },  
+  },
   modalTitleText: {
     color: colors.accent,
     textAlign: "center",
@@ -303,17 +199,17 @@ export const styles = StyleSheet.create({
     height: 110,
     paddingTop: 12,
   },
-  inputText: { 
-    color: colors.placeholderText, 
-    fontSize: 18, 
+  inputText: {
+    color: colors.placeholderText,
+    fontSize: 18,
   },
-  center: { 
-    justifyContent: "center", 
+  center: {
+    justifyContent: "center",
   },
-  row: { 
-    flexDirection: "row", 
-    gap: 16, 
-    justifyContent: "center" 
+  row: {
+    flexDirection: "row",
+    gap: 16,
+    justifyContent: "center",
   },
   btn: {
     backgroundColor: colors.accent,
@@ -321,22 +217,22 @@ export const styles = StyleSheet.create({
     paddingHorizontal: 16,
     borderRadius: 10,
   },
-  btnText: { 
-    color: "#000", 
-    fontSize: 20, 
+  btnText: {
+    color: "#000",
+    fontSize: 20,
     fontWeight: "600",
-    textAlign: "center", 
+    textAlign: "center",
   },
   btnGhost: {
     backgroundColor: "transparent",
     borderWidth: 2,
     borderColor: colors.accent,
   },
-  btnGhostText: { 
+  btnGhostText: {
     color: colors.accent,
-    fontSize: 20, 
+    fontSize: 20,
     fontWeight: "600",
-    textAlign: "center",  
+    textAlign: "center",
   },
   iosSheet: {
     backgroundColor: colors.backgroundDark,
@@ -356,10 +252,10 @@ export const styles = StyleSheet.create({
     borderBottomWidth: StyleSheet.hairlineWidth,
     borderBottomColor: "#333",
   },
-  sheetBtnText: { 
-    color: colors.textSecondary, 
-    fontSize: 18, 
-    fontWeight: "600" 
+  sheetBtnText: {
+    color: colors.textSecondary,
+    fontSize: 18,
+    fontWeight: "600",
   },
   iosPicker: {
     alignSelf: "stretch",
@@ -372,8 +268,10 @@ export const styles = StyleSheet.create({
   error: {
     color: colors.danger,
     marginBottom: 12,
-    textAlign: "center" as const,
+    textAlign: "center",
     fontSize: 22,
-    fontWeight: 600,
+    fontWeight: "600",
   },
 });
+
+export const styles = { ...g, ...uniqueStyles };

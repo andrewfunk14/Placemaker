@@ -15,6 +15,7 @@ export interface GroupMessage {
   group_id: string;
   user_id: string;
   content: string;
+  image_url?: string | null;
   created_at: string;
   users?: {
     name: string;
@@ -53,7 +54,7 @@ export const fetchGroupMessages = createAsyncThunk(
 export const sendGroupMessage = createAsyncThunk(
   "groupMessages/sendGroupMessage",
   async (
-    { groupId, content }: { groupId: string; content: string },
+    { groupId, content, imageUrl }: { groupId: string; content: string; imageUrl?: string },
     { rejectWithValue }
   ) => {
     const {
@@ -71,6 +72,7 @@ export const sendGroupMessage = createAsyncThunk(
         group_id: groupId,
         content,
         user_id: user.id,
+        image_url: imageUrl ?? null,
       })
       .select("*")
       .single();

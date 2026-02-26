@@ -99,36 +99,46 @@ const ForgotPassword = () => {
                 returnKeyType="done"
                 keyboardType="email-address"
                 autoCapitalize="none"
-                onSubmitEditing={Keyboard.dismiss}
+                onSubmitEditing={handleForgotPassword}
                 keyboardAppearance="dark"
               />
   
-              <TouchableOpacity
-                style={[s.primaryBtn, isLoading && { opacity: 0.7 }]}
+              <Pressable
+                style={(state: any) => [
+                  s.primaryBtn,
+                  state.hovered && { opacity: 0.8 },
+                  state.pressed && { opacity: 0.8 },
+                ]}
                 onPress={handleForgotPassword}
                 disabled={isLoading}
               >
                 <Text style={s.primaryBtnText}>
                   {isLoading ? "Sending..." : "Send Password Link"}
                 </Text>
-              </TouchableOpacity>
+              </Pressable>
   
               {!!message && <Text style={s.success}>{message}</Text>}
               {!!errorMessage && <Text style={s.error}>{errorMessage}</Text>}
-  
-              <TouchableOpacity
-                style={s.ghostBtn}
-                onPress={(e) => {
-                  if (Platform.OS === "web") {
-                    (e.currentTarget as unknown as HTMLElement).blur();
-                  }
-                  router.push("/login");
-                }}
-              >
-                <Text style={s.link}>
-                  Back to <Text style={[s.link, { fontWeight: "bold" }]}>Login</Text>
-                </Text>              
-              </TouchableOpacity>
+                <View style={s.footerRow}>
+                  <Pressable
+                    onPress={(e) => {
+                      if (Platform.OS === "web") {
+                        (e.currentTarget as unknown as HTMLElement).blur();
+                      }
+                      router.push("/login");
+                    }}
+                    style={(state) => {
+                      const hovered = (state as any).hovered;
+                      return [
+                        hovered && Platform.OS === "web" && { opacity: 0.8 },
+                      ];
+                    }}
+                  >
+                  <Text style={s.link}>
+                    Back to <Text style={[s.link, { fontWeight: "bold" }]}>Login</Text>
+                  </Text>                  
+                </Pressable>
+              </View>
             </View>
           </ScrollView>
         </KeyboardAvoidingView>

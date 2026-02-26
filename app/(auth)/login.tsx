@@ -133,31 +133,41 @@ const Login = () => {
                 value={password}
                 onChangeText={setPassword}
                 returnKeyType="done"
-                onSubmitEditing={Keyboard.dismiss}
+                onSubmitEditing={handleLogin}
                 keyboardAppearance="dark"
               />
 
-              <TouchableOpacity
-                style={s.forgotLinkBtn}
+              <Pressable
                 onPress={(e) => {
                   if (Platform.OS === "web") {
                     (e.currentTarget as unknown as HTMLElement).blur();
                   }
                   router.push("/forgotpassword");
                 }}
+                style={(state) => {
+                  const hovered = (state as any).hovered;
+                  return [
+                    s.forgotLinkBtn,
+                    hovered && Platform.OS === "web" && { opacity: 0.8 },
+                  ];
+                }}
               >
                 <Text style={s.link}>Forgot Password?</Text>
-              </TouchableOpacity>
+              </Pressable>
 
-              <TouchableOpacity
-                style={[s.primaryBtn, isLoading && { opacity: 0.7 }]}
-                  onPress={handleLogin}
-                  disabled={isLoading}
+              <Pressable
+                style={(state: any) => [
+                  s.primaryBtn,
+                  state.hovered && { opacity: 0.8 },
+                  state.pressed && { opacity: 0.8 },
+                ]}
+                onPress={handleLogin}
+                disabled={isLoading}
               >
                 <Text style={s.primaryBtnText}>
                   {isLoading ? "Logging in..." : "Login"}
                 </Text>
-              </TouchableOpacity>
+              </Pressable>
 
               {errorMessage ? (
                 <Text style={s.error}>{errorMessage}</Text>
@@ -165,16 +175,22 @@ const Login = () => {
 
               <View style={s.footerRow}>
                 <Text style={s.helperText}>Don't have an account?</Text>
-                  <TouchableOpacity
-                    onPress={(e) => {
-                      if (Platform.OS === "web") {
-                        (e.currentTarget as unknown as HTMLElement).blur();
-                      }
-                      router.push("/signup");
-                    }}
-                  >                  
+                <Pressable
+                  onPress={(e) => {
+                    if (Platform.OS === "web") {
+                      (e.currentTarget as unknown as HTMLElement).blur();
+                    }
+                    router.push("/signup");
+                  }}
+                  style={(state) => {
+                    const hovered = (state as any).hovered;
+                    return [
+                      hovered && Platform.OS === "web" && { opacity: 0.8 },
+                    ];
+                  }}
+                >
                   <Text style={s.link}>Sign Up</Text>
-                </TouchableOpacity>
+                </Pressable>
               </View>
             </View>
           </ScrollView>

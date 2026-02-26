@@ -9,6 +9,7 @@ export interface DirectMessage {
   sender_id: string;
   receiver_id: string;
   content: string;
+  image_url?: string | null;
   created_at: string;
 }
 
@@ -35,7 +36,7 @@ export const fetchDMs = createAsyncThunk(
 
 export const sendDM = createAsyncThunk(
   "dm/send",
-  async ({ threadId, senderId, receiverId, content }: any) => {
+  async ({ threadId, senderId, receiverId, content, imageUrl }: any) => {
     const { data } = await supabase
       .from("direct_messages")
       .insert({
@@ -43,6 +44,7 @@ export const sendDM = createAsyncThunk(
         sender_id: senderId,
         receiver_id: receiverId,
         content,
+        image_url: imageUrl ?? null,
       })
       .select("*")
       .single();

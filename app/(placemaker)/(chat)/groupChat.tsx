@@ -10,7 +10,11 @@ import {
   KeyboardAvoidingView,
   Keyboard,
   Platform,
+  ActivityIndicator,
+  Alert,
+  Linking,
 } from "react-native";
+import { Ionicons } from "@expo/vector-icons";
 import { connectStyles as styles, colors } from "../../../styles/connectStyles";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks/hooks";
 import {
@@ -21,6 +25,7 @@ import {
   selectMessagesByGroupId,
 } from "../../../store/slices/groupMessagesSlice";
 import { supabase } from "../../../lib/supabaseClient";
+import { uploadChatImage, deleteChatImage } from "../../../utils/uploadChatImage";
 
 interface GroupChatProps {
   groupId: string;
@@ -31,6 +36,9 @@ export default function GroupChat({ groupId }: GroupChatProps) {
 
   const scrollRef = useRef<ScrollView>(null);
   const [text, setText] = useState("");
+  const [pendingImage, setPendingImage] = useState<string | null>(null);
+  const [uploading, setUploading] = useState(false);
+  const [inputHeight, setInputHeight] = useState(40);
 
   const messages = useAppSelector(selectMessagesByGroupId(groupId));
 
@@ -66,13 +74,13 @@ export default function GroupChat({ groupId }: GroupChatProps) {
         },
         async (payload) => {
           const newMsg = payload.new as GroupMessage;
-  
+
           const { data: profile } = await supabase
             .from("profiles")
             .select("name, avatar_url")
             .eq("id", newMsg.user_id)
             .maybeSingle();
-  
+
           dispatch(
             messageReceived({
               ...newMsg,
@@ -85,16 +93,44 @@ export default function GroupChat({ groupId }: GroupChatProps) {
         }
       )
       .subscribe();
-  
+
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [groupId]);  
+  }, [groupId]);
+
+  const handlePickImage = async () => {
+    try {
+      setUploading(true);
+      const url = await uploadChatImage();
+      if (url) setPendingImage(url);
+    } catch (err: any) {
+      Alert.alert("Upload Error", err.message ?? "Failed to upload image.");
+    } finally {
+      setUploading(false);
+    }
+  };
 
   const handleSend = () => {
-    if (!text.trim()) return;
-    dispatch(sendGroupMessage({ groupId, content: text }));
+    if (!text.trim() && !pendingImage) return;
+    dispatch(
+      sendGroupMessage({
+        groupId,
+        content: text.trim(),
+        imageUrl: pendingImage ?? undefined,
+      })
+    );
     setText("");
+    setPendingImage(null);
+    setInputHeight(40);
+  };
+
+  const openImage = async (url: string) => {
+    if (Platform.OS === "web") {
+      window.open(url, "_blank");
+    } else {
+      await Linking.openURL(url);
+    }
   };
 
   const formatTime = (iso: string) =>
@@ -110,104 +146,229 @@ export default function GroupChat({ groupId }: GroupChatProps) {
       day: "numeric",
     });
 
-    return (
-      <KeyboardAvoidingView
-        style={{ flex: 1 }}
-        behavior={Platform.OS === "ios" ? "padding" : undefined}
-        keyboardVerticalOffset={Platform.OS === "ios" ? 88 : 0}
+  const canSend = (text.trim().length > 0 || !!pendingImage) && !uploading;
+
+  return (
+    <KeyboardAvoidingView
+      style={{ flex: 1 }}
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+      keyboardVerticalOffset={Platform.OS === "ios" ? 88 : 0}
+    >
+      <ScrollView
+        ref={scrollRef}
+        style={styles.messagesList}
+        keyboardShouldPersistTaps="handled"
+        keyboardDismissMode={Platform.OS === "ios" ? "interactive" : "on-drag"}
+        onContentSizeChange={scrollToBottom}
+        contentContainerStyle={{
+          paddingBottom: 12,
+          paddingTop: 12,
+          paddingHorizontal: 16,
+        }}
       >
-          
-          <ScrollView
-            ref={scrollRef}
-            style={styles.messagesList}
-            keyboardShouldPersistTaps="handled"
-            keyboardDismissMode={Platform.OS === "ios" ? "interactive" : "on-drag"}
-            onContentSizeChange={scrollToBottom}
-            contentContainerStyle={{
-              paddingBottom: 12,
-              paddingTop: 12,
-              paddingHorizontal: 16,
-            }}
-          >
-            {messages.map((m, i) => {
-              const name = m.profiles?.name ?? "Unknown";
-              const avatar = m.profiles?.avatar_url ?? null;
-    
-              const currentDay = formatDayHeader(m.created_at);
-              const previousDay =
-                i > 0 ? formatDayHeader(messages[i - 1].created_at) : null;
-    
-              const showDayHeader = currentDay !== previousDay;
-    
-              return (
-                <View key={m.id}>
-                  {showDayHeader && (
-                    <View style={styles.dayHeaderWrapper}>
-                      <View style={styles.dayHeaderLine} />
-                      <Text style={styles.dayHeaderText}>{currentDay}</Text>
-                      <View style={styles.dayHeaderLine} />
-                    </View>
+        {messages.map((m, i) => {
+          const name = m.profiles?.name ?? "Unknown";
+          const avatar = m.profiles?.avatar_url ?? null;
+
+          const currentDay = formatDayHeader(m.created_at);
+          const previousDay =
+            i > 0 ? formatDayHeader(messages[i - 1].created_at) : null;
+          const showDayHeader = currentDay !== previousDay;
+
+          const prevMsg = i > 0 ? messages[i - 1] : null;
+          const isContinuation =
+            !showDayHeader && prevMsg?.user_id === m.user_id;
+
+          return (
+            <View key={m.id}>
+              {showDayHeader && (
+                <View style={styles.dayHeaderWrapper}>
+                  <View style={styles.dayHeaderLine} />
+                  <Text style={styles.dayHeaderText}>{currentDay}</Text>
+                  <View style={styles.dayHeaderLine} />
+                </View>
+              )}
+
+              {isContinuation ? (
+                // Continuation — indented to align with text above, no avatar/name
+                <View style={{ paddingLeft: 54, marginBottom: 2, marginTop: 1 }}>
+                  {m.image_url && (
+                    <TouchableOpacity
+                      onPress={() => openImage(m.image_url!)}
+                      activeOpacity={0.85}
+                    >
+                      <Image
+                        source={{ uri: m.image_url }}
+                        style={{
+                          width: 220,
+                          height: 165,
+                          borderRadius: 8,
+                          marginBottom: m.content ? 4 : 0,
+                          marginTop: 2,
+                        }}
+                        resizeMode="cover"
+                      />
+                    </TouchableOpacity>
                   )}
-    
-                  <View style={styles.messageRow}>
-                    <View style={styles.avatarWrapper}>
-                      {avatar ? (
-                        <Image source={{ uri: avatar }} style={styles.messageAvatar} />
-                      ) : (
-                        <View style={styles.messageAvatarFallback}>
-                          <Text style={styles.fallbackText}>
-                            {name.charAt(0).toUpperCase()}
-                          </Text>
-                        </View>
-                      )}
-                    </View>
-    
-                    <View style={styles.messageContentBlock}>
-                      <Text style={styles.messageSender}>{name}</Text>
-                      <Text style={styles.slackMessageText}>{m.content}</Text>
-                      <Text style={styles.messageTimestamp}>
+                  {!!m.content && (
+                    <Text style={styles.slackMessageText}>{m.content}</Text>
+                  )}
+                </View>
+              ) : (
+                // First message in a group — avatar + name + timestamp inline
+                <View
+                  style={[
+                    styles.messageRow,
+                    { marginTop: i > 0 && !showDayHeader ? 12 : 0 },
+                  ]}
+                >
+                  <View style={styles.avatarWrapper}>
+                    {avatar ? (
+                      <Image
+                        source={{ uri: avatar }}
+                        style={styles.messageAvatar}
+                      />
+                    ) : (
+                      <View style={styles.messageAvatarFallback}>
+                        <Text style={styles.fallbackText}>
+                          {name.charAt(0).toUpperCase()}
+                        </Text>
+                      </View>
+                    )}
+                  </View>
+
+                  <View style={styles.messageContentBlock}>
+                    <View
+                      style={{
+                        flexDirection: "row",
+                        alignItems: "baseline",
+                        gap: 6,
+                        marginBottom: 4,
+                      }}
+                    >
+                      <Text
+                        style={styles.messageSender}
+                      >
+                        {name}
+                      </Text>
+                      <Text style={[styles.messageTimestamp, { marginTop: 0 }]}>
                         {formatTime(m.created_at)}
                       </Text>
                     </View>
+
+                    {m.image_url && (
+                      <TouchableOpacity
+                        onPress={() => openImage(m.image_url!)}
+                        activeOpacity={0.85}
+                      >
+                        <Image
+                          source={{ uri: m.image_url }}
+                          style={{
+                            width: 220,
+                            height: 165,
+                            borderRadius: 8,
+                            marginBottom: m.content ? 4 : 0,
+                            marginTop: 2,
+                          }}
+                          resizeMode="cover"
+                        />
+                      </TouchableOpacity>
+                    )}
+
+                    {!!m.content && (
+                      <Text style={styles.slackMessageText}>{m.content}</Text>
+                    )}
                   </View>
                 </View>
-              );
-            })}
-          </ScrollView>
-    
-          <View style={styles.messageInputRow}>
-            <TextInput
-              value={text}
-              onChangeText={setText}
-              placeholder="Type a message…"
-              placeholderTextColor={colors.placeholderText}
-              keyboardAppearance="dark"
-              style={[
-                styles.messageInput,
-                {
-                  color: "#f5f5f5",
-                  borderWidth: 1,
-                  borderColor: colors.translucentBorder,
-                  borderRadius: 8,
-                  paddingHorizontal: 12,
-                },
-              ]}                  
-              onKeyPress={(e) => {
-                if (Platform.OS === "web") {
-                  const shift = (e as any).shiftKey;
-                  if (e.nativeEvent.key === "Enter" && !shift) {
-                    e.preventDefault?.();
-                    handleSend();
-                  }
-                }
-              }}
-            />
-            <TouchableOpacity style={styles.sendButton} onPress={handleSend}>
-              <Text style={styles.sendButtonText}>Send</Text>
-            </TouchableOpacity>
-          </View>
-    
-        </KeyboardAvoidingView>
-    );    
-}
+              )}
+            </View>
+          );
+        })}
+      </ScrollView>
 
+      <View style={{ borderTopWidth: 1, borderTopColor: "#222" }}>
+        {pendingImage && (
+          <View style={{ paddingHorizontal: 16, paddingTop: 8 }}>
+            <View style={{ position: "relative", alignSelf: "flex-start" }}>
+              <Image
+                source={{ uri: pendingImage }}
+                style={{ width: 80, height: 80, borderRadius: 8 }}
+                resizeMode="cover"
+              />
+              <TouchableOpacity
+                onPress={() => {
+                  deleteChatImage(pendingImage!);
+                  setPendingImage(null);
+                }}
+                style={{ position: "absolute", top: -8, right: -8 }}
+                hitSlop={{ top: 6, bottom: 6, left: 6, right: 6 }}
+              >
+                <Ionicons name="close-circle" size={22} color="#fff" />
+              </TouchableOpacity>
+            </View>
+          </View>
+        )}
+
+        <View style={styles.messageInputRow}>
+          <TouchableOpacity
+            onPress={handlePickImage}
+            disabled={uploading}
+            style={{ justifyContent: "center", marginRight: 8 }}
+            hitSlop={{ top: 6, bottom: 6, left: 6, right: 6 }}
+          >
+            {uploading ? (
+              <ActivityIndicator size="small" color={colors.accent} />
+            ) : (
+              <Ionicons name="image-outline" size={26} color={colors.textSecondary} />
+            )}
+          </TouchableOpacity>
+
+          <TextInput
+            value={text}
+            onChangeText={setText}
+            placeholder="Message…"
+            placeholderTextColor={colors.placeholderText}
+            keyboardAppearance="dark"
+            multiline
+            onContentSizeChange={(e) => {
+              const h = e.nativeEvent.contentSize.height;
+              setInputHeight(Math.min(Math.max(40, h), 120));
+            }}
+            style={[
+              styles.messageInput,
+              {
+                height: inputHeight,
+                color: "#f5f5f5",
+                borderWidth: 1,
+                borderColor: colors.translucentBorder,
+                borderRadius: 8,
+                paddingHorizontal: 12,
+                paddingTop: Platform.OS === "ios" ? 10 : 8,
+              },
+            ]}
+            onKeyPress={(e) => {
+              if (Platform.OS === "web") {
+                const shift = (e as any).shiftKey;
+                if (e.nativeEvent.key === "Enter" && !shift) {
+                  e.preventDefault?.();
+                  handleSend();
+                }
+              }
+            }}
+          />
+
+          <TouchableOpacity
+            style={[
+              styles.sendButton,
+              { paddingHorizontal: 12, opacity: canSend ? 1 : 0.35 },
+            ]}
+            onPress={handleSend}
+            disabled={!canSend}
+          >
+            <Ionicons name="send" size={18} color="#000" />
+          </TouchableOpacity>
+        </View>
+      </View>
+    </KeyboardAvoidingView>
+  );
+}

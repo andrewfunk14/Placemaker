@@ -182,37 +182,47 @@ const Signup = () => {
                 value={confirmPassword}
                 onChangeText={setConfirmPassword}
                 returnKeyType="done"
-                onSubmitEditing={Keyboard.dismiss}
+                onSubmitEditing={handleSignup}
                 keyboardAppearance="dark"
               />
-  
-              <TouchableOpacity
-                style={[s.primaryBtn, isLoading && { opacity: 0.7 }]}
+
+              <Pressable
+                style={(state: any) => [
+                  s.primaryBtn,
+                  state.hovered && { opacity: 0.8 },
+                  state.pressed && { opacity: 0.8 },
+                ]}
                 onPress={handleSignup}
                 disabled={isLoading}
               >
                 <Text style={s.primaryBtnText}>
                   {isLoading ? "Signing up..." : "Create Account"}
                 </Text>
-              </TouchableOpacity>
+              </Pressable>
   
               {!!errorMessage && <Text style={s.error}>{errorMessage}</Text>}
               {!!successMessage && <Text style={s.success}>{successMessage}</Text>}
   
               <View style={s.footerRow}>
                 <Text style={s.helperText}>Already have an account?</Text>
-                <TouchableOpacity
-                  onPress={(e) => {
-                    if (Platform.OS === "web") {
-                      (e.currentTarget as unknown as HTMLElement).blur();
-                    }
-                    router.push("/login");
-                  }}
-                >
+                  <Pressable
+                    onPress={(e) => {
+                      if (Platform.OS === "web") {
+                        (e.currentTarget as unknown as HTMLElement).blur();
+                      }
+                      router.push("/login");
+                    }}
+                    style={(state) => {
+                      const hovered = (state as any).hovered;
+                      return [
+                        hovered && Platform.OS === "web" && { opacity: 0.8 },
+                      ];
+                    }}
+                  >
                   <Text style={s.link}>
                     Back to <Text style={[s.link, { fontWeight: "bold" }]}>Login</Text>
-                  </Text>
-                </TouchableOpacity>
+                  </Text>                  
+                </Pressable>
               </View>
             </View>
           </ScrollView>

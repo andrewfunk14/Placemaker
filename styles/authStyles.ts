@@ -1,16 +1,17 @@
 // styles/authStyles.ts
 import { Platform, StyleSheet } from "react-native";
+import { colors as gc } from "./globalStyles";
 
 const colors = {
-  bg: "#0d0d0d",
-  brand: "#ffd21f",
-  text: "#f5f5f5",
-  placeholderText: "#a0a0a0",
-  border: "#ffd21f",
-  inputBg: "#1c1c1c",
-  link: "#2e78b7",
-  danger: "#ff4d4f",
-  success: "#4ade80",
+  bg: gc.backgroundDark,
+  brand: gc.accent,
+  text: gc.textPrimary,
+  placeholderText: gc.placeholderText,
+  border: gc.border,
+  inputBg: gc.authInputBg,
+  link: gc.link,
+  danger: gc.danger,
+  success: gc.success
 };
 
 export const authStyles = StyleSheet.create({
@@ -51,7 +52,7 @@ export const authStyles = StyleSheet.create({
     paddingHorizontal: 10,
     borderRadius: 8,
     backgroundColor: colors.inputBg,
-    color: "#e5e5e5",
+    color: colors.text,
     fontSize: 16,
   },
   primaryBtn: {
@@ -65,28 +66,15 @@ export const authStyles = StyleSheet.create({
   primaryBtnText: {
     color: "black",
     fontWeight: "bold",
-    fontSize: 26,
-  },
-  ghostBtn: {
-    alignSelf: "center",
-    paddingVertical: 8,
-    paddingHorizontal: 16,
-    borderRadius: 6,
-    backgroundColor: "transparent",
+    fontSize: Platform.OS === "web" ? 24 : 22,
+    textTransform: "uppercase",
+    textAlign: 'center',
+    letterSpacing: 1.5,
   },
   forgotLinkBtn: {
     alignSelf: "center",
-    paddingHorizontal: 16,
-    borderRadius: 6,
-    backgroundColor: "transparent",
     marginTop: 4,
     marginBottom: 16,
-  },
-  linkBtn: {
-    alignSelf: "center",
-    paddingHorizontal: 16,
-    borderRadius: 6,
-    backgroundColor: "transparent",
   },
   link: {
     color: colors.link,
