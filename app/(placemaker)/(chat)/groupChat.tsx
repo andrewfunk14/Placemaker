@@ -203,8 +203,8 @@ export default function GroupChat({ groupId }: GroupChatProps) {
                           width: 220,
                           height: 165,
                           borderRadius: 8,
-                          marginBottom: m.content ? 4 : 0,
-                          marginTop: 2,
+                          // // marginBottom: m.content ? 4 : 0,
+                          // marginTop: 2,
                         }}
                         resizeMode="cover"
                       />
@@ -242,7 +242,7 @@ export default function GroupChat({ groupId }: GroupChatProps) {
                       style={{
                         flexDirection: "row",
                         alignItems: "baseline",
-                        gap: 6,
+                        gap: 8,
                         marginBottom: 4,
                       }}
                     >
@@ -251,7 +251,7 @@ export default function GroupChat({ groupId }: GroupChatProps) {
                       >
                         {name}
                       </Text>
-                      <Text style={[styles.messageTimestamp, { marginTop: 0 }]}>
+                      <Text style={styles.messageTimestamp}>
                         {formatTime(m.created_at)}
                       </Text>
                     </View>

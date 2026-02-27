@@ -306,19 +306,18 @@ const uniqueStyles = StyleSheet.create({
     paddingTop: 4,
   },
   messageSender: {
-    color: colors.textSecondary,
-    fontSize: 18,
+    color: colors.textPrimary,
+    fontSize: 20,
     fontWeight: 'bold',
   },
   slackMessageText: {
-    color: "#ddd",
-    fontSize: 16,
+    color: colors.textSecondary,
+    fontSize: 18,
     lineHeight: 24,
   },
   messageTimestamp: {
     color: colors.placeholderText,
-    fontSize: 13,
-    marginTop: 8,
+    fontSize: 14,
     alignSelf: 'center',
   },
   messageInputRow: {
