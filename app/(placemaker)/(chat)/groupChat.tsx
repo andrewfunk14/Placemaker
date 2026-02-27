@@ -12,8 +12,8 @@ import {
   Platform,
   ActivityIndicator,
   Alert,
-  Linking,
 } from "react-native";
+import ImageViewerModal from "../../../components/ImageViewerModal";
 import { Ionicons } from "@expo/vector-icons";
 import { connectStyles as styles, colors } from "../../../styles/connectStyles";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks/hooks";
@@ -39,6 +39,7 @@ export default function GroupChat({ groupId }: GroupChatProps) {
   const [pendingImage, setPendingImage] = useState<string | null>(null);
   const [uploading, setUploading] = useState(false);
   const [inputHeight, setInputHeight] = useState(40);
+  const [viewingImage, setViewingImage] = useState<string | null>(null);
 
   const messages = useAppSelector(selectMessagesByGroupId(groupId));
 
@@ -125,14 +126,6 @@ export default function GroupChat({ groupId }: GroupChatProps) {
     setInputHeight(40);
   };
 
-  const openImage = async (url: string) => {
-    if (Platform.OS === "web") {
-      window.open(url, "_blank");
-    } else {
-      await Linking.openURL(url);
-    }
-  };
-
   const formatTime = (iso: string) =>
     new Date(iso).toLocaleTimeString([], {
       hour: "numeric",
@@ -149,6 +142,7 @@ export default function GroupChat({ groupId }: GroupChatProps) {
   const canSend = (text.trim().length > 0 || !!pendingImage) && !uploading;
 
   return (
+    <>
     <KeyboardAvoidingView
       style={{ flex: 1 }}
       behavior={Platform.OS === "ios" ? "padding" : "height"}
@@ -194,7 +188,7 @@ export default function GroupChat({ groupId }: GroupChatProps) {
                 <View style={{ paddingLeft: 54, marginBottom: 2, marginTop: 1 }}>
                   {m.image_url && (
                     <TouchableOpacity
-                      onPress={() => openImage(m.image_url!)}
+                      onPress={() => setViewingImage(m.image_url!)}
                       activeOpacity={0.85}
                     >
                       <Image
@@ -258,7 +252,7 @@ export default function GroupChat({ groupId }: GroupChatProps) {
 
                     {m.image_url && (
                       <TouchableOpacity
-                        onPress={() => openImage(m.image_url!)}
+                        onPress={() => setViewingImage(m.image_url!)}
                         activeOpacity={0.85}
                       >
                         <Image
@@ -370,5 +364,11 @@ export default function GroupChat({ groupId }: GroupChatProps) {
         </View>
       </View>
     </KeyboardAvoidingView>
+
+      <ImageViewerModal
+        uri={viewingImage}
+        onClose={() => setViewingImage(null)}
+      />
+    </>
   );
 }

@@ -26,7 +26,8 @@ import {
   Circle,
 } from "lucide-react-native";
 import DeleteConfirmModal from "./deleteConfirmModal";
-import * as WebBrowser from "expo-web-browser";
+import ImageViewerModal from "../../components/ImageViewerModal";
+import { downloadFile } from "../../utils/downloadFile";
 import { useUser } from "../../app/userContext";
 import TierBadge from "./tierBadge";
 
@@ -46,6 +47,7 @@ export default function ResourceCard({ resource, user }: ResourceCardProps) {
   const [showReview, setShowReview] = useState(false);
   const [showEdit, setShowEdit] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [viewingImage, setViewingImage] = useState<string | null>(null);
 
   const isAdmin = contextUser?.roles?.includes("admin");
 
@@ -225,7 +227,7 @@ export default function ResourceCard({ resource, user }: ResourceCardProps) {
           {resource.file_urls.map((url, idx) => (
             <TouchableOpacity
               key={idx}
-              onPress={() => WebBrowser.openBrowserAsync(url)}
+              onPress={() => isImage(url) ? setViewingImage(url) : downloadFile(url)}
               style={[styles.cardFileItem, idx === 0 && { marginTop: 0 }]}
               activeOpacity={0.7}
             >
@@ -286,6 +288,10 @@ export default function ResourceCard({ resource, user }: ResourceCardProps) {
         />
       )}
 
+      <ImageViewerModal
+        uri={viewingImage}
+        onClose={() => setViewingImage(null)}
+      />
     </View>
   );
 }

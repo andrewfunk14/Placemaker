@@ -20,7 +20,8 @@ import { learnStyles as styles, colors } from "../../styles/learnStyles";
 import ResourceTagDropdown from "./tagDropdown";
 import ResourceTierDropdown from "./tierDropdown";
 import { FileText } from "lucide-react-native";
-import * as WebBrowser from "expo-web-browser";
+import ImageViewerModal from "../../components/ImageViewerModal";
+import { downloadFile } from "../../utils/downloadFile";
 import type { Resource } from "../../store/slices/resourcesSlice";
 import { useUser } from "../../app/userContext";
 
@@ -55,6 +56,7 @@ export default function AdminModal({
   const [uploadedUrls, setUploadedUrls] = useState<string[]>(initialFiles);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
+  const [viewingImage, setViewingImage] = useState<string | null>(null);
 
   const handleCancel = () => {
     setTitle(resource.title ?? "");
@@ -100,17 +102,6 @@ export default function AdminModal({
     }
   };
 
-  const openFile = async (url: string) => {
-    try {
-      if (Platform.OS === "web") {
-        window.open(url, "_blank");
-      } else {
-        await WebBrowser.openBrowserAsync(url);
-      }
-    } catch {
-      Alert.alert("Error", "Failed to open file.");
-    }
-  };
 
   if (!visible) return null;
 
@@ -164,7 +155,7 @@ export default function AdminModal({
                 {uploadedUrls.map((url, i) => (
                   <TouchableOpacity
                     key={i}
-                    onPress={() => openFile(url)}
+                    onPress={() => /\.(png|jpe?g|gif|webp)$/i.test(url) ? setViewingImage(url) : downloadFile(url)}
                     activeOpacity={0.8}
                     style={styles.adminPreviewCard}
                   >
@@ -210,6 +201,7 @@ export default function AdminModal({
           </View>
         </ScrollView>
       </KeyboardAvoidingView>
+      <ImageViewerModal uri={viewingImage} onClose={() => setViewingImage(null)} />
     </Modal>
   );
 }

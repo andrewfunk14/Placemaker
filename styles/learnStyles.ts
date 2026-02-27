@@ -110,7 +110,7 @@ const uniqueStyles = StyleSheet.create({
     height: 32,
     borderRadius: 6,
     marginRight: 8,
-    backgroundColor: "#f0f0f0",
+    backgroundColor: colors.backgroundMid,
   },
   cardFileText: {
     color: colors.link,
