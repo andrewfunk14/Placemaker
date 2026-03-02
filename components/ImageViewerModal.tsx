@@ -42,7 +42,7 @@ export default function ImageViewerModal({ uri, onClose }: ImageViewerModalProps
           onPress={onClose}
           hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
         >
-          <Ionicons name="close" size={28} color="#fff" />
+          <Ionicons name="close" size={28} color="#ff4d4f" />
         </TouchableOpacity>
       </SafeAreaView>
     </Modal>

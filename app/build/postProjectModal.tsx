@@ -1,5 +1,5 @@
 // build/postProjectModal.tsx
-import React, { useState, useRef, } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import {
   View,
   Text,
@@ -11,7 +11,7 @@ import {
   KeyboardAvoidingView,
   Platform,
 } from "react-native";
-import { ProjectStatus } from "../../store/slices/projectsSlice";
+import { Project, ProjectStatus } from "../../store/slices/projectsSlice";
 import { buildStyles as styles } from "../../styles/buildStyles";
 import ProjectFileUpload from "./projectFileUpload";
 import { supabase } from "../../lib/supabaseClient";
@@ -36,12 +36,16 @@ interface PostProjectModalProps {
   visible: boolean;
   onClose: () => void;
   onSubmit: (data: ProjectFormValues) => Promise<void>;
+  mode?: "create" | "edit";
+  project?: Project | null;
 }
 
 export default function PostProjectModal({
   visible,
   onClose,
   onSubmit,
+  mode = "create",
+  project,
 }: PostProjectModalProps) {
   const [title, setTitle] = useState("");
   const [location, setLocation] = useState("");
@@ -50,6 +54,18 @@ export default function PostProjectModal({
   const [files, setFiles] = useState<string[]>([]);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  // Pre-fill form when editing
+  useEffect(() => {
+    if (mode === "edit" && project && visible) {
+      setTitle(project.title ?? "");
+      setLocation(project.location ?? "");
+      setDescription(project.description ?? "");
+      setStatus(project.status ?? "idea");
+      setFiles(project.files ?? []);
+      setError(null);
+    }
+  }, [mode, project, visible]);
 
   const resetForm = () => {
     setTitle("");
@@ -91,7 +107,9 @@ export default function PostProjectModal({
 
   const handleClose = async () => {
     if (submitting) return;
-    if (files.length > 0) {
+    // In create mode, clean up any uploaded files on cancel.
+    // In edit mode, only clean up files that weren't part of the original project.
+    if (mode === "create" && files.length > 0) {
       const paths = files
         .map((url) => {
           const marker = "/object/public/";
@@ -136,7 +154,7 @@ export default function PostProjectModal({
         >
           <View style={styles.modalCard}>
             {/* Header */}
-            <Text style={styles.modalTitle}>New Project</Text>
+            <Text style={styles.modalTitle}>{mode === "edit" ? "Edit Project" : "New Project"}</Text>
   
             {/* Title */}
             <TextInput
@@ -238,7 +256,7 @@ export default function PostProjectModal({
                 disabled={submitting}
               >
                 <Text style={styles.buttonText}>
-                  {submitting ? "Submitting…" : "Submit"}
+                  {submitting ? (mode === "edit" ? "Saving…" : "Submitting…") : (mode === "edit" ? "Save" : "Submit")}
                 </Text>
               </TouchableOpacity>
             </View>

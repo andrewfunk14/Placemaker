@@ -139,6 +139,57 @@ export const createProject = createAsyncThunk<
   };
 });
 
+// UPDATE /projects
+export const updateProject = createAsyncThunk<
+  Project,
+  {
+    id: string;
+    title: string;
+    description?: string;
+    location?: string;
+    status: ProjectStatus;
+    files?: string[];
+  },
+  { rejectValue: string }
+>("projects/updateProject", async ({ id, title, description, location, status, files }, { rejectWithValue }) => {
+  const { data, error } = await supabase
+    .from("projects")
+    .update({
+      title,
+      description: description ?? null,
+      location: location ?? null,
+      status,
+      files: files ?? null,
+    })
+    .eq("id", id)
+    .select(`
+      id,
+      created_by,
+      title,
+      description,
+      location,
+      status,
+      created_at,
+      updated_at,
+      files,
+      creator:profiles (
+        id,
+        name,
+        avatar_url
+      )
+    `)
+    .single();
+
+  if (error || !data) {
+    return rejectWithValue(error?.message ?? "Failed to update project.");
+  }
+
+  return {
+    ...data,
+    creator: normalizeCreator(data.creator),
+  };
+});
+
 // DELETE /projects
 export const deleteProject = createAsyncThunk<
   string,
@@ -192,6 +243,10 @@ const projectsSlice = createSlice({
       })
       .addCase(createProject.fulfilled, (state, action) => {
         state.projects.unshift(action.payload);
+      })
+      .addCase(updateProject.fulfilled, (state, action) => {
+        const idx = state.projects.findIndex((p) => p.id === action.payload.id);
+        if (idx !== -1) state.projects[idx] = action.payload;
       })
       .addCase(deleteProject.fulfilled, (state, action) => {
         state.projects = state.projects.filter(

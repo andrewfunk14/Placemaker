@@ -15,11 +15,6 @@ const colors = {
 };
 
 export const authStyles = StyleSheet.create({
-  screen: {
-    flex: 1,
-    backgroundColor: "transparent",
-    cursor: "auto" as any,
-  },
   contentContainer: {
     flexGrow: 1,
     justifyContent: "center",

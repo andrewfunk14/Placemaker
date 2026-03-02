@@ -11,7 +11,7 @@ import { useAppDispatch, useAppSelector } from "../../../store/hooks/hooks";
 import { fetchEvents, deleteEvent, EventRow } from "../../../store/slices/eventsSlice";
 import { useUser } from "../../userContext";
 import NewEventModal from "../../home/newEventModal/newEventModal";
-import DeleteConfirmModal from "../../home/deleteConfirmModal";
+import DeleteConfirmModal from "../../../components/DeleteConfirmModal";
 import { styles } from "../../../styles/homeStyles";
 import EventList from "../../home/eventList";
 import { startsInLabel, formatEventDate, formatEventTime } from "../../../utils/time"
@@ -128,6 +128,7 @@ export default function Home() {
         visible={!!toDelete}
         onCancel={() => setToDelete(null)}
         onConfirm={confirmDelete}
+        itemType="event"
       />
     </View>
   );

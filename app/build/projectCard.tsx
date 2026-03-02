@@ -1,15 +1,21 @@
 // build/projectCard.tsx
-import React from "react";
-import { View, Text, Image, Platform } from "react-native";
-import { Project } from "../../store/slices/projectsSlice";
-import { buildStyles as styles } from "../../styles/buildStyles";
+import React, { useState } from "react";
+import { View, Text, Image, Platform, Alert } from "react-native";
+import { Project, ProjectStatus } from "../../store/slices/projectsSlice";
+import { buildStyles as styles, colors } from "../../styles/buildStyles";
+import { User2 } from "lucide-react-native";
+import { useAppDispatch } from "../../store/hooks/hooks";
+import { deleteProject, updateProject } from "../../store/slices/projectsSlice";
+import PostProjectModal, { ProjectFormValues } from "./postProjectModal";
+import DeleteConfirmModal from "../../components/DeleteConfirmModal";
+import CardActionMenu from "../../components/CardActionMenu";
 
 interface ProjectCardProps {
   project: Project;
   gridItemStyle?: any;
+  currentUserId?: string | null;
+  isAdmin?: boolean;
 }
-
-type ProjectStatus = "idea" | "in progress" | "completed";
 
 const STATUS_COLORS: Record<ProjectStatus, string> = {
   idea: "#3B82F6",
@@ -20,7 +26,18 @@ const STATUS_COLORS: Record<ProjectStatus, string> = {
 export default function ProjectCard({
   project,
   gridItemStyle,
+  currentUserId,
+  isAdmin,
 }: ProjectCardProps) {
+  const dispatch = useAppDispatch();
+
+  const [avatarError, setAvatarError] = useState(false);
+  const [showEdit, setShowEdit] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+
+  const isCreator = !!currentUserId && project.created_by === currentUserId;
+  const showEllipsis = isCreator || isAdmin;
+
   const files = project.files ?? [];
   const firstFile = files[0];
 
@@ -34,10 +51,32 @@ export default function ProjectCard({
     STATUS_COLORS[project.status as ProjectStatus] ?? "#9CA3AF";
 
   const avatarUrl = project.creator?.avatar_url ?? null;
-  const avatarInitial =
-    project.creator?.name?.trim()?.charAt(0)?.toUpperCase() ??
-    project.title?.trim()?.charAt(0)?.toUpperCase() ??
-    "P";
+
+  const handleDelete = async () => {
+    setShowDeleteConfirm(false);
+    try {
+      await dispatch(deleteProject({ id: project.id, files: project.files })).unwrap();
+    } catch (e: any) {
+      Alert.alert("Error", e?.message ?? "Failed to delete project.");
+    }
+  };
+
+  const handleEditSubmit = async (data: ProjectFormValues) => {
+    const result = await dispatch(
+      updateProject({
+        id: project.id,
+        title: data.title,
+        description: data.description,
+        location: data.location,
+        status: data.status as ProjectStatus,
+        files: data.files,
+      })
+    );
+    if (updateProject.rejected.match(result)) {
+      const payload = (result as any).payload;
+      throw new Error((typeof payload === "string" && payload) || "Failed to update project.");
+    }
+  };
 
   const Wrapper = Platform.OS === "web" ? View : React.Fragment;
   const wrapperProps = Platform.OS === "web" ? { style: gridItemStyle } : {};
@@ -48,18 +87,14 @@ export default function ProjectCard({
         <View style={styles.projectHeader}>
           <View style={styles.projectHeaderLeft}>
             <View style={styles.projectAvatar}>
-              {avatarUrl ? (
+              {avatarUrl && !avatarError ? (
                 <Image
                   source={{ uri: avatarUrl }}
                   style={styles.projectAvatarImage}
-                  // resizeMode="cover"
+                  onError={() => setAvatarError(true)}
                 />
               ) : (
-                <View style={styles.projectAvatarFallback}>
-                  <Text style={styles.projectAvatarInitial}>
-                    {avatarInitial}
-                  </Text>
-                </View>
+                <User2 color={colors.accent} size={26} />
               )}
             </View>
 
@@ -67,35 +102,44 @@ export default function ProjectCard({
               <Text style={styles.projectTitle}>{project.title}</Text>
               {project.location ? (
                 <Text style={styles.projectLocation}>{project.location}</Text>
-                ) : null}
+              ) : null}
             </View>
           </View>
+
+          {showEllipsis && (
+            <CardActionMenu
+              items={[
+                { label: "Edit", onPress: () => setShowEdit(true) },
+                { label: "Delete", onPress: () => setShowDeleteConfirm(true), danger: true },
+              ]}
+            />
+          )}
         </View>
 
         <View style={styles.statusRow}>
-            <View
-                style={[
-                styles.statusPill,
-                {
-                    borderColor: `${statusColor}55`,
-                    backgroundColor: `${statusColor}20`,
-                },
-                ]}
-            >
-                <Text style={[styles.statusText, { color: statusColor }]}>
-                {statusLabel}
-                </Text>
+          <View
+            style={[
+              styles.statusPill,
+              {
+                borderColor: `${statusColor}55`,
+                backgroundColor: `${statusColor}20`,
+              },
+            ]}
+          >
+            <Text style={[styles.statusText, { color: statusColor }]}>
+              {statusLabel}
+            </Text>
 
-                <Text style={[styles.dot, { color: statusColor }]}>•</Text>
+            <Text style={[styles.dot, { color: statusColor }]}>•</Text>
 
-                <Text style={[styles.projectMetaInline, { color: statusColor }]}>
-                {createdDate.toLocaleDateString(undefined, {
-                    month: "short",
-                    day: "numeric",
-                    year: "numeric",
-                })}
-                </Text>
-            </View>
+            <Text style={[styles.projectMetaInline, { color: statusColor }]}>
+              {createdDate.toLocaleDateString(undefined, {
+                month: "short",
+                day: "numeric",
+                year: "numeric",
+              })}
+            </Text>
+          </View>
         </View>
 
         {project.description ? (
@@ -104,7 +148,6 @@ export default function ProjectCard({
           </Text>
         ) : null}
 
-        {/* Media */}
         {firstFile ? (
           <View style={styles.projectMedia}>
             <Image
@@ -114,6 +157,20 @@ export default function ProjectCard({
           </View>
         ) : null}
 
+        <PostProjectModal
+          visible={showEdit}
+          onClose={() => setShowEdit(false)}
+          onSubmit={handleEditSubmit}
+          mode="edit"
+          project={project}
+        />
+
+        <DeleteConfirmModal
+          visible={showDeleteConfirm}
+          onCancel={() => setShowDeleteConfirm(false)}
+          onConfirm={handleDelete}
+          itemType="project"
+        />
       </View>
     </Wrapper>
   );

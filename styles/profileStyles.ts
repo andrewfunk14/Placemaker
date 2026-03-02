@@ -18,10 +18,6 @@ const uniqueStyles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
-  muted: {
-    color: colors.textSecondary,
-    fontSize: 24,
-  },
   profileContainer: {
     width: "100%",
     borderRadius: 16,
@@ -47,14 +43,6 @@ const uniqueStyles = StyleSheet.create({
     alignItems: "center",
     gap: 8,
     marginBottom: 4,
-  },
-  nameColumn: {
-    flex: 1,
-    justifyContent: "center",
-  },
-  avatarLeft: {
-    alignItems: "center",
-    justifyContent: "center",
   },
   editTopRightBtn: {
     position: "absolute",
@@ -104,7 +92,7 @@ const uniqueStyles = StyleSheet.create({
     marginBottom: 12,
   },
   profileDetailLabel: {
-    color: "#a0a0a0",
+    color: colors.placeholderText,
     fontSize: 14,
     fontWeight: "600",
     marginBottom: 2,
@@ -112,7 +100,7 @@ const uniqueStyles = StyleSheet.create({
     letterSpacing: 0.5,
   },
   profileDetailText: {
-    color: "#f5f5f5",
+    color: colors.textPrimary,
     fontSize: 16,
     lineHeight: 22,
   },
@@ -144,7 +132,7 @@ const uniqueStyles = StyleSheet.create({
     pointerEvents: "none",
   },
   avatarOverlayText: {
-    color: "#f5f5f5",
+    color: colors.textPrimary,
     fontSize: 20,
     fontWeight: "600",
   },
@@ -186,36 +174,13 @@ const uniqueStyles = StyleSheet.create({
     borderWidth: 2,
     borderColor: colors.accent,
   },
-  previewImage: {
-    width: 200,
-    height: 200,
-    borderRadius: 130,
-    alignSelf: "center",
-    marginBottom: 12,
-  },
   avatarWrap: {
     alignItems: "center",
     justifyContent: "center",
   },
-  avatar: {
-    width: 100,
-    height: 100,
-    borderRadius: 50,
-    backgroundColor: colors.translucentLight,
-  },
   avatarPlaceholder: {
     alignItems: "center",
     justifyContent: "center",
-  },
-  avatarInitials: {
-    fontSize: 32,
-    fontWeight: "700",
-    color: colors.textSecondary,
-  },
-  label: {
-    fontSize: 14,
-    color: colors.textSecondary,
-    marginBottom: 6,
   },
   input: {
     height: 48,
@@ -224,13 +189,13 @@ const uniqueStyles = StyleSheet.create({
     borderRadius: 8,
     paddingHorizontal: 12,
     backgroundColor: colors.backgroundMid,
-    color: "#f5f5f5",
+    color: colors.textPrimary,
     marginTop: 16,
     marginBottom: 12,
     fontSize: 18,
   },
   modalLabel: {
-    color: "#a0a0a0",
+    color: colors.placeholderText,
     fontSize: 14,
     fontWeight: "600",
     textTransform: "uppercase",
@@ -247,7 +212,7 @@ const uniqueStyles = StyleSheet.create({
     borderColor: "gray",
     borderRadius: 8,
     backgroundColor: colors.backgroundMid,
-    color: "#f5f5f5",
+    color: colors.textPrimary,
     paddingHorizontal: 12,
     flexDirection: "row",
     alignItems: "center",
@@ -310,7 +275,7 @@ const uniqueStyles = StyleSheet.create({
     backgroundColor: colors.accent,
   },
   buttonText: {
-    color: "#000",
+    color: colors.backgroundDark,
     fontSize: 18,
     fontWeight: "600",
   },
@@ -399,7 +364,7 @@ const uniqueStyles = StyleSheet.create({
     fontWeight: "500",
   },
   dropdownFooterDoneText: {
-    color: "#000",
+    color: colors.backgroundDark,
     fontSize: 16,
     fontWeight: "700",
   },

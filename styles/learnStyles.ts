@@ -24,12 +24,9 @@ const uniqueStyles = StyleSheet.create({
     borderColor: "rgba(255,255,255,0.15)",
   },
   tagText: {
-    color: "#f5f5f5",
+    color: colors.textPrimary,
     fontWeight: "500",
     fontSize: 14,
-  },
-  tagTextActive: {
-    color: "#000",
   },
   content: {
     paddingBottom: 100,
@@ -46,17 +43,6 @@ const uniqueStyles = StyleSheet.create({
   },
   cardDimmed: {
     opacity: 0.5,
-  },
-  creatorTopRightWrap: {
-    position: "absolute",
-    top: 12,
-    right: 12,
-    pointerEvents: "none",
-  },
-  titleRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginBottom: 4,
   },
   cardTitle: {
     fontSize: Platform.OS === "web" ? 30 : 24,
@@ -136,46 +122,6 @@ const uniqueStyles = StyleSheet.create({
     fontSize: 16,
   },
 
-  // deleteConfirmModal.tsx
-  confirmModalCard: {
-    backgroundColor: colors.backgroundMid,
-    borderRadius: 12,
-    padding: 20,
-    borderWidth: 1,
-    borderColor: colors.translucentBorder,
-    width: "80%",
-    maxWidth: 380,
-    alignSelf: "center",
-    top: "40%",
-  },
-  confirmTitle: {
-    color: colors.textPrimary,
-    fontSize: 18,
-    fontWeight: "700",
-    marginBottom: 6,
-    textAlign: "center",
-  },
-  confirmSubtitle: {
-    color: colors.textMuted,
-    fontSize: 14,
-    textAlign: "center",
-    marginBottom: 18,
-  },
-  confirmButtonRow: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    marginTop: 4,
-  },
-  buttonDanger: {
-    backgroundColor: colors.danger,
-  },
-  badgeRow: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginBottom: 6,
-  },
-
   // uploadModal.tsx & adminModal.tsx
   error: {
     color: colors.danger,
@@ -209,7 +155,7 @@ const uniqueStyles = StyleSheet.create({
     borderColor: "gray",
     borderRadius: 8,
     backgroundColor: colors.backgroundMid,
-    color: "#f5f5f5",
+    color: colors.textPrimary,
     paddingHorizontal: 12,
     flexDirection: "row",
     alignItems: "center",
@@ -251,17 +197,6 @@ const uniqueStyles = StyleSheet.create({
   dropdownItemTextSelected: {
     color: colors.accent,
     fontWeight: "600",
-  },
-  dropdownDoneButton: {
-    paddingVertical: 10,
-    alignItems: "center",
-    borderTopColor: colors.translucentBorder,
-  },
-  dropdownDoneText: {
-    color: colors.accent,
-    fontWeight: "600",
-    fontSize: 20,
-    marginBottom: 6,
   },
 });
 

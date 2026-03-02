@@ -9,10 +9,9 @@ import {
   Image,
   KeyboardAvoidingView,
   Platform,
-  ActivityIndicator,
   Alert,
-  Linking,
 } from "react-native";
+import ImageViewerModal from "../../../components/ImageViewerModal";
 import { Ionicons } from "@expo/vector-icons";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks/hooks";
 import { connectStyles as styles, colors } from "../../../styles/connectStyles";
@@ -41,6 +40,7 @@ export default function DirectMessageChat({ partnerId }: { partnerId: string }) 
   const [inputHeight, setInputHeight] = useState(40);
   const [myProfile, setMyProfile] = useState<Profile | null>(null);
   const [partnerProfile, setPartnerProfile] = useState<Profile | null>(null);
+  const [viewingImage, setViewingImage] = useState<string | null>(null);
 
   useEffect(() => {
     supabase.auth.getUser().then(({ data }) => {
@@ -147,14 +147,6 @@ export default function DirectMessageChat({ partnerId }: { partnerId: string }) 
     setInputHeight(40);
   };
 
-  const openImage = async (url: string) => {
-    if (Platform.OS === "web") {
-      window.open(url, "_blank");
-    } else {
-      await Linking.openURL(url);
-    }
-  };
-
   const formatTime = (iso: string) =>
     new Date(iso).toLocaleTimeString([], { hour: "numeric", minute: "2-digit" });
 
@@ -168,6 +160,7 @@ export default function DirectMessageChat({ partnerId }: { partnerId: string }) 
   const canSend = (text.trim().length > 0 || !!pendingImage) && !uploading;
 
   return (
+    <>
     <KeyboardAvoidingView
       style={{ flex: 1 }}
       behavior={Platform.OS === "ios" ? "padding" : undefined}
@@ -210,7 +203,7 @@ export default function DirectMessageChat({ partnerId }: { partnerId: string }) 
                 <View style={{ paddingLeft: 54, marginBottom: 2, marginTop: 1 }}>
                   {m.image_url && (
                     <TouchableOpacity
-                      onPress={() => openImage(m.image_url!)}
+                      onPress={() => setViewingImage(m.image_url!)}
                       activeOpacity={0.85}
                     >
                       <Image
@@ -258,8 +251,8 @@ export default function DirectMessageChat({ partnerId }: { partnerId: string }) 
                       style={{
                         flexDirection: "row",
                         alignItems: "baseline",
-                        gap: 6,
-                        marginBottom: 3,
+                        gap: 8,
+                        marginBottom: 6,
                       }}
                     >
                       <Text
@@ -274,7 +267,7 @@ export default function DirectMessageChat({ partnerId }: { partnerId: string }) 
 
                     {m.image_url && (
                       <TouchableOpacity
-                        onPress={() => openImage(m.image_url!)}
+                        onPress={() => setViewingImage(m.image_url!)}
                         activeOpacity={0.85}
                       >
                         <Image
@@ -332,11 +325,11 @@ export default function DirectMessageChat({ partnerId }: { partnerId: string }) 
             style={{ justifyContent: "center", marginRight: 8 }}
             hitSlop={{ top: 6, bottom: 6, left: 6, right: 6 }}
           >
-            {uploading ? (
+            {/* {uploading ? (
               <ActivityIndicator size="small" color={colors.accent} />
-            ) : (
-              <Ionicons name="image-outline" size={26} color={colors.textSecondary} />
-            )}
+            ) : ( */}
+              <Ionicons name="add-circle-outline" size={32} color={colors.textSecondary} />
+            {/* )} */}
           </TouchableOpacity>
 
           <TextInput
@@ -359,7 +352,7 @@ export default function DirectMessageChat({ partnerId }: { partnerId: string }) 
                 borderColor: colors.translucentBorder,
                 borderRadius: 8,
                 paddingHorizontal: 12,
-                paddingTop: Platform.OS === "ios" ? 10 : 8,
+                paddingTop: 10,
               },
             ]}
             onKeyPress={(e) => {
@@ -385,5 +378,11 @@ export default function DirectMessageChat({ partnerId }: { partnerId: string }) 
         </View>
       </View>
     </KeyboardAvoidingView>
+
+      <ImageViewerModal
+        uri={viewingImage}
+        onClose={() => setViewingImage(null)}
+      />
+    </>
   );
 }

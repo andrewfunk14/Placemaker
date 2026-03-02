@@ -90,7 +90,7 @@ export const globalStyles = StyleSheet.create({
   fabPlus: {
     fontSize: 32,
     fontWeight: "900",
-    color: "#000",
+    color: colors.backgroundDark,
   },
 
   // ─── Modal structure ─────────────────────────────────────────────────
@@ -206,43 +206,50 @@ export const globalStyles = StyleSheet.create({
     maxWidth: 120,
   },
 
-  // ─── Card creator overlay (home + learn) ─────────────────────────────
-  editTopRightButton: {
-    position: "absolute",
-    top: 12,
-    right: 12,
-    zIndex: 10,
-    elevation: 10,
-    borderRadius: 9999,
-    backgroundColor: colors.accent,
-    padding: 12,
-    ...(Platform.OS === "web" && { cursor: "pointer" }),
-  },
-  creatorTopRightAvatar: {
-    width: 56,
-    height: 56,
-    borderRadius: 9999,
-    borderWidth: 1,
-    borderColor: colors.translucentBorder,
+  // ─── Uniform card header (avatar left + ellipsis right) ──────────────
+  cardAvatarLeft: {
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    overflow: "hidden",
     backgroundColor: colors.translucentLight,
-  },
-  creatorTopRightFallback: {
-    width: 56,
-    height: 56,
-    borderRadius: 9999,
     borderWidth: 1,
     borderColor: colors.translucentBorder,
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: "rgba(255,255,255,0.06)",
   },
-  creatorAvatarImage: {
-    width: 30,
-    height: 30,
-    borderRadius: 15,
-  },
-  deleteCircle: {
-    marginLeft: Platform.OS === "web" ? 12 : 8,
+  cardEllipsisButton: {
+    padding: 4,
+    borderRadius: 999,
     ...(Platform.OS === "web" && { cursor: "pointer" }),
+  },
+  cardActionMenu: {
+    position: "absolute",
+    top: 48,
+    right: 8,
+    zIndex: 200,
+    elevation: 200,
+    backgroundColor: colors.backgroundDark,
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: colors.translucentBorder,
+    minWidth: 130,
+    overflow: "hidden",
+  },
+  cardActionMenuItem: {
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+  },
+  cardActionMenuText: {
+    color: colors.textPrimary,
+    fontSize: 18,
+    fontWeight: "500",
+  },
+  cardActionMenuDangerText: {
+    color: colors.danger,
+  },
+  cardActionMenuDivider: {
+    height: 1,
+    backgroundColor: colors.translucentBorder,
   },
 });

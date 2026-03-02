@@ -8,7 +8,7 @@ export function cardShadow(): ViewStyle {
   }
   // iOS/Android shadow
   return {
-    shadowColor: "#000",
+    shadowColor: "#0d0d0d",
     shadowOpacity: 0.25,
     shadowRadius: 6,
     shadowOffset: { width: 0, height: 3 },

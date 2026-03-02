@@ -1,5 +1,5 @@
 // app/(placemaker)/_layout.tsx
-import { Platform, View, StyleSheet, Image, TouchableOpacity, Text } from "react-native";
+import { Platform, View, StyleSheet, Image, TouchableOpacity, Text, Pressable } from "react-native";
 import { useEffect } from "react";
 import { Stack, useRouter, useSegments } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
@@ -85,14 +85,38 @@ export default function PlacemakerLayout() {
             onPress={() => router.push("/(placemaker)/(tabs)/profile")}
           />
 
-          <TouchableOpacity
+          <Pressable
             onPress={handleLogout}
-            activeOpacity={0.8}
             style={styles.logoutButton}
           >
-            <Ionicons name="log-out-outline" size={32} color="#ff4d4f" />
-            <Text style={styles.logoutText}>Logout</Text>
-          </TouchableOpacity>
+            {(state) => {
+              const hovered = (state as any).hovered;
+
+              const color =
+                hovered && Platform.OS === "web"
+                  ? "#e04345"
+                  : "#ff4d4f";
+
+              return (
+                <>
+                  <Ionicons
+                    name="log-out-outline"
+                    size={32}
+                    color={color}
+                  />
+                  <Text
+                    style={[
+                      styles.logoutText,
+                      hovered &&
+                        Platform.OS === "web" && { color: "#e04345" },
+                    ]}
+                  >
+                    Logout
+                  </Text>
+                </>
+              );
+            }}
+          </Pressable>
 
         </View>
 
@@ -114,24 +138,55 @@ export default function PlacemakerLayout() {
   );
 }
 
-function NavLink({
-  label,
-  icon,
-  active,
-  onPress,
-}: {
-  label: string;
-  icon: keyof typeof Ionicons.glyphMap;
-  active: boolean;
-  onPress: () => void;
-}) {
-  return (
-    <TouchableOpacity style={[styles.link, active && styles.activeLink]} onPress={onPress}>
-      <Ionicons name={icon} size={28} color={active ? "#FFD21F" : "#f5f5f5"} />
-      <Text style={[styles.linkText, active && styles.activeLinkText]}>{label}</Text>
-    </TouchableOpacity>
-  );
-}
+  function NavLink({
+    label,
+    icon,
+    active,
+    onPress,
+  }: {
+    label: string;
+    icon: keyof typeof Ionicons.glyphMap;
+    active: boolean;
+    onPress: () => void;
+  }) {
+    return (
+      <Pressable
+        onPress={onPress}
+        style={styles.link}
+      >
+        {(state) => {
+          const hovered = (state as any).hovered;
+
+          const textColor = active
+            ? "#FFD21F"
+            : hovered && Platform.OS === "web"
+            ? "#FFD21F"
+            : "#f5f5f5";
+
+          return (
+            <>
+              <Ionicons
+                name={icon}
+                size={28}
+                color={textColor}
+              />
+              <Text
+                style={[
+                  styles.linkText,
+                  active && styles.activeLinkText,
+                  hovered &&
+                    Platform.OS === "web" &&
+                    !active && { color: "#FFD21F" },
+                ]}
+              >
+                {label}
+              </Text>
+            </>
+          );
+        }}
+      </Pressable>
+    );
+  }
 
 const styles = StyleSheet.create({
   container: { 
@@ -164,6 +219,9 @@ const styles = StyleSheet.create({
     color: "#f5f5f5", 
     fontSize: 26, 
     marginLeft: 12 
+  },
+  hoverLinkText: {
+    color: "#FFD21F",
   },
   activeLink: { 
     borderRadius: 6 

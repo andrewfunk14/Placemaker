@@ -28,7 +28,8 @@ export default function BuildScreen() {
   const { projects, loading, error } = useAppSelector(
     (state) => state.projects
   );
-  const { roles } = useUser() as { roles?: string[] };
+  const { userId, roles } = useUser() as { userId?: string; roles?: string[] };
+  const isAdmin = Array.isArray(roles) && roles.includes("admin");
 
   const { width } = useWindowDimensions();
 
@@ -111,6 +112,8 @@ export default function BuildScreen() {
               key={project.id}
               project={project}
               gridItemStyle={gridItemStyle}
+              currentUserId={userId}
+              isAdmin={isAdmin}
             />
           ))}
         </ScrollView>
@@ -124,7 +127,7 @@ export default function BuildScreen() {
       )}
 
       {/* FAB */}
-      {isPlacemaker && (
+      {/* {isPlacemaker && ( */}
         <TouchableOpacity
           style={styles.fab}
           activeOpacity={0.85}
@@ -132,16 +135,16 @@ export default function BuildScreen() {
         >
           <Text style={styles.fabPlus}>＋</Text>
         </TouchableOpacity>
-      )}
+      {/* )} */}
 
       {/* Modal */}
-      {isPlacemaker && (
+      {/* {isPlacemaker && ( */}
         <PostProjectModal
           visible={isModalVisible}
           onClose={() => setIsModalVisible(false)}
           onSubmit={handleSubmitFromModal}
         />
-      )}
+      {/* )} */}
     </View>
   );
 }

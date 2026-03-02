@@ -27,45 +27,21 @@ const uniqueStyles = StyleSheet.create({
     alignSelf: "flex-start",
     backgroundColor: colors.badgeBg,
     color: colors.accent,
-    fontSize: Platform.OS === "web" ? 22 : 24,
+    fontSize: 24,
     fontWeight: "600",
-    paddingVertical: 10,
+    paddingVertical: Platform.OS === "web" ? 12 : 10,
     paddingHorizontal: 12,
     borderRadius: 8,
-  },
-  editTopRightButton: {
-    position: "absolute",
-    top: 12,
-    right: 12,
-    zIndex: 10,
-    elevation: 10,
-    borderRadius: 9999,
-    backgroundColor: colors.accent,
-    padding: 12,
-    ...(Platform.OS === "web" && { cursor: "pointer" }),
-  },
-  creatorTopRightWrap: {
-    position: "absolute",
-    top: 12,
-    right: 12,
-    pointerEvents: "box-none",
   },
   badgeRow: {
     flexDirection: "row",
     alignItems: "center",
-    marginBottom: 8,
   },
   cardTitle: {
     color: colors.textPrimary,
     fontSize: Platform.OS === "web" ? 30 : 28,
     fontWeight: "600",
     marginBottom: 4,
-  },
-  cardMetaRow: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    alignItems: "center",
-    marginBottom: 8,
   },
   cardDate: {
     color: colors.accent,
@@ -86,7 +62,7 @@ const uniqueStyles = StyleSheet.create({
   cardDesc: {
     color: colors.textPrimary,
     fontSize: 20,
-    lineHeight: 20,
+    lineHeight: 28,
     opacity: 0.95,
     marginTop: 8,
   },
@@ -149,10 +125,6 @@ const uniqueStyles = StyleSheet.create({
   },
 
   // EVENT MODAL
-  modalRoot: {
-    flex: 1,
-    justifyContent: "center",
-  },
   backdrop: {
     ...StyleSheet.absoluteFillObject,
     zIndex: 1,
@@ -191,7 +163,7 @@ const uniqueStyles = StyleSheet.create({
     borderRadius: 8,
     paddingHorizontal: 12,
     backgroundColor: colors.backgroundMid,
-    color: "#f5f5f5",
+    color: colors.textPrimary,
     marginBottom: 12,
     fontSize: 18,
   },
@@ -218,7 +190,7 @@ const uniqueStyles = StyleSheet.create({
     borderRadius: 10,
   },
   btnText: {
-    color: "#000",
+    color: colors.backgroundDark,
     fontSize: 20,
     fontWeight: "600",
     textAlign: "center",
@@ -242,28 +214,6 @@ const uniqueStyles = StyleSheet.create({
     marginBottom: 12,
     overflow: "hidden",
     zIndex: 2,
-  },
-  iosSheetBar: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    paddingHorizontal: 14,
-    paddingVertical: 12,
-    borderBottomWidth: StyleSheet.hairlineWidth,
-    borderBottomColor: "#333",
-  },
-  sheetBtnText: {
-    color: colors.textSecondary,
-    fontSize: 18,
-    fontWeight: "600",
-  },
-  iosPicker: {
-    alignSelf: "stretch",
-    backgroundColor: colors.backgroundDark,
-    ...Platform.select({
-      ios: { height: 320 },
-      android: { height: 0 },
-    }),
   },
   error: {
     color: colors.danger,

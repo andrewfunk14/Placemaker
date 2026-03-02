@@ -40,6 +40,7 @@ export default function AvatarManager({
 }: AvatarManagerProps) {
   const dispatch = useAppDispatch();
   const [avatarUploading, setAvatarUploading] = useState(false);
+  const [avatarError, setAvatarError] = useState(false);
   const [previewUri, setPreviewUri] = useState<string | null>(null);
   const [previewOpen, setPreviewOpen] = useState(false);
   const croppedPixelsRef = useRef<CropPixels | null>(null);
@@ -115,8 +116,12 @@ export default function AvatarManager({
             inModal && styles.avatarContainerClickable,
           ]}
         >
-          {displayedUri ? (
-            <RNImage source={{ uri: displayedUri }} style={styles.avatarImage} />
+          {displayedUri && !avatarError ? (
+            <RNImage
+              source={{ uri: displayedUri }}
+              style={styles.avatarImage}
+              onError={() => setAvatarError(true)}
+            />
           ) : (
             <View style={[styles.avatarImage, styles.avatarPlaceholder]}>
               <User2 color={colors.accent} size={80} />

@@ -1,5 +1,5 @@
 // home/eventCard.tsx
-import React from "react";
+import React, { useState } from "react";
 import {
   View,
   Text,
@@ -12,8 +12,9 @@ import { EventRow } from "../../store/slices/eventsSlice";
 import { styles, colors } from "../../styles/homeStyles";
 import { cardShadow } from "../../styles/shadow";
 import ParsedText from "react-native-parsed-text";
-import { Pencil, MinusCircle, User2 } from "lucide-react-native";
+import { User2 } from "lucide-react-native";
 import { useUser } from "../../app/userContext";
+import CardActionMenu from "../../components/CardActionMenu";
 
 interface Props {
   item: EventRow;
@@ -36,6 +37,9 @@ export default function EventCard({
   const user = useUser();
   const isAdmin = user?.roles?.includes("admin");
 
+  const [avatarError, setAvatarError] = useState(false);
+
+  const showEllipsis = isCreator || isAdmin;
 
   const isUrl = /^https?:\/\/\S+/i.test(address);
 
@@ -75,61 +79,44 @@ export default function EventCard({
         isPast && { opacity: 0.7 },
       ]}
     >
-      {isCreator ? (
-        <TouchableOpacity
-          style={styles.editTopRightButton}
-          onPress={onEdit}
-          hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-          activeOpacity={0.7}
-        >
-          <Pencil color={"#000"} size={28} strokeWidth={2.5}/>
-        </TouchableOpacity>
-      ) : (
-        <View style={styles.creatorTopRightWrap}>
-          {avatarUrl ? (
+      {/* Header row: avatar + badge inline, ellipsis right */}
+      <View style={{ flexDirection: "row", alignItems: "center", marginBottom: 4 }}>
+        <View style={styles.cardAvatarLeft}>
+          {avatarUrl && !avatarError ? (
             <Image
               source={{ uri: avatarUrl }}
-              style={styles.creatorTopRightAvatar}
+              style={{ width: 60, height: 60, borderRadius: 30 }}
               resizeMode="cover"
+              onError={() => setAvatarError(true)}
             />
           ) : (
-            <View style={styles.creatorTopRightFallback}>
-              {avatarUrl ? (
-                <Image
-                  source={{ uri: avatarUrl }}
-                  style={styles.creatorAvatarImage}
-                  resizeMode="cover"
-                />
-              ) : (
-                <User2 color={colors.accent} size={30} />
-              )}
-            </View>
+            <User2 color={colors.accent} size={26} />
           )}
         </View>
-      )}
 
-      <View style={styles.badgeRow}>
-        <Text
-          style={[
-            styles.badge,
-            isNow && { backgroundColor: "#2f5f2f", color: "#9ae66e" },
-            isPast && { backgroundColor: "#555", color: "#ccc" },
-          ]}
-        >
-          {label}
-        </Text>
-        {(isCreator || isAdmin) && (
-          <TouchableOpacity
-            onPress={onDelete}
-            style={styles.deleteCircle}
-            activeOpacity={0.7}
+        <View style={{ flex: 1, marginLeft: 12 }}>
+          <Text
+            style={[
+              styles.badge,
+              isNow && { backgroundColor: "#2f5f2f", color: "#9ae66e" },
+              isPast && { backgroundColor: "#555", color: "#ccc" },
+            ]}
           >
-            <MinusCircle color={colors.danger} size={36} />
-          </TouchableOpacity>
+            {label}
+          </Text>
+        </View>
+
+        {showEllipsis && (
+          <CardActionMenu
+            items={[
+              { label: "Edit", onPress: onEdit },
+              { label: "Delete", onPress: onDelete, danger: true },
+            ]}
+          />
         )}
       </View>
 
-      <Text style={[styles.cardTitle, { flexWrap: "wrap" }]}>{item.title}</Text>
+      <Text style={[styles.cardTitle, { flexWrap: "wrap", marginBottom: 4 }]}>{item.title}</Text>
 
       <View
         style={{
@@ -174,7 +161,6 @@ export default function EventCard({
       {item.description ? (
         <ParsedText
           style={[styles.cardDesc, { flexWrap: "wrap" }]}
-          // numberOfLines={Platform.OS === "web" ? undefined : 4}
           ellipsizeMode="tail"
           parse={[
             {

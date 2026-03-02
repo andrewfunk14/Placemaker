@@ -59,7 +59,9 @@ const uniqueStyles = StyleSheet.create({
     width: 50,
     height: 50,
     borderRadius: 25,
-    backgroundColor: "#eee",
+    backgroundColor: colors.translucentLight,
+    borderWidth: 1,
+    borderColor: colors.translucentBorder,
     alignItems: "center",
     justifyContent: "center",
     marginRight: 10,
@@ -70,19 +72,6 @@ const uniqueStyles = StyleSheet.create({
     height: 50,
     borderRadius: 25,
     resizeMode: "cover",
-  },
-  projectAvatarFallback: {
-    width: 50,
-    height: 50,
-    borderRadius: 25,
-    backgroundColor: "#f1f1f1",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  projectAvatarInitial: {
-    fontSize: 16,
-    fontWeight: "600",
-    color: "#555",
   },
   projectHeaderText: {
     flex: 1,
@@ -147,6 +136,7 @@ const uniqueStyles = StyleSheet.create({
     paddingHorizontal: 4,
     fontSize: 16,
     color: colors.textPrimary,
+    lineHeight: 22,
   },
 
   // postProjectModal.tsx
@@ -167,17 +157,9 @@ const uniqueStyles = StyleSheet.create({
     justifyContent: "center",
     backgroundColor: colors.backgroundDark,
   },
-  statusOptionSelected: {
-    borderColor: colors.accent,
-    backgroundColor: colors.translucentLight,
-  },
   statusOptionText: {
     fontSize: 14,
     color: colors.textSecondary,
-  },
-  statusOptionTextSelected: {
-    color: colors.textPrimary,
-    fontWeight: "600",
   },
 });
 

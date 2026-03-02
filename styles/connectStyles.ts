@@ -46,7 +46,7 @@ const uniqueStyles = StyleSheet.create({
     marginLeft: 8,
   },
   headerSmallFabText: {
-    color: "#000",
+    color: colors.backgroundDark,
     fontSize: 18,
     fontWeight: "900",
     marginTop: -1,
@@ -56,7 +56,8 @@ const uniqueStyles = StyleSheet.create({
     fontSize: 28,
     textAlign: "center",
     fontWeight: "700",
-    marginBottom: 12,
+    marginTop: 12,
+    marginBottom: 16,
     marginLeft: 4,
   },
   matchCard: {
@@ -95,12 +96,12 @@ const uniqueStyles = StyleSheet.create({
     justifyContent: "center",
   },
   matchAvatarInitial: {
-    color: "#f5f5f5",
+    color: colors.textPrimary,
     fontSize: 24,
     fontWeight: "700",
   },
   matchName: {
-    color: "#f5f5f5",
+    color: colors.textPrimary,
     fontSize: 20,
     fontWeight: "600",
     marginBottom: 2,
@@ -149,7 +150,7 @@ const uniqueStyles = StyleSheet.create({
     borderRadius: 8,
     paddingHorizontal: 12,
     backgroundColor: colors.backgroundMid,
-    color: "#f5f5f5",
+    color: colors.textPrimary,
     marginTop: 16,
     marginBottom: 12,
     fontSize: 18,
@@ -225,7 +226,7 @@ const uniqueStyles = StyleSheet.create({
     backgroundColor: colors.accent,
   },
   buttonText: {
-    color: "#000",
+    color: colors.backgroundDark,
     fontSize: 18,
     fontWeight: "600",
   },
@@ -284,22 +285,9 @@ const uniqueStyles = StyleSheet.create({
     alignItems: "center",
   },
   fallbackText: {
-    color: "#f5f5f5",
+    color: colors.textPrimary,
     fontWeight: "600",
     fontSize: 16,
-  },
-  messageText: {
-    fontSize: 16,
-    marginBottom: 4,
-    color: "#f5f5f5",
-  },
-  myMessageTimestamp: {
-    color: "#ddd",
-    alignSelf: "flex-end",
-  },
-  theirMessageTimestamp: {
-    color: "#ddd",
-    alignSelf: "flex-start",
   },
   messageContentBlock: {
     flexShrink: 1,
@@ -307,7 +295,7 @@ const uniqueStyles = StyleSheet.create({
   },
   messageSender: {
     color: colors.textPrimary,
-    fontSize: 20,
+    fontSize: 22,
     fontWeight: 'bold',
   },
   slackMessageText: {
@@ -323,7 +311,7 @@ const uniqueStyles = StyleSheet.create({
   messageInputRow: {
     flexDirection: "row",
     marginTop: 12,
-    marginBottom: Platform.OS === "ios" ? 28 : 20,
+    marginBottom: Platform.OS === "ios" ? 28 : 40,
     paddingHorizontal: 16,
   },
   messageInput: {
@@ -341,11 +329,6 @@ const uniqueStyles = StyleSheet.create({
     borderRadius: 8,
     justifyContent: "center",
     alignItems: "center",
-  },
-  sendButtonText: {
-    color: "#000",
-    fontWeight: "700",
-    fontSize: 16,
   },
 });
 

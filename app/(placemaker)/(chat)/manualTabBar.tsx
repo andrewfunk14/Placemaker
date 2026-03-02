@@ -52,12 +52,8 @@ export default function ManualTabBar() {
       style={{
         flexDirection: "row",
         backgroundColor: "#0d0d0d",
-
-        // 👇 SAFE AREA HANDLED HERE (and ONLY here)
         paddingTop: 8,
         paddingBottom: Platform.OS === "ios" ? insets.bottom : 8,
-
-        // 👇 remove borders that cause visual seams
         borderTopWidth: 0,
       }}
     >
@@ -75,7 +71,7 @@ export default function ManualTabBar() {
         >
           <Ionicons
             name={t.icon as any}
-            size={24}
+            size={26}
             color={t.active ? "#FFD21F" : "#f5f5f5"}
             style={{ marginBottom: 2 }}
           />
@@ -83,7 +79,7 @@ export default function ManualTabBar() {
           <Text
             style={{
               color: t.active ? "#FFD21F" : "#f5f5f5",
-              fontSize: 14,
+              fontSize: 15,
               fontWeight: "600",
             }}
           >

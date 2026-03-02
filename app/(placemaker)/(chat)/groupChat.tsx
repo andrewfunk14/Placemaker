@@ -141,6 +141,88 @@ export default function GroupChat({ groupId }: GroupChatProps) {
 
   const canSend = (text.trim().length > 0 || !!pendingImage) && !uploading;
 
+  const inputBar = (
+    <View style={Platform.OS === "web" ? { marginTop: 8 } : { borderTopWidth: 1, borderTopColor: "#222" }}>
+      {pendingImage && (
+        <View style={{ paddingHorizontal: 16, paddingTop: 8 }}>
+          <View style={{ position: "relative", alignSelf: "flex-start" }}>
+            <Image
+              source={{ uri: pendingImage }}
+              style={{ width: 80, height: 80, borderRadius: 8 }}
+              resizeMode="cover"
+            />
+            <TouchableOpacity
+              onPress={() => {
+                deleteChatImage(pendingImage!);
+                setPendingImage(null);
+              }}
+              style={{ position: "absolute", top: -8, right: -8 }}
+              hitSlop={{ top: 6, bottom: 6, left: 6, right: 6 }}
+            >
+              <Ionicons name="close-circle" size={22} color="#fff" />
+            </TouchableOpacity>
+          </View>
+        </View>
+      )}
+
+      <View style={styles.messageInputRow}>
+        <TouchableOpacity
+          onPress={handlePickImage}
+          disabled={uploading}
+          style={{ justifyContent: "center", marginRight: 8 }}
+          hitSlop={{ top: 6, bottom: 6, left: 6, right: 6 }}
+        >
+          <Ionicons name="add-circle-outline" size={32} color={colors.textSecondary} />
+        </TouchableOpacity>
+
+        <TextInput
+          value={text}
+          onChangeText={setText}
+          placeholder="Message…"
+          placeholderTextColor={colors.placeholderText}
+          keyboardAppearance="dark"
+          multiline
+          onContentSizeChange={(e) => {
+            const h = e.nativeEvent.contentSize.height;
+            setInputHeight(Math.min(Math.max(40, h), 120));
+          }}
+          style={[
+            styles.messageInput,
+            {
+              height: inputHeight,
+              color: "#f5f5f5",
+              borderWidth: 1,
+              borderColor: colors.translucentBorder,
+              borderRadius: 8,
+              paddingHorizontal: 12,
+              paddingTop: Platform.OS === "ios" ? 10 : 8,
+            },
+          ]}
+          onKeyPress={(e) => {
+            if (Platform.OS === "web") {
+              const shift = (e as any).shiftKey;
+              if (e.nativeEvent.key === "Enter" && !shift) {
+                e.preventDefault?.();
+                handleSend();
+              }
+            }
+          }}
+        />
+
+        <TouchableOpacity
+          style={[
+            styles.sendButton,
+            { paddingHorizontal: 12, opacity: canSend ? 1 : 0.35 },
+          ]}
+          onPress={handleSend}
+          disabled={!canSend}
+        >
+          <Ionicons name="send" size={18} color="#000" />
+        </TouchableOpacity>
+      </View>
+    </View>
+  );
+
   return (
     <>
     <KeyboardAvoidingView
@@ -237,7 +319,7 @@ export default function GroupChat({ groupId }: GroupChatProps) {
                         flexDirection: "row",
                         alignItems: "baseline",
                         gap: 8,
-                        marginBottom: 4,
+                        marginBottom: 6,
                       }}
                     >
                       <Text
@@ -310,11 +392,11 @@ export default function GroupChat({ groupId }: GroupChatProps) {
             style={{ justifyContent: "center", marginRight: 8 }}
             hitSlop={{ top: 6, bottom: 6, left: 6, right: 6 }}
           >
-            {uploading ? (
-              <ActivityIndicator size="small" color={colors.accent} />
-            ) : (
-              <Ionicons name="image-outline" size={26} color={colors.textSecondary} />
-            )}
+            {/* {uploading ? ( */}
+              {/* // <ActivityIndicator size="small" color={colors.accent} /> */}
+            {/* ) : ( */}
+              <Ionicons name="add-circle-outline" size={32} color={colors.textSecondary} />
+            {/* )} */}
           </TouchableOpacity>
 
           <TextInput
@@ -337,7 +419,7 @@ export default function GroupChat({ groupId }: GroupChatProps) {
                 borderColor: colors.translucentBorder,
                 borderRadius: 8,
                 paddingHorizontal: 12,
-                paddingTop: Platform.OS === "ios" ? 10 : 8,
+                paddingTop: 10,
               },
             ]}
             onKeyPress={(e) => {

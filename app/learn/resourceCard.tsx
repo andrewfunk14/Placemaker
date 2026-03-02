@@ -1,5 +1,5 @@
 // learn/resourceCard.tsx
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import {
   View,
   Text,
@@ -7,6 +7,9 @@ import {
   Image,
   Alert,
   ScrollView,
+  Modal,
+  Pressable,
+  Dimensions,
 } from "react-native";
 import type { Resource } from "../../store/slices/resourcesSlice";
 import { useAppDispatch } from "../../store/hooks/hooks";
@@ -18,18 +21,17 @@ import { learnStyles as styles, colors } from "../../styles/learnStyles";
 import AdminModal from "./adminModal";
 import UploadModal from "./uploadModal";
 import {
-  Pencil,
   User2,
-  MinusCircle,
   FileText,
   CheckCircle,
   Circle,
 } from "lucide-react-native";
-import DeleteConfirmModal from "./deleteConfirmModal";
+import DeleteConfirmModal from "../../components/DeleteConfirmModal";
 import ImageViewerModal from "../../components/ImageViewerModal";
 import { downloadFile } from "../../utils/downloadFile";
 import { useUser } from "../../app/userContext";
 import TierBadge from "./tierBadge";
+import CardActionMenu from "../../components/CardActionMenu";
 
 interface ResourceCardProps {
   resource: Resource;
@@ -48,6 +50,17 @@ export default function ResourceCard({ resource, user }: ResourceCardProps) {
   const [showEdit, setShowEdit] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [viewingImage, setViewingImage] = useState<string | null>(null);
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [avatarError, setAvatarError] = useState(false);
+  const [menuPos, setMenuPos] = useState({ top: 0, right: 0 });
+  const ellipsisRef = useRef<any>(null);
+
+  const openMenu = () => {
+    ellipsisRef.current?.measureInWindow((x: number, y: number, w: number, h: number) => {
+      setMenuPos({ top: y + h + 4, right: Dimensions.get("window").width - x - w });
+      setMenuOpen(true);
+    });
+  };
 
   const isAdmin = contextUser?.roles?.includes("admin");
 
@@ -59,6 +72,17 @@ export default function ResourceCard({ resource, user }: ResourceCardProps) {
   const isCreator =
     contextUser?.userId === resourceCreatorId ||
     user?.id === resourceCreatorId;
+
+  const showEllipsis = isCreator || isAdmin;
+
+  const avatarUrl =
+    typeof resource.uploaded_by === "object"
+      ? resource.uploaded_by?.avatar_url ?? null
+      : null;
+  const creatorName =
+    typeof resource.uploaded_by === "object"
+      ? resource.uploaded_by?.name ?? null
+      : null;
 
   const handleDelete = async () => {
     if (!isAdmin && !isCreator) {
@@ -90,57 +114,34 @@ export default function ResourceCard({ resource, user }: ResourceCardProps) {
         !resource.is_approved && !isAdmin && styles.cardDimmed,
       ]}
     >
-      {(isCreator || (isAdmin && isCreator)) ? (
-        <TouchableOpacity
-          style={styles.editTopRightButton}
-          onPress={() => setShowEdit(true)}
-          hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-          activeOpacity={0.7}
-        >
-          <Pencil color={"#000"} size={28} strokeWidth={2.5}/>
-        </TouchableOpacity>
-      ) : isAdmin ? (
-        <View style={styles.creatorTopRightWrap}>
-          {typeof resource.uploaded_by === "object" && resource.uploaded_by?.avatar_url ? (
+      {/* Header row: avatar + title inline (matching project card), ellipsis right */}
+      <View style={{ flexDirection: "row", alignItems: "center", marginBottom: 8 }}>
+        <View style={styles.cardAvatarLeft}>
+          {avatarUrl && !avatarError ? (
             <Image
-              source={{ uri: resource.uploaded_by.avatar_url }}
-              style={styles.creatorTopRightAvatar}
+              source={{ uri: avatarUrl }}
+              style={{ width: 60, height: 60, borderRadius: 30 }}
               resizeMode="cover"
+              onError={() => setAvatarError(true)}
             />
           ) : (
-            <View style={styles.creatorTopRightFallback}>
-              <User2 color={colors.accent} size={30} />
-            </View>
-          )}
-        </View>    
-      ) : (
-        <View style={styles.creatorTopRightWrap}>
-          {typeof resource.uploaded_by === "object" && resource.uploaded_by?.avatar_url ? (
-            <Image
-              source={{ uri: resource.uploaded_by.avatar_url }}
-              style={styles.creatorTopRightAvatar}
-              resizeMode="cover"
-            />
-          ) : (
-            <View style={styles.creatorTopRightFallback}>
-              <User2 color={colors.accent} size={30} />
-            </View>
+            <User2 color={colors.accent} size={26} />
           )}
         </View>
-      )}
 
-      <View style={styles.titleRow}>
-        <Text style={styles.cardTitle} numberOfLines={2}>
-          {resource.title}
-        </Text>
-        {(isAdmin || isCreator) && (
-          <TouchableOpacity
-            onPress={() => setShowDeleteConfirm(true)}
-            style={styles.deleteCircle}
-            activeOpacity={0.7}
-          >
-            <MinusCircle color={colors.danger} size={28} />
-          </TouchableOpacity>
+        <View style={{ flex: 1, marginLeft: 12 }}>
+          <Text style={styles.cardTitle} numberOfLines={2}>
+            {resource.title}
+          </Text>
+        </View>
+
+        {showEllipsis && (
+          <CardActionMenu
+            items={[
+              { label: "Edit", onPress: () => setShowEdit(true) },
+              { label: "Delete", onPress: () => setShowDeleteConfirm(true), danger: true },              
+            ]}
+          />
         )}
       </View>
 
@@ -266,6 +267,7 @@ export default function ResourceCard({ resource, user }: ResourceCardProps) {
         visible={showDeleteConfirm}
         onCancel={() => setShowDeleteConfirm(false)}
         onConfirm={handleDelete}
+        itemType="resource"
       />
 
       {isAdmin && (
@@ -295,4 +297,3 @@ export default function ResourceCard({ resource, user }: ResourceCardProps) {
     </View>
   );
 }
-
