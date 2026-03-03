@@ -3,7 +3,7 @@ import React, { useEffect, useState, useCallback } from "react";
 import { View, Text, TouchableOpacity, ScrollView, Image, Platform } from "react-native";
 import { useAppDispatch, useAppSelector } from "../../../../store/hooks/hooks";
 import { fetchMyGroups, fetchGroupMembers } from "../../../../store/slices/groupsSlice";
-import { connectStyles as styles } from "../../../../styles/connectStyles";
+import { connectStyles as styles, colors } from "../../../../styles/connectStyles";
 import CreateGroupModal from "../../../connect/createGroupModal";
 import AddMemberModal from "../../../connect/addMemberModal";
 import { useUser } from "../../../userContext";
@@ -11,6 +11,7 @@ import { useFocusEffect } from "@react-navigation/native";
 import { useRouter } from "expo-router";
 import useMatchmaking from "../../../../store/hooks/useMatchmaking";
 import { ArrowRight, Send,  } from "lucide-react-native";
+import { User2 } from "lucide-react-native";
 
 export default function ConnectScreen() {
   const dispatch = useAppDispatch();
@@ -35,6 +36,7 @@ export default function ConnectScreen() {
   );
 
   const { matches } = useMatchmaking(userId);
+  const [avatarError, setAvatarError] = useState(false);
 
   useEffect(() => {
     if (userId) dispatch(fetchMyGroups({ roles }));
@@ -124,15 +126,28 @@ export default function ConnectScreen() {
               >
                 {/* LEFT SIDE */}
                 <View style={styles.matchLeft}>
-                  {m.avatar_url ? (
-                    <Image source={{ uri: m.avatar_url }} style={styles.matchAvatar} />
-                  ) : (
-                    <View style={styles.matchAvatarFallback}>
-                      <Text style={styles.matchAvatarInitial}>
-                        {m.name.charAt(0).toUpperCase()}
-                      </Text>
-                    </View>
-                  )}
+                  <View style={styles.cardAvatarLeft}>
+                    {m.avatar_url && !avatarError ? (
+                      <Image
+                        source={{ uri: m.avatar_url }}
+                        style={{ width: 60, height: 60, borderRadius: 30 }}
+                        resizeMode="cover"
+                        onError={() => setAvatarError(true)}
+                      />
+                    ) : (
+                      <View
+                        style={{
+                          width: 60,
+                          height: 60,
+                          borderRadius: 30,
+                          alignItems: "center",
+                          justifyContent: "center",
+                        }}
+                      >
+                        <User2 color={colors.accent} size={26} />
+                      </View>
+                    )}
+                  </View>
 
                   <View style={{ marginLeft: 12 }}>
                     <Text style={styles.matchName}>{m.name}</Text>

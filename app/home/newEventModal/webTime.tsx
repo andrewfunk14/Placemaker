@@ -31,6 +31,7 @@ export default function WebTime({ startTime, setStartTime }: Props) {
         className="pm-dt"
         value={startTime ? `${pad(startTime.h)}:${pad(startTime.m)}` : ""}
         onChange={handleTimeChange}
+        onClick={(e) => (e.target as HTMLInputElement).showPicker?.()}
         data-placeholder="Select Time"
         required
       />

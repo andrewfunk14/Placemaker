@@ -26,6 +26,7 @@ import {
 } from "../../../store/slices/groupMessagesSlice";
 import { supabase } from "../../../lib/supabaseClient";
 import { uploadChatImage, deleteChatImage } from "../../../utils/uploadChatImage";
+import { User2 } from "lucide-react-native";
 
 interface GroupChatProps {
   groupId: string;
@@ -141,30 +142,6 @@ export default function GroupChat({ groupId }: GroupChatProps) {
 
   const canSend = (text.trim().length > 0 || !!pendingImage) && !uploading;
 
-  const inputBar = (
-    <View style={Platform.OS === "web" ? { marginTop: 8 } : { borderTopWidth: 1, borderTopColor: "#222" }}>
-      {pendingImage && (
-        <View style={{ paddingHorizontal: 16, paddingTop: 8 }}>
-          <View style={{ position: "relative", alignSelf: "flex-start" }}>
-            <Image
-              source={{ uri: pendingImage }}
-              style={{ width: 80, height: 80, borderRadius: 8 }}
-              resizeMode="cover"
-            />
-            <TouchableOpacity
-              onPress={() => {
-                deleteChatImage(pendingImage!);
-                setPendingImage(null);
-              }}
-              style={{ position: "absolute", top: -8, right: -8 }}
-              hitSlop={{ top: 6, bottom: 6, left: 6, right: 6 }}
-            >
-              <Ionicons name="close-circle" size={22} color="#fff" />
-            </TouchableOpacity>
-          </View>
-        </View>
-      )}
-
       <View style={styles.messageInputRow}>
         <TouchableOpacity
           onPress={handlePickImage}
@@ -220,8 +197,6 @@ export default function GroupChat({ groupId }: GroupChatProps) {
           <Ionicons name="send" size={18} color="#000" />
         </TouchableOpacity>
       </View>
-    </View>
-  );
 
   return (
     <>
@@ -279,8 +254,6 @@ export default function GroupChat({ groupId }: GroupChatProps) {
                           width: 220,
                           height: 165,
                           borderRadius: 8,
-                          // // marginBottom: m.content ? 4 : 0,
-                          // marginTop: 2,
                         }}
                         resizeMode="cover"
                       />
@@ -303,13 +276,10 @@ export default function GroupChat({ groupId }: GroupChatProps) {
                       <Image
                         source={{ uri: avatar }}
                         style={styles.messageAvatar}
+                        resizeMode="cover"
                       />
                     ) : (
-                      <View style={styles.messageAvatarFallback}>
-                        <Text style={styles.fallbackText}>
-                          {name.charAt(0).toUpperCase()}
-                        </Text>
-                      </View>
+                      <User2 color={colors.accent} size={26} />
                     )}
                   </View>
 
@@ -392,11 +362,7 @@ export default function GroupChat({ groupId }: GroupChatProps) {
             style={{ justifyContent: "center", marginRight: 8 }}
             hitSlop={{ top: 6, bottom: 6, left: 6, right: 6 }}
           >
-            {/* {uploading ? ( */}
-              {/* // <ActivityIndicator size="small" color={colors.accent} /> */}
-            {/* ) : ( */}
-              <Ionicons name="add-circle-outline" size={32} color={colors.textSecondary} />
-            {/* )} */}
+            <Ionicons name="add-circle-outline" size={32} color={colors.textSecondary} />
           </TouchableOpacity>
 
           <TextInput

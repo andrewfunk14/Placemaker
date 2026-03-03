@@ -51,6 +51,7 @@ export default function NativeDate({
     );
     setIosTempDate(d);
     setStartDay(d);
+    setShowDatePicker(false);
   };
 
   const selectedKey = startDay

@@ -22,6 +22,7 @@ import {
   makeSelectDMsByThread,
 } from "../../../store/slices/dmSlice";
 import { uploadChatImage, deleteChatImage } from "../../../utils/uploadChatImage";
+import { User2 } from "lucide-react-native";
 
 interface Profile {
   name: string;
@@ -238,10 +239,8 @@ export default function DirectMessageChat({ partnerId }: { partnerId: string }) 
                         style={styles.messageAvatar}
                       />
                     ) : (
-                      <View style={styles.messageAvatarFallback}>
-                        <Text style={styles.fallbackText}>
-                          {name.charAt(0).toUpperCase()}
-                        </Text>
+                   <View style={styles.avatarWrapper}>
+                        <User2 color={colors.accent} size={26} />
                       </View>
                     )}
                   </View>
@@ -325,11 +324,7 @@ export default function DirectMessageChat({ partnerId }: { partnerId: string }) 
             style={{ justifyContent: "center", marginRight: 8 }}
             hitSlop={{ top: 6, bottom: 6, left: 6, right: 6 }}
           >
-            {/* {uploading ? (
-              <ActivityIndicator size="small" color={colors.accent} />
-            ) : ( */}
-              <Ionicons name="add-circle-outline" size={32} color={colors.textSecondary} />
-            {/* )} */}
+            <Ionicons name="add-circle-outline" size={32} color={colors.textSecondary} />
           </TouchableOpacity>
 
           <TextInput

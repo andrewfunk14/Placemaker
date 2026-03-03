@@ -5,7 +5,6 @@ import {
   Text,
   FlatList,
   RefreshControl,
-  ActivityIndicator,
 } from "react-native";
 import { EventRow } from "../../store/slices/eventsSlice";
 import EventCard from "../home/eventCard";

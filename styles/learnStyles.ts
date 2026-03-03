@@ -16,7 +16,7 @@ const uniqueStyles = StyleSheet.create({
   },
   tagPill: {
     backgroundColor: "rgba(255,255,255,0.1)",
-    paddingVertical: 6,
+    paddingVertical: 4,
     paddingHorizontal: 12,
     borderRadius: 16,
     marginRight: 8,

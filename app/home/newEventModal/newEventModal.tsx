@@ -49,9 +49,12 @@ export default function NewEventModal({ visible, onClose, event, currentUserId }
   const { roles } = useUser();
 
   const isEdit = !!event;
+  const isAdmin = roles?.includes("admin");
   const isCreator = isEdit ? event?.created_by === currentUserId : false;
   const canCreate = roles?.includes("placemaker");
-  const canEdit = isEdit ? isCreator : canCreate;
+  // const canEdit = isEdit ? isCreator : canCreate;
+  const canEdit = isEdit ? (isCreator || isAdmin) : canCreate;
+
 
   const [title, setTitle] = useState("");
   const [address, setAddress] = useState("");
@@ -334,7 +337,15 @@ export default function NewEventModal({ visible, onClose, event, currentUserId }
                 style={[styles.btn, (!canEdit || saving) && { opacity: 0.5 }]}
                 onPress={save}
               >
-                <Text style={styles.btnText}>{saving ? "Saving..." : isEdit ? "Save" : "Save"}</Text>
+                <Text style={styles.btnText}>
+                  {saving
+                    ? mode === "edit"
+                      ? "Saving..."
+                      : "Submitting..."
+                    : mode === "edit"
+                    ? "Save"
+                    : "Submit"}
+                </Text>
               </TouchableOpacity>
             </View>
           </View>

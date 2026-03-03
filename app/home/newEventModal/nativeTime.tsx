@@ -11,9 +11,6 @@ import {
 import { Picker } from "@react-native-picker/picker";
 import { styles } from "../../../styles/homeStyles";
 
-/* ---------------------------------------------
- * Minute snapping config
- * -------------------------------------------*/
 const MINUTE_STEP = 5;
 const MINUTE_OPTIONS = Array.from(
   { length: 60 / MINUTE_STEP },
@@ -39,9 +36,6 @@ export default function NativeTime({
 }: Props) {
   if (Platform.OS === "web") return null;
 
-  /* ---------------------------------------------
-   * Label
-   * -------------------------------------------*/
   const label = startTime
     ? new Date(2000, 0, 1, startTime.h, startTime.m).toLocaleTimeString(
         "en-US",
@@ -51,9 +45,6 @@ export default function NativeTime({
 
   const labelColor = startTime ? "#f5f5f5" : "#a0a0a0";
 
-  /* ---------------------------------------------
-   * Initial picker state (12-hour)
-   * -------------------------------------------*/
   const initial = useMemo<{
     hour: number;
     minute: number;
@@ -69,7 +60,6 @@ export default function NativeTime({
     let hour12 = hour24 % 12;
     if (hour12 === 0) hour12 = 12;
 
-    // 🔒 Snap minutes DOWN to nearest 5
     const snappedMinute =
       Math.floor(base.getMinutes() / MINUTE_STEP) * MINUTE_STEP;
 
@@ -84,9 +74,6 @@ export default function NativeTime({
   const [minute, setMinute] = useState<number>(initial.minute);
   const [ampm, setAmpm] = useState<"AM" | "PM">(initial.ampm);
 
-  /* ---------------------------------------------
-   * Open / Close
-   * -------------------------------------------*/
   const open = () => {
     setHour(initial.hour);
     setMinute(initial.minute);
@@ -103,9 +90,6 @@ export default function NativeTime({
     setShowTimePicker(false);
   };
 
-  /* ---------------------------------------------
-   * Render
-   * -------------------------------------------*/
   return (
     <>
       <TouchableOpacity

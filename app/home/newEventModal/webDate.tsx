@@ -20,14 +20,10 @@ export default function WebDate({ startDay, setStartDay }: Props) {
     if (value) {
       const [y, m, d] = value.split("-").map(Number);
       setStartDay(new Date(y, m - 1, d, 0, 0, 0));
-  
-      requestAnimationFrame(() => {
-        e.target.showPicker?.();
-      });
     } else {
       setStartDay(null);
     }
-  };  
+  };
 
   return (
     <View style={[styles.center]}>
@@ -36,6 +32,7 @@ export default function WebDate({ startDay, setStartDay }: Props) {
         className="pm-dt"
         value={startDay ? toLocalYYYYMMDD(startDay) : ""}
         onChange={handleDateChange}
+        onClick={(e) => (e.target as HTMLInputElement).showPicker?.()}
         data-placeholder="Select Date"
         required
       />

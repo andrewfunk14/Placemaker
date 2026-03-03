@@ -256,7 +256,7 @@ export default function PostProjectModal({
                 disabled={submitting}
               >
                 <Text style={styles.buttonText}>
-                  {submitting ? (mode === "edit" ? "Saving…" : "Submitting…") : (mode === "edit" ? "Save" : "Submit")}
+                  {submitting ? (mode === "edit" ? "Saving..." : "Submitting...") : (mode === "edit" ? "Save" : "Submit")}
                 </Text>
               </TouchableOpacity>
             </View>

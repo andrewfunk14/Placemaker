@@ -241,7 +241,7 @@ export const globalStyles = StyleSheet.create({
     paddingHorizontal: 16,
   },
   cardActionMenuText: {
-    color: colors.textPrimary,
+    color: colors.accent,
     fontSize: 18,
     fontWeight: "500",
   },

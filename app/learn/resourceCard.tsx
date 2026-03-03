@@ -55,13 +55,6 @@ export default function ResourceCard({ resource, user }: ResourceCardProps) {
   const [menuPos, setMenuPos] = useState({ top: 0, right: 0 });
   const ellipsisRef = useRef<any>(null);
 
-  const openMenu = () => {
-    ellipsisRef.current?.measureInWindow((x: number, y: number, w: number, h: number) => {
-      setMenuPos({ top: y + h + 4, right: Dimensions.get("window").width - x - w });
-      setMenuOpen(true);
-    });
-  };
-
   const isAdmin = contextUser?.roles?.includes("admin");
 
   const resourceCreatorId =
@@ -78,10 +71,6 @@ export default function ResourceCard({ resource, user }: ResourceCardProps) {
   const avatarUrl =
     typeof resource.uploaded_by === "object"
       ? resource.uploaded_by?.avatar_url ?? null
-      : null;
-  const creatorName =
-    typeof resource.uploaded_by === "object"
-      ? resource.uploaded_by?.name ?? null
       : null;
 
   const handleDelete = async () => {
@@ -278,7 +267,7 @@ export default function ResourceCard({ resource, user }: ResourceCardProps) {
         />
       )}
 
-      {isCreator && showEdit && (
+      {(isCreator || isAdmin) && showEdit && (
         <UploadModal
           visible={showEdit}
           onClose={() => {
