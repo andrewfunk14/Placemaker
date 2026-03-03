@@ -68,7 +68,7 @@ export default function WebCropper({
           cropperStyle={{
             touchAction: "none",
             cursor: dragging ? "grabbing" : "grab",
-            background: "#000",
+            background: "#0d0d0d",
           }}
           imageCrossOrigin="anonymous"
           objectFit="cover"

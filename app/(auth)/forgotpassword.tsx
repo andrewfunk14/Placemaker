@@ -6,7 +6,6 @@ import {
   Text,
   Image,
   TextInput,
-  TouchableOpacity,
   StyleSheet,
   ScrollView,
   Keyboard,
@@ -86,7 +85,6 @@ const ForgotPassword = () => {
                 <Image
                   source={require("../../assets/dark-wordmark.png")}
                   style={s.wordmark}
-                  // resizeMode="cover"
                 />
               </View>
   

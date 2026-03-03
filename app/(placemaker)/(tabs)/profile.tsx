@@ -1,15 +1,14 @@
 // (placemaker)/(tabs)/profile.tsx
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import {
   View,
   Text,
   ScrollView,
   TouchableOpacity,
-  Alert,
   Platform,
 } from "react-native";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks/hooks";
-import { fetchProfile, updateProfile } from "../../../store/slices/profileSlice";
+import { fetchProfile } from "../../../store/slices/profileSlice";
 import { useUser, type UserRole } from "../../userContext";
 import { profileStyles as styles, colors } from "../../../styles/profileStyles";
 import AvatarManager from "../../profile/avatarManager";
@@ -49,27 +48,6 @@ export default function ProfileScreen() {
       .catch(console.error);
   }, [dispatch, userId]);
 
-  // save handler
-  const handleSave = useCallback(async () => {
-    if (!userId) return;
-    try {
-      setSaving(true);
-      await dispatch(
-        updateProfile({
-          id: userId,
-          name: editName.trim(),
-          profile_type: editType,
-        })
-      ).unwrap();
-      setEditModalOpen(false);
-    } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : String(err);
-      Alert.alert("Save Failed", msg ?? "Please try again.");
-    } finally {
-      setSaving(false);
-    }
-  }, [dispatch, userId, editName, editType]);
-
   return (
     <View style={{ flex: 1, backgroundColor: colors.backgroundMid }}>
       <ScrollView
@@ -85,7 +63,7 @@ export default function ProfileScreen() {
             style={styles.editTopRightBtn}
             activeOpacity={0.7}
           >
-            <Pencil color={"#000"} size={28} strokeWidth={2.5}/>
+            <Pencil color={"#0d0d0d"} size={28} strokeWidth={2.5}/>
           </TouchableOpacity>
           
           <View style={styles.header}>

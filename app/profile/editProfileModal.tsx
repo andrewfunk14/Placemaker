@@ -60,7 +60,7 @@ export default function EditProfileModal({
   const [assetTypes, setAssetTypes] = useState<string[]>(profile?.asset_types ?? []);
   const [markets, setMarkets] = useState<string[]>(profile?.markets ?? []);
 
-  // 👇 Whenever the modal opens, reset all fields to the latest profile data
+  // Whenever the modal opens, reset all fields to the latest profile data
   useEffect(() => {
     if (visible && profile) {
       setTempAvatarUri(profile.avatar_url ?? null);
@@ -73,7 +73,7 @@ export default function EditProfileModal({
     }
   }, [visible, profile, setName, setType]);
 
-  // ❌ Cancel handler: discard changes & revert to saved values
+  // Cancel handler: discard changes & revert to saved values
   const handleCancel = () => {
     if (profile) {
       setTempAvatarUri(profile.avatar_url ?? null);
@@ -87,7 +87,7 @@ export default function EditProfileModal({
     onClose();
   };
 
-  // 💾 Save handler: upload avatar (if changed) and run onSave()
+  // Save handler: upload avatar (if changed) and run onSave()
   const handleSave = async () => {
     if (!userId) return;
   

@@ -200,7 +200,6 @@ export default function DirectMessageChat({ partnerId }: { partnerId: string }) 
               )}
 
               {isContinuation ? (
-                // Continuation — indented, no avatar/name
                 <View style={{ paddingLeft: 54, marginBottom: 2, marginTop: 1 }}>
                   {m.image_url && (
                     <TouchableOpacity
@@ -311,7 +310,7 @@ export default function DirectMessageChat({ partnerId }: { partnerId: string }) 
                 style={{ position: "absolute", top: -8, right: -8 }}
                 hitSlop={{ top: 6, bottom: 6, left: 6, right: 6 }}
               >
-                <Ionicons name="close-circle" size={22} color="#fff" />
+                <Ionicons name="close-circle" size={22} color="#f5f5f5" />
               </TouchableOpacity>
             </View>
           </View>
@@ -368,7 +367,7 @@ export default function DirectMessageChat({ partnerId }: { partnerId: string }) 
             onPress={handleSend}
             disabled={!canSend}
           >
-            <Ionicons name="send" size={18} color="#000" />
+            <Ionicons name="send" size={18} color="#0d0d0d" />
           </TouchableOpacity>
         </View>
       </View>

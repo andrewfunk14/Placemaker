@@ -38,7 +38,7 @@ export const fetchMyGroups = createAsyncThunk(
   async ({ roles }: { roles: string[] }) => {
     const isAdmin = roles.includes("admin");
 
-    // 🔐 ADMINS: direct groups query
+    // ADMINS: direct groups query
     if (isAdmin) {
       const { data, error } = await supabase
         .from("groups")
@@ -49,7 +49,7 @@ export const fetchMyGroups = createAsyncThunk(
       return data ?? [];
     }
 
-    // 👥 MEMBERS + LEADERS: membership-first query
+    // MEMBERS + LEADERS: membership-first query
     const { data, error } = await supabase
       .from("group_members")
       .select(`
@@ -67,7 +67,7 @@ export const fetchMyGroups = createAsyncThunk(
 
     if (error) throw error;
 
-    // ✅ Deduplicate groups by ID (critical)
+    // Deduplicate groups by ID (critical)
     const unique = new Map<string, Group>();
 
     (data ?? []).forEach((row: any) => {

@@ -12,12 +12,12 @@ export type TierRole =
   | "free";
 
 export const ROLE_COLORS: Record<TierRole, string> = {
-  placemaker: "#FBBF24", // gold
-  policymaker: "#3B82F6", // blue
-  dealmaker: "#22C55E",  // green
-  changemaker: "#F97316", // orange
-  admin: "#9CA3AF",        // gray
-  free: "#9CA3AF",        // gray
+  placemaker: "#FBBF24",
+  policymaker: "#3B82F6",
+  dealmaker: "#22C55E",
+  changemaker: "#F97316",
+  admin: "#9CA3AF",
+  free: "#9CA3AF",
 };
 
 interface RoleBadgeProps {

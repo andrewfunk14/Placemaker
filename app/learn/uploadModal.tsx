@@ -19,7 +19,6 @@ import ResourceTagDropdown from "./tagDropdown";
 import FileUpload from "./fileUpload";
 import type { Resource } from "../../store/slices/resourcesSlice";
 import { supabase } from "../../lib/supabaseClient";
-import { useUser } from "../../app/userContext";
 
 function extractStoragePath(url: string): string | null {
   try {
@@ -50,8 +49,6 @@ export default function UploadModal({
   resource = null,
 }: UploadModalProps) {
   const dispatch = useAppDispatch();
-  const user = useUser();
-  const isAdmin = user?.roles?.includes("admin");
 
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");

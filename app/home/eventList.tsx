@@ -1,7 +1,6 @@
 // home/eventList.tsx
 import React from "react";
 import {
-  View,
   Text,
   FlatList,
   RefreshControl,
@@ -33,13 +32,6 @@ export default function EventList({
   onEdit,
   onDelete,
 }: EventListProps) {
-  if (loading) {
-    return (
-      <View style={{ marginTop: 24 }}>
-        {/* <ActivityIndicator color="#ffd21f" /> */}
-      </View>
-    );
-  }
 
   if (!events.length) {
     return (

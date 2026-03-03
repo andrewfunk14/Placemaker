@@ -56,7 +56,6 @@ export default function ConnectScreen() {
     <View style={styles.container}>
       <ScrollView
         style={styles.groupsListScroll}
-        // contentContainerStyle={styles.groupsListContent}
       >
         {groups.map((g) => (
           <TouchableOpacity
@@ -68,10 +67,7 @@ export default function ConnectScreen() {
               }
             
               router.push(`/(placemaker)/(chat)/chat?groupId=${g.id}`);
-            }}            
-            // onPress={() =>
-            //   router.push(`/(placemaker)/(chat)/chat?groupId=${g.id}`)
-            // }
+            }}
           >
             <View style={styles.groupCardHeader}>
               <Text style={styles.groupCardTitle}>{g.name}</Text>
@@ -96,7 +92,7 @@ export default function ConnectScreen() {
                   <ArrowRight
                     size={24}
                     strokeWidth={3}
-                    color="#000"
+                    color="#0d0d0d"
                   />
                 </TouchableOpacity>
               )}
@@ -119,10 +115,7 @@ export default function ConnectScreen() {
                   }
                 
                   router.push(`/(placemaker)/(chat)/dm?userId=${m.id}`)
-                }}    
-                // onPress={() =>
-                  // router.push(`/(placemaker)/(chat)/dm?userId=${m.id}`)
-                // }
+                }}
               >
                 {/* LEFT SIDE */}
                 <View style={styles.matchLeft}>

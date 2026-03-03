@@ -33,7 +33,7 @@ export default function BuildScreen() {
 
   const { width } = useWindowDimensions();
 
-  const isPlacemaker = Array.isArray(roles) && roles.includes("placemaker");
+  // const isPlacemaker = Array.isArray(roles) && roles.includes("placemaker");
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [search, setSearch] = useState("");
 

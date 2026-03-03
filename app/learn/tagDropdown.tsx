@@ -149,7 +149,7 @@ export default function ResourceTagDropdown({
                 marginLeft: 8,
               }}
             >
-              <Text style={{ color: "#000", fontSize: 16, fontWeight: "700" }}>Done</Text>
+              <Text style={{ color: "#0d0d0d", fontSize: 16, fontWeight: "700" }}>Done</Text>
             </TouchableOpacity>
           </View>
         </View>

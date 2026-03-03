@@ -7,7 +7,6 @@ import {
   Text,
   Image,
   TextInput,
-  TouchableOpacity,
   StyleSheet,
   Keyboard,
   KeyboardAvoidingView,
@@ -66,7 +65,6 @@ const Login = () => {
           await setRoles(profileData.roles);
         }
 
-        // ✅ FIX: clear focus BEFORE navigation
         Keyboard.dismiss();
 
         if (Platform.OS === "web") {
@@ -108,7 +106,6 @@ const Login = () => {
               <Image
                 source={require("../../assets/dark-wordmark.png")}
                 style={s.wordmark}
-                // resizeMode="cover"
               />
             </View>
               <TextInput

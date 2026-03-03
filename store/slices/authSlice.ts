@@ -150,10 +150,10 @@ const authSlice = createSlice({
         state.loading = true;
       })
       .addCase(signOut.fulfilled, (state) => {
-        state.user = null; // ✅ clear user completely
+        state.user = null;
       })
       .addCase(signOut.rejected, (state) => {
-        state.user = null; // ✅ still clear in case of network issues
+        state.user = null;
       });
   },
 });

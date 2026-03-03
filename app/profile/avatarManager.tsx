@@ -33,7 +33,6 @@ interface AvatarManagerProps {
 export default function AvatarManager({
   profile,
   userId,
-  authUser,
   inModal = false,
   tempUri,
   setTempUri,
@@ -45,7 +44,7 @@ export default function AvatarManager({
   const [previewOpen, setPreviewOpen] = useState(false);
   const croppedPixelsRef = useRef<CropPixels | null>(null);
 
-  // === Upload handler (only used outside modal) ===
+  // Upload handler (only used outside modal)
   const processAndUpload = useCallback(
     async (sourceUri: string) => {
       if (!userId || !sourceUri) return;
@@ -75,7 +74,7 @@ export default function AvatarManager({
     [dispatch, userId]
   );
 
-  // === Image picker handler ===
+  // Image picker handler
   const handlePickImage = useCallback(async () => {
     const res = await pickImageCompat();
     if (res.canceled || !res.assets?.length) return;
@@ -83,7 +82,7 @@ export default function AvatarManager({
     if (!uri) return;
 
     if (Platform.OS === "web") {
-      // 🧩 Always open WebCropper for web
+      // Always open WebCropper for web
       setPreviewUri(uri);
       setPreviewOpen(true);
       return;
@@ -128,7 +127,7 @@ export default function AvatarManager({
             </View>
           )}
 
-          {/* "Edit" overlay */}
+          {/* Edit overlay */}
           {inModal && (
             <View style={styles.avatarOverlay}>
               <Text style={styles.avatarOverlayText}>Edit</Text>
@@ -144,7 +143,7 @@ export default function AvatarManager({
         </View>
       </TouchableOpacity>
 
-      {/* === WebCropper Modal (now works for modal editing too) === */}
+      {/* WebCropper Modal (now works for modal editing too) */}
       {Platform.OS === "web" && previewOpen && (
         <Modal visible animationType="slide" transparent>
           <View style={[styles.center, styles.modalBackdrop]}>
@@ -177,13 +176,13 @@ export default function AvatarManager({
                       : previewUri;
 
                     if (inModal && setTempUri) {
-                      // ✅ store locally inside modal
+                      // store locally inside modal
                       setTempUri(cropped);
                       setPreviewOpen(false);
                       return;
                     }
 
-                    // ✅ otherwise upload directly (outside modal)
+                    // otherwise upload directly (outside modal)
                     await processAndUpload(cropped);
                   }}
                   style={[styles.button, styles.buttonPrimary]}

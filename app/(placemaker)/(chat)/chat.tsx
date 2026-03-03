@@ -39,7 +39,7 @@ export default function ChatScreen() {
       {/* Disable native header */}
       <Stack.Screen options={{ headerShown: false }} />
 
-      {/* ✅ Custom header with SAFE AREA */}
+      {/* Custom header */}
       <View
         style={{
           backgroundColor: "#1a1a1a",

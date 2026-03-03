@@ -52,7 +52,6 @@ export default function NewEventModal({ visible, onClose, event, currentUserId }
   const isAdmin = roles?.includes("admin");
   const isCreator = isEdit ? event?.created_by === currentUserId : false;
   const canCreate = roles?.includes("placemaker");
-  // const canEdit = isEdit ? isCreator : canCreate;
   const canEdit = isEdit ? (isCreator || isAdmin) : canCreate;
 
 
@@ -63,7 +62,6 @@ export default function NewEventModal({ visible, onClose, event, currentUserId }
   const [startDay, setStartDay] = useState<Date | null>(null);
   const [startTime, setStartTime] = useState<{ h: number; m: number } | null>(null);
 
-  // 👇 field error state
   const [errors, setErrors] = useState<{ title?: string; date?: string; time?: string }>({});
 
   const [showDatePicker, setShowDatePicker] = useState(false);
@@ -156,11 +154,11 @@ export default function NewEventModal({ visible, onClose, event, currentUserId }
       return false;
     }
   
-    // 🧭 Combine date & time
+    // Combine date & time
     const candidate = combineDateTime(startDay, startTime);
     const now = new Date();
   
-    // Only enforce "future" if creating OR editing a future event
+    // Only enforce "future" if creating or editing a future event
     if (mode === "create") {
       if (candidate <= now) {
         setErrors({ date: "Event must be in the future" });

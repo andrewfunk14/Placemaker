@@ -32,7 +32,7 @@ export default function DirectMessageScreen() {
 
   return (
     <View style={{ flex: 1, backgroundColor: "#1a1a1a" }}>
-      {/* 🚫 Disable native header */}
+      {/* Disable native header */}
       <Stack.Screen options={{ headerShown: false }} />
 
       <View

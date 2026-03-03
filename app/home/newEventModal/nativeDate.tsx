@@ -135,7 +135,7 @@ export default function NativeDate({
                         [selectedKey]: {
                           selected: true,
                           selectedColor: "#ffd21f",
-                          selectedTextColor: "#000000",
+                          selectedTextColor: "#0d0d0d",
                         },
                       }
                     : undefined
@@ -145,7 +145,7 @@ export default function NativeDate({
                   calendarBackground: "#121212",
                   textSectionTitleColor: "#9ca3af",
                   selectedDayBackgroundColor: "#ffd21f",
-                  selectedDayTextColor: "#000000",
+                  selectedDayTextColor: "#0d0d0d",
                   todayTextColor: "#ffd21f",
                   dayTextColor: "#f5f5f5",
                   textDisabledColor: "#555",

@@ -21,7 +21,6 @@ interface Props {
 }
 
 export default function ProfileMultiSelectDropdown({
-  label,
   options,
   value,
   onChange,

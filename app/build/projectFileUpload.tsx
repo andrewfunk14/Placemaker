@@ -107,7 +107,7 @@ export default function ProjectFileUpload({
 
   async function handlePickImages() {
     try {
-      // ✅ MOBILE: pick first, THEN setUploading(true) only if a photo was selected
+      // MOBILE: pick first, then setUploading(true) only if a photo was selected
       if (Platform.OS !== "web") {
         const result = await pickImageCompat();
         if ((result as any)?.canceled) return;
@@ -115,7 +115,7 @@ export default function ProjectFileUpload({
         const asset = (result as any)?.assets?.[0];
         if (!asset?.uri) return;
 
-        setUploading(true); // ✅ moved here
+        setUploading(true);
 
         try {
           const publicUrl = await uploadOneImage({
@@ -134,7 +134,7 @@ export default function ProjectFileUpload({
         return;
       }
 
-      // ✅ WEB: pick first, verify selection, THEN setUploading(true)
+      // ✅ WEB: pick first, verify selection, then setUploading(true)
       const result = await DocumentPicker.getDocumentAsync({
         type: "image/*",
         multiple: true,
@@ -150,7 +150,7 @@ export default function ProjectFileUpload({
         return;
       }
 
-      setUploading(true); // ✅ moved here
+      setUploading(true);
 
       try {
         const uploaded: string[] = [];

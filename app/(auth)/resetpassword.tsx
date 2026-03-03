@@ -7,7 +7,6 @@ import {
   Text,
   Image,
   TextInput,
-  TouchableOpacity,
   StyleSheet,
   Alert,
   Keyboard,
@@ -180,7 +179,6 @@ const ResetPassword = () => {
                 <Image
                   source={require("../../assets/dark-wordmark.png")}
                   style={s.wordmark}
-                  // resizeMode="cover"
                 />
               </View>
   

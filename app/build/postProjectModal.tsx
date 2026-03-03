@@ -107,8 +107,6 @@ export default function PostProjectModal({
 
   const handleClose = async () => {
     if (submitting) return;
-    // In create mode, clean up any uploaded files on cancel.
-    // In edit mode, only clean up files that weren't part of the original project.
     if (mode === "create" && files.length > 0) {
       const paths = files
         .map((url) => {

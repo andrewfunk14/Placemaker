@@ -42,8 +42,6 @@ export default function LearnScreen() {
   
   const canUploadResource = isPaidUser || isAdmin;
 
-  const TAG_ACTIVE_COLOR = colors.accent;
-
   const allTags = useMemo(() => {
     const tagSet = new Set<string>();
     items.forEach((r) => {

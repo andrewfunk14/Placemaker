@@ -182,8 +182,7 @@ const styles = StyleSheet.create({
   },
   menuText: {
     fontSize: 20,
-    color: "#000",
-    // fontWeight: "bold",
+    color: "#0d0d0d",
   },
   logoutText: {
     fontSize: 20,

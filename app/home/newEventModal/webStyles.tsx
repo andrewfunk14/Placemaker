@@ -35,12 +35,12 @@ input.pm-dt[value=""]::-webkit-datetime-edit {
   color: transparent;
 }
 
-/* ✅ Always show readable gray selected text when filled */
+/* Always show readable gray selected text when filled */
 input.pm-dt:not([value=""])::-webkit-datetime-edit {
   color: #f5f5f5 !important;
 }
 
-/* ✅ Custom placeholder */
+/* Custom placeholder */
 input.pm-dt::before {
   content: attr(data-placeholder);
   position: absolute;
@@ -64,13 +64,13 @@ input.pm-dt[value=""]::-webkit-datetime-edit-text {
   pointer-events: none; /* don't focus the (hidden) edit area */
 }
 
-/* ✅ Hide custom placeholder once a real value exists */
+/* Hide custom placeholder once a real value exists */
 input.pm-dt:not([value=""])::before {
   content: "";
   opacity: 0;
 }
 
-/* ✅ Calendar and clock icon styles */
+/* Calendar and clock icon styles */
 input.pm-dt::-webkit-calendar-picker-indicator {
   position: absolute;
   right: 12px;

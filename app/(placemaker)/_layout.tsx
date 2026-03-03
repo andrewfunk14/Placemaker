@@ -1,9 +1,9 @@
 // app/(placemaker)/_layout.tsx
-import { Platform, View, StyleSheet, Image, TouchableOpacity, Text, Pressable } from "react-native";
+import { Platform, View, StyleSheet, Image, Text, Pressable } from "react-native";
 import { useEffect } from "react";
 import { Stack, useRouter, useSegments } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
-import { useAppDispatch, useAppSelector } from "../../store/hooks/hooks";
+import { useAppDispatch } from "../../store/hooks/hooks";
 import { pushPath, resetHistory } from "../../store/slices/navigationSlice";
 import { supabase } from "../../lib/supabaseClient";
 import { signOut } from "../../store/slices/authSlice";
@@ -244,6 +244,6 @@ const styles = StyleSheet.create({
   },
   content: { 
     flex: 1, 
-    backgroundColor: "#000" 
+    backgroundColor: "#0d0d0d"
   },
 });

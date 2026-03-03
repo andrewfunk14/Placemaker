@@ -1,3 +1,4 @@
+// store/slices/projectsSlice.ts
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import { supabase } from "../../lib/supabaseClient";
 
@@ -36,9 +37,7 @@ const initialState: ProjectsState = {
 
 const STORAGE_BUCKET = "projects";
 
-/**
- * Normalize Supabase join (array → object)
- */
+// Normalize Supabase join (array → object)
 function normalizeCreator(
   creator: Creator[] | Creator | null | undefined
 ): Creator | null {

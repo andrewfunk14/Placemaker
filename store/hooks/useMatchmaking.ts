@@ -46,7 +46,7 @@ export default function useMatchmaking(userId: string | null) {
         return;
       }
 
-      /** 3. Compute match score for each candidate */
+      // Compute match score for each candidate
       const scored = others
         .map((cand) => ({
           ...cand,
@@ -66,7 +66,7 @@ export default function useMatchmaking(userId: string | null) {
   return { matches, loading };
 }
 
-/* SCORING ALGORITHM HERE */
+// SCORING ALGORITHM HERE
 function computeMatchScore(me: Profile, cand: Profile): number {
   let score = 0;
 

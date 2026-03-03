@@ -7,9 +7,6 @@ import {
   Image,
   Alert,
   ScrollView,
-  Modal,
-  Pressable,
-  Dimensions,
 } from "react-native";
 import type { Resource } from "../../store/slices/resourcesSlice";
 import { useAppDispatch } from "../../store/hooks/hooks";
@@ -50,10 +47,7 @@ export default function ResourceCard({ resource, user }: ResourceCardProps) {
   const [showEdit, setShowEdit] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [viewingImage, setViewingImage] = useState<string | null>(null);
-  const [menuOpen, setMenuOpen] = useState(false);
   const [avatarError, setAvatarError] = useState(false);
-  const [menuPos, setMenuPos] = useState({ top: 0, right: 0 });
-  const ellipsisRef = useRef<any>(null);
 
   const isAdmin = contextUser?.roles?.includes("admin");
 

@@ -91,10 +91,6 @@ export default function LandingPage() {
       setMessageType("success");
       setName("");
       setEmail("");
-      // setTimeout(() => {
-      //   setMessage("");
-      //   setMessageType("");
-      // }, 5000);
     } catch (err) {
       setMessage("Unexpected error. Please try again.");
       setMessageType("error");
@@ -124,7 +120,6 @@ export default function LandingPage() {
             <Image
               source={require("../assets/dark-wordmark.png")}
               style={styles.wordmark}
-              // resizeMode="cover"
             />
           </TouchableOpacity>
           {isMobile ? (
@@ -366,7 +361,7 @@ const styles = StyleSheet.create({
     fontSize: 20, 
   },
   loginButton: {
-    color: "#000",
+    color: "#0d0d0d",
     backgroundColor: "#ffd21f",
     paddingVertical: 8,
     paddingHorizontal: 12,
@@ -440,7 +435,7 @@ const styles = StyleSheet.create({
     alignSelf: "center",
   },
   ctaButtonText: { 
-    color: "#000", 
+    color: "#0d0d0d", 
     fontWeight: "600", 
     fontSize: 20, 
   },
@@ -513,7 +508,7 @@ const styles = StyleSheet.create({
     height: "env(safe-area-inset-bottom)" as any,
     backgroundColor: "#0d0d0d",
     zIndex: 1,
-  },  
+  },
   icon: { 
     marginBottom: windowWidth > 768 ? 12 : 8, 
   },

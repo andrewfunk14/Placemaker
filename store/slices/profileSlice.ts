@@ -28,14 +28,6 @@ const initialState: ProfileState = {
   error: null,
 };
 
-const slugify = (s: string) =>
-  s
-    .toLowerCase()
-    .trim()
-    .replace(/['"]/g, "")
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/(^-|-$)/g, "") || "user";
-
 function getWritableTmpDir(): string {
   const fsAny = FileSystem as unknown as {
     cacheDirectory?: string;
@@ -142,12 +134,7 @@ export const uploadAvatar = createAsyncThunk<
       .maybeSingle();
     if (profErr) throw profErr;
 
-    // const folder = slugify(prof?.name || `user-${userId.slice(0, 8)}`);
-    // const folder = userId;
-    // const filename = "avatar.jpg";
-    // const path = `${folder}/${filename}`;
     const path = `${userId}/avatar.jpg`;
-
 
     const isDataUrl = fileUri.startsWith("data:");
     const contentType = isDataUrl

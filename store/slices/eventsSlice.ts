@@ -26,35 +26,6 @@ const initialState: EventsState = {
   error: null,
 };
 
-// Small helper to coerce creator_profile to a single object
-function normalizeRows(rows: any[]): EventRow[] {
-  return (rows ?? []).map((r) => {
-    let cp = r?.creator_profile ?? null;
-    if (Array.isArray(cp)) {
-      cp = cp[0] ?? null;
-    }
-    // Optionally, guard fields to satisfy the EventRow type
-    const norm: EventRow = {
-      id: r.id,
-      title: r.title,
-      description: r.description ?? null,
-      start_at: r.start_at,
-      address: r.address ?? null,
-      created_by: r.created_by,
-      created_at: r.created_at,
-      updated_at: r.updated_at,
-      creator_profile: cp
-        ? {
-          id: String(cp.id),
-          name: cp.name ?? null,
-          avatar_url: cp.avatar_url ?? null,
-        }
-        : null,
-    };
-    return norm;
-  });
-}
-
 export const fetchEvents = createAsyncThunk(
   "events/fetchEvents",
   async (_: void, { rejectWithValue }) => {
@@ -65,10 +36,10 @@ export const fetchEvents = createAsyncThunk(
       const BASE_COLUMNS =
         "id,title,description,start_at,address,created_by,created_at,updated_at";
 
-      // 🗑️ Clean up old events
+      // Clean up old events
       await supabase.from("events").delete().lte("start_at", cutoffISO);
 
-      // 1) Get events
+      // Get events
       const { data: eventsRaw, error: evErr } = await supabase
         .from("events")
         .select(BASE_COLUMNS)
@@ -90,11 +61,10 @@ export const fetchEvents = createAsyncThunk(
 
       if (!events.length) return [];
 
-      // 2) Collect unique creator ids
+      // Collect unique creator ids
       const creatorIds = Array.from(new Set(events.map(e => e.created_by).filter(Boolean)));
 
-      // 3) Fetch minimal profile fields for those ids
-      // NOTE: requires a SELECT policy on profiles allowing authenticated users to read id,name,avatar_url
+      // Fetch minimal profile fields for those ids
       let profilesById: Record<string, { id: string; name: string | null; avatar_url: string | null }> = {};
       if (creatorIds.length) {
         const { data: profs, error: pErr } = await supabase
@@ -112,7 +82,7 @@ export const fetchEvents = createAsyncThunk(
         }
       }
 
-      // 4) Stitch creator_profile onto each event
+      // Stitch creator_profile onto each event
       const stitched = events.map(e => ({
         ...e,
         creator_profile: profilesById[e.created_by] ?? null,
@@ -179,12 +149,12 @@ export const deleteEvent = createAsyncThunk(
   "events/deleteEvent",
   async (id: string | null, { rejectWithValue }) => {
     try {
-      // 🕒 Define 2-hour window in milliseconds
+      // Define 2-hour window in milliseconds
       const TWO_HOURS_MS = 2 * 60 * 60 * 1000;
       const now = new Date();
       const cutoffISO = new Date(now.getTime() - TWO_HOURS_MS).toISOString();
 
-      // 🧹 Step 1: Delete any events older than 2 hours past start time
+      // Step 1: Delete any events older than 2 hours past start time
       const { error: cleanupError } = await supabase
         .from("events")
         .delete()
@@ -194,7 +164,7 @@ export const deleteEvent = createAsyncThunk(
         console.warn("Auto-cleanup failed:", cleanupError.message);
       }
 
-      // 🗑️ Step 2: If an explicit event ID is provided, delete it manually
+      // Step 2: If an explicit event ID is provided, delete it manually
       if (id) {
         const { data, error } = await supabase
           .from("events")
@@ -275,12 +245,9 @@ const eventsSlice = createSlice({
 
       // delete
       .addCase(deleteEvent.fulfilled, (s, a: PayloadAction<string | null>) => {
-        // 🧹 If we got a specific event ID, remove it from the list
         if (a.payload) {
           s.items = s.items.filter((e) => e.id !== a.payload);
         } else {
-          // If no ID (auto-cleanup mode), re-fetch remaining valid events from server
-          // or just leave state as-is (depending on how you handle fetchEvents)
           s.items = s.items.filter((e) => {
             const TWO_HOURS_MS = 2 * 60 * 60 * 1000;
             const eventStart = new Date(e.start_at).getTime();

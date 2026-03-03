@@ -7,7 +7,6 @@ import {
   Text,
   Image,
   TextInput,
-  TouchableOpacity,
   StyleSheet,
   KeyboardAvoidingView,
   ScrollView,
@@ -40,13 +39,11 @@ const Signup = () => {
   const showError = (msg: string) => {
     setErrorMessage(msg);
     setSuccessMessage("");
-    // setTimeout(() => setErrorMessage(""), 5000);
   };
   
   const showSuccess = (msg: string) => {
     setSuccessMessage(msg);
     setErrorMessage("");
-    // setTimeout(() => setSuccessMessage(""), 3000);
   };
   
   const handleSignup = async () => {
@@ -131,7 +128,6 @@ const Signup = () => {
                 <Image
                   source={require("../../assets/dark-wordmark.png")}
                   style={s.wordmark}
-                  // resizeMode="cover"
                 />
               </View>
   
