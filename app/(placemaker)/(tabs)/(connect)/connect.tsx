@@ -1,6 +1,6 @@
 // app/(tabs)/(connect)/connect.tsx
 import React, { useEffect, useState, useCallback } from "react";
-import { View, Text, TouchableOpacity, ScrollView, Image, Platform } from "react-native";
+import { View, Text, TouchableOpacity, ScrollView, Image, Platform, RefreshControl } from "react-native";
 import { useAppDispatch, useAppSelector } from "../../../../store/hooks/hooks";
 import { fetchMyGroups, fetchGroupMembers } from "../../../../store/slices/groupsSlice";
 import { connectStyles as styles, colors } from "../../../../styles/connectStyles";
@@ -24,6 +24,7 @@ export default function ConnectScreen() {
   const roles = authUser?.roles ?? ctxRoles ?? [];
 
   const { groups } = useAppSelector((state) => state.groups);
+  const [refreshing, setRefreshing] = useState(false);
   const membersByGroupId = useAppSelector((s) => s.groups.membersByGroupId);
 
   const [showCreateModal, setShowCreateModal] = useState(false);
@@ -56,7 +57,20 @@ export default function ConnectScreen() {
     <View style={styles.container}>
       <ScrollView
         style={styles.groupsListScroll}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={async () => {
+              if (!userId) return;
+              setRefreshing(true);
+              await dispatch(fetchMyGroups({ roles }));
+              setRefreshing(false);
+            }}
+            tintColor={colors.accent}
+          />
+        }
       >
+      <Text style={styles.topHeader}>Your Groups</Text>
         {groups.map((g) => (
           <TouchableOpacity
             key={g.id}

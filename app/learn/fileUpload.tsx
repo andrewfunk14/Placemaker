@@ -87,11 +87,16 @@ export default function FileUploadUnified({
       if (result.canceled) return;
 
       setUploading(true);
-      const assets = result.assets.map((a) => ({
-        uri: a.uri,
-        name: a.fileName ?? `photo_${Date.now()}.jpg`,
-        mimeType: a.mimeType ?? "image/jpeg",
-      }));
+      const assets = result.assets.map((a, i) => {
+        const ext = a.mimeType?.split("/")[1]?.replace("jpeg", "jpg") ?? "jpg";
+        const baseName = (a.fileName ?? "").split("/").pop() ?? "";
+        const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}/i.test(baseName);
+        const isNumericOrTimestamp = /^\d{7,}/.test(baseName.split(".")[0]);
+        const name = baseName && !isUuid && !isNumericOrTimestamp
+          ? baseName
+          : `IMG_${String(i + 1).padStart(4, "0")}.${ext}`;
+        return { uri: a.uri, name, mimeType: a.mimeType ?? "image/jpeg" };
+      });
       const uploaded = await uploadToSupabase(assets);
       const updated = [...uploaded, ...files];
       setFiles(updated);

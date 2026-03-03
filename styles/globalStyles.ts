@@ -56,7 +56,7 @@ export const globalStyles = StyleSheet.create({
     paddingHorizontal: 12,
     backgroundColor: colors.backgroundMid,
     color: colors.textPrimary,
-    marginBottom: Platform.OS === "web" ? 16 : 12,
+    marginBottom: 16,
     fontSize: 18,
   },
   inputMultiline: {
@@ -193,8 +193,8 @@ export const globalStyles = StyleSheet.create({
     borderColor: "gray",
   },
   modalPreviewImage: {
-    width: 32,
-    height: 32,
+    width: 36,
+    height: 36,
     borderRadius: 4,
     marginRight: 6,
   },

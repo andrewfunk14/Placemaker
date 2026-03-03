@@ -42,9 +42,9 @@ export default function ChatScreen() {
       {/* Custom header */}
       <View
         style={{
-          backgroundColor: "#1a1a1a",
+          backgroundColor: Platform.OS === "ios" ? "#0d0d0d" : "#1a1a1a",
           paddingTop: Platform.OS === "ios" ? insets.top : 12,
-          paddingBottom: 8,
+          paddingBottom: 12,
           paddingHorizontal: 12,
           flexDirection: "row",
           alignItems: "center",
@@ -63,7 +63,7 @@ export default function ChatScreen() {
         <Text
           style={{
             color: "#f5f5f5",
-            fontSize: 20,
+            fontSize: 22,
             fontWeight: "700",
             marginLeft: 8,
           }}

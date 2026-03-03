@@ -16,9 +16,10 @@ const uniqueStyles = StyleSheet.create({
   },
   tagPill: {
     backgroundColor: "rgba(255,255,255,0.1)",
-    paddingVertical: 4,
+    paddingVertical: 6,
     paddingHorizontal: 12,
     borderRadius: 16,
+    marginTop: 2,
     marginRight: 8,
     borderWidth: 1,
     borderColor: "rgba(255,255,255,0.15)",
@@ -52,12 +53,11 @@ const uniqueStyles = StyleSheet.create({
   reviewStatusButton: {
     flexDirection: "row",
     alignItems: "center",
-    alignSelf: "flex-start",
+    alignSelf: "center",
     paddingHorizontal: 10,
-    paddingVertical: 4,
+    height: 32,
+    marginBottom: 6,
     borderRadius: 6,
-    marginTop: 2,
-    marginBottom: 2,
   },
   reviewPending: {
     backgroundColor: "rgba(255,210,31,0.15)",
@@ -92,8 +92,8 @@ const uniqueStyles = StyleSheet.create({
     marginTop: 4,
   },
   cardFileImage: {
-    width: 32,
-    height: 32,
+    width: 36,
+    height: 36,
     borderRadius: 6,
     marginRight: 8,
     backgroundColor: colors.backgroundMid,
@@ -101,7 +101,7 @@ const uniqueStyles = StyleSheet.create({
   cardFileText: {
     color: colors.link,
     flexShrink: 1,
-    fontSize: 16,
+    fontSize: 18,
   },
   cardTagContainer: {
     flexDirection: "row",
@@ -147,7 +147,7 @@ const uniqueStyles = StyleSheet.create({
   // tagDropdown.tsx
   dropdownContainer: {
     width: "100%",
-    marginBottom: Platform.OS === "web" ? 16 : 12,
+    marginBottom: 16,
   },
   dropdownButton: {
     height: 48,

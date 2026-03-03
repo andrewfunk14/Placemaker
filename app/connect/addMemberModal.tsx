@@ -135,7 +135,7 @@ export default function AddMemberModal({
               color: "#f5f5f5",
               paddingHorizontal: 14,
               paddingVertical: 10,
-              borderRadius: 12,
+              borderRadius: 8,
               fontSize: 16,
               borderWidth: 1,
               borderColor: "#f5f5f5",

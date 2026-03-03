@@ -37,7 +37,7 @@ export default function DirectMessageScreen() {
 
       <View
         style={{
-          backgroundColor: "#1a1a1a",
+          backgroundColor: Platform.OS === "ios" ? "#0d0d0d" : "#1a1a1a",
           paddingTop: Platform.OS === "ios" ? insets.top : 12,
           paddingVertical: 12,
           paddingHorizontal: 12,
@@ -58,7 +58,7 @@ export default function DirectMessageScreen() {
         <Text
           style={{
             color: "#f5f5f5",
-            fontSize: 20,
+            fontSize: 22,
             fontWeight: "700",
             marginLeft: 8,
           }}

@@ -8,6 +8,7 @@ import {
   Platform,
   useWindowDimensions,
   ScrollView,
+  RefreshControl,
 } from "react-native";
 import { useAppDispatch, useAppSelector } from "../../../../store/hooks/hooks";
 import {
@@ -17,7 +18,7 @@ import {
   ProjectStatus,
 } from "../../../../store/slices/projectsSlice";
 import { useUser } from "../../../userContext";
-import { buildStyles as styles } from "../../../../styles/buildStyles";
+import { buildStyles as styles, colors } from "../../../../styles/buildStyles";
 import PostProjectModal, {
   ProjectFormValues,
 } from "../../../build/postProjectModal";
@@ -94,20 +95,26 @@ export default function BuildScreen() {
         />
       </View>
 
-      {filteredProjects.length === 0 ? (
-        <Text style={styles.empty}>No Projects Found</Text>
-      ) : (
-
-        <ScrollView
-          style={{ flex: 1 }}
-          contentContainerStyle={[
-            Platform.OS === "web" ? styles.webGrid : styles.mobileList,
-            { paddingBottom: 100 },
-          ]}
-          keyboardShouldPersistTaps="handled"
-          showsVerticalScrollIndicator
-        >
-          {filteredProjects.map((project) => (
+      <ScrollView
+        style={{ flex: 1 }}
+        contentContainerStyle={[
+          Platform.OS === "web" ? styles.webGrid : styles.mobileList,
+          { paddingBottom: 100 },
+        ]}
+        keyboardShouldPersistTaps="handled"
+        showsVerticalScrollIndicator
+        refreshControl={
+          <RefreshControl
+            refreshing={loading}
+            onRefresh={() => dispatch(fetchProjects())}
+            tintColor={colors.accent}
+          />
+        }
+      >
+        {filteredProjects.length === 0 ? (
+          <Text style={[styles.empty, { width: "100%" }]}>No Projects Found</Text>
+        ) : (
+          filteredProjects.map((project) => (
             <ProjectCard
               key={project.id}
               project={project}
@@ -115,9 +122,9 @@ export default function BuildScreen() {
               currentUserId={userId}
               isAdmin={isAdmin}
             />
-          ))}
-        </ScrollView>
-      )}
+          ))
+        )}
+      </ScrollView>
 
       {/* Error */}
       {error && (

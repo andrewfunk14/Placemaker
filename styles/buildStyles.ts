@@ -145,7 +145,6 @@ const uniqueStyles = StyleSheet.create({
     flexWrap: "wrap",
     gap: 10,
     marginBottom: 16,
-    marginTop: 4,
   },
   statusOption: {
     flex: 1,

@@ -19,15 +19,18 @@ input.pm-dt {
   border: 1px solid gray;
   padding: 12px;
   background: #1a1a1a;
-  color: #a0a0a0; 
+  color: #a0a0a0;
   outline: none;
-  margin-bottom: 12px;
+  margin-bottom: 16px;
   font-family: "Inter", sans-serif;
   font-size: 16px;
   position: relative;
   display: flex;
   align-items: center;
   box-sizing: border-box;
+  cursor: pointer;
+  user-select: none;
+  -webkit-user-select: none;
 }
 
 /* Hide the browser's date/time text when no value is set */
@@ -70,13 +73,28 @@ input.pm-dt:not([value=""])::before {
   opacity: 0;
 }
 
-/* Calendar and clock icon styles */
+/* Expand indicator to cover the full input — intercepts all clicks, opens picker */
 input.pm-dt::-webkit-calendar-picker-indicator {
   position: absolute;
-  right: 12px;
-  opacity: 0.9;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
   cursor: pointer;
-  color: #a0a0a0;
+}
+
+/* Prevent number fields from receiving focus/highlight on click */
+input.pm-dt::-webkit-datetime-edit,
+input.pm-dt::-webkit-datetime-edit-fields-wrapper,
+input.pm-dt::-webkit-datetime-edit-text,
+input.pm-dt::-webkit-datetime-edit-month-field,
+input.pm-dt::-webkit-datetime-edit-day-field,
+input.pm-dt::-webkit-datetime-edit-year-field,
+input.pm-dt::-webkit-datetime-edit-hour-field,
+input.pm-dt::-webkit-datetime-edit-minute-field,
+input.pm-dt::-webkit-datetime-edit-ampm-field {
+  pointer-events: none;
 }
 
 /* Prevent autofill background from changing text color */

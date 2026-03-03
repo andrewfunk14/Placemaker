@@ -27,11 +27,11 @@ export default function TierBadge({ tier }: TierBadgeProps) {
         borderColor: `${color}55`,
         borderWidth: 2,
         borderRadius: 8,
-        paddingVertical: 4,
         paddingHorizontal: 10,
-        alignSelf: "flex-start",
-        marginTop: 2,
-        marginBottom: 2,
+        height: 32,
+        marginBottom: 6,
+        alignSelf: "center",
+        justifyContent: "center",
       }}
     >
       <Text

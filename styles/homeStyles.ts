@@ -164,7 +164,7 @@ const uniqueStyles = StyleSheet.create({
     paddingHorizontal: 12,
     backgroundColor: colors.backgroundMid,
     color: colors.textPrimary,
-    marginBottom: 12,
+    marginBottom: 16,
     fontSize: 18,
   },
   textarea: {

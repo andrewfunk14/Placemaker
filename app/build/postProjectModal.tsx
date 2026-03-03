@@ -227,7 +227,7 @@ export default function PostProjectModal({
             />
   
             {/* Files */}
-            <View style={{ marginTop: 8 }}>
+            <View>
               <ProjectFileUpload
                 initialFiles={files}
                 onChange={setFiles}

@@ -38,7 +38,6 @@ export default function DirectMessageChat({ partnerId }: { partnerId: string }) 
   const [threadId, setThreadId] = useState<string | null>(null);
   const [pendingImage, setPendingImage] = useState<string | null>(null);
   const [uploading, setUploading] = useState(false);
-  const [inputHeight, setInputHeight] = useState(40);
   const [myProfile, setMyProfile] = useState<Profile | null>(null);
   const [partnerProfile, setPartnerProfile] = useState<Profile | null>(null);
   const [viewingImage, setViewingImage] = useState<string | null>(null);
@@ -145,7 +144,6 @@ export default function DirectMessageChat({ partnerId }: { partnerId: string }) 
     );
     setText("");
     setPendingImage(null);
-    setInputHeight(40);
   };
 
   const formatTime = (iso: string) =>
@@ -200,7 +198,7 @@ export default function DirectMessageChat({ partnerId }: { partnerId: string }) 
               )}
 
               {isContinuation ? (
-                <View style={{ paddingLeft: 54, marginBottom: 2, marginTop: 1 }}>
+                <View style={{ paddingLeft: 56, marginBottom: 2, marginTop: 1 }}>
                   {m.image_url && (
                     <TouchableOpacity
                       onPress={() => setViewingImage(m.image_url!)}
@@ -239,7 +237,7 @@ export default function DirectMessageChat({ partnerId }: { partnerId: string }) 
                       />
                     ) : (
                    <View style={styles.avatarWrapper}>
-                        <User2 color={colors.accent} size={26} />
+                        <User2 color={colors.accent} size={22} />
                       </View>
                     )}
                   </View>
@@ -250,7 +248,7 @@ export default function DirectMessageChat({ partnerId }: { partnerId: string }) 
                         flexDirection: "row",
                         alignItems: "baseline",
                         gap: 8,
-                        marginBottom: 6,
+                        marginBottom: 4,
                       }}
                     >
                       <Text
@@ -323,7 +321,7 @@ export default function DirectMessageChat({ partnerId }: { partnerId: string }) 
             style={{ justifyContent: "center", marginRight: 8 }}
             hitSlop={{ top: 6, bottom: 6, left: 6, right: 6 }}
           >
-            <Ionicons name="add-circle-outline" size={32} color={colors.textSecondary} />
+            <Ionicons name="add-circle-outline" size={34} color={colors.textSecondary} />
           </TouchableOpacity>
 
           <TextInput
@@ -333,20 +331,16 @@ export default function DirectMessageChat({ partnerId }: { partnerId: string }) 
             placeholderTextColor={colors.placeholderText}
             keyboardAppearance="dark"
             multiline
-            onContentSizeChange={(e) => {
-              const h = e.nativeEvent.contentSize.height;
-              setInputHeight(Math.min(Math.max(40, h), 120));
-            }}
             style={[
               styles.messageInput,
               {
-                height: inputHeight,
+                maxHeight: 100,
                 color: "#f5f5f5",
                 borderWidth: 1,
                 borderColor: colors.translucentBorder,
                 borderRadius: 8,
-                paddingHorizontal: 12,
-                paddingTop: 10,
+                paddingHorizontal: 10,
+                paddingVertical: 9,
               },
             ]}
             onKeyPress={(e) => {
@@ -362,12 +356,12 @@ export default function DirectMessageChat({ partnerId }: { partnerId: string }) 
           <TouchableOpacity
             style={[
               styles.sendButton,
-              { paddingHorizontal: 12, opacity: canSend ? 1 : 0.35 },
+              { opacity: canSend ? 1 : 0.35 },
             ]}
             onPress={handleSend}
             disabled={!canSend}
           >
-            <Ionicons name="send" size={18} color="#0d0d0d" />
+            <Ionicons name="send" size={24} color={colors.accent} />
           </TouchableOpacity>
         </View>
       </View>
