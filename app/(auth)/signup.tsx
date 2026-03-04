@@ -64,8 +64,11 @@ const Signup = () => {
         password,
         options: {
           data: { name, roles: ["free"] },
-          emailRedirectTo: "https://joinplacemaker.com/login",
-        },
+          emailRedirectTo:
+            Platform.OS === "web"
+              ? "https://joinplacemaker.com/login"
+              : "placemaker://login"
+                  },
       });
   
       if (error) {

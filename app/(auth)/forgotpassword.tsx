@@ -42,7 +42,7 @@ const ForgotPassword = () => {
       const { error } = await supabase.auth.resetPasswordForEmail(email.trim(), {
         redirectTo: Platform.OS === "web"
         ? "https://joinplacemaker.com/resetpassword"
-        : "exp://127.0.0.1:19000/--/resetpassword"
+        : "placemaker://resetpassword",
       });
   
       if (error) {
