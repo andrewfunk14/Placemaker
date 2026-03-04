@@ -6,9 +6,10 @@ import {
   TouchableOpacity,
   FlatList,
   Dimensions,
+  Pressable,
+  Modal,
 } from "react-native";
-import Modal from "react-native-modal";
-import { learnStyles as styles, colors } from "../../styles/learnStyles";
+import { learnStyles as styles } from "../../styles/learnStyles";
 import { ChevronDown } from "lucide-react-native";
 
 const TIER_OPTIONS = [
@@ -49,37 +50,44 @@ export default function ResourceTierDropdown({
       </TouchableOpacity>
 
       <Modal
-        isVisible={open}
-        onBackdropPress={() => setOpen(false)}
-        backdropColor={colors.modalBackdrop}
-        backdropOpacity={0.8}
-        useNativeDriver
-        style={styles.dropdownModal}
+        visible={open}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setOpen(false)}
       >
-        <View
-          style={[
-            styles.dropdownList,
-            { maxHeight: Math.min(height * 0.7, 300) },
-          ]}
+        <Pressable
+          style={{
+            flex: 1,
+            backgroundColor: "rgba(0,0,0,0.75)",
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+          onPress={() => setOpen(false)}
         >
-          <FlatList
-            data={TIER_OPTIONS}
-            keyExtractor={(item) => item.value}
-            renderItem={({ item }) => (
-              <TouchableOpacity
-                onPress={() => {
-                  onSelect(item.value as "free" | "paid");
-                  setOpen(false);
-                }}
-                style={[
-                  styles.dropdownItem,
-                ]}
-              >
-                <Text style={styles.dropdownItemText}>{item.label}</Text>
-              </TouchableOpacity>
-            )}
-          />
-        </View>
+          <View
+            style={[
+              styles.dropdownList,
+              { maxHeight: Math.min(height * 0.7, 300) },
+            ]}
+            onStartShouldSetResponder={() => true}
+          >
+            <FlatList
+              data={TIER_OPTIONS}
+              keyExtractor={(item) => item.value}
+              renderItem={({ item }) => (
+                <TouchableOpacity
+                  onPress={() => {
+                    onSelect(item.value as "free" | "paid");
+                    setOpen(false);
+                  }}
+                  style={styles.dropdownItem}
+                >
+                  <Text style={styles.dropdownItemText}>{item.label}</Text>
+                </TouchableOpacity>
+              )}
+            />
+          </View>
+        </Pressable>
       </Modal>
     </View>
   );

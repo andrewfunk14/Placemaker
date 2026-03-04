@@ -35,6 +35,7 @@ export default function CreateGroupModal({
   const [leaderId, setLeaderId] = useState<string | null>(null);
   const [users, setUsers] = useState<SimpleUser[]>([]);
   const [showDropdown, setShowDropdown] = useState(false);
+  const [isCreating, setIsCreating] = useState(false);
 
   const paidRolesLc = [
     "placemaker",
@@ -103,13 +104,15 @@ export default function CreateGroupModal({
   const handleCreate = async () => {
     if (!name || !leaderId) return;
 
+    setIsCreating(true);
     try {
       await dispatch(createGroup({ name, leaderId })).unwrap();
     } catch (e) {
       console.error("Create failed:", e);
+    } finally {
+      setIsCreating(false);
+      onClose();
     }
-
-    onClose();
   };
 
   const selectedLeaderName =
@@ -183,10 +186,13 @@ export default function CreateGroupModal({
             </TouchableOpacity>
 
             <TouchableOpacity
-              style={[styles.button, styles.buttonPrimary]}
+              style={[styles.button, styles.buttonPrimary, isCreating && { opacity: 0.6 }]}
               onPress={handleCreate}
+              disabled={isCreating}
             >
-              <Text style={styles.buttonText}>Create</Text>
+              <Text style={styles.buttonText}>
+                {isCreating ? "Creating..." : "Create"}
+              </Text>
             </TouchableOpacity>
           </View>
         </View>

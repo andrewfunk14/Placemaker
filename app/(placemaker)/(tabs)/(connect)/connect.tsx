@@ -1,16 +1,17 @@
 // app/(tabs)/(connect)/connect.tsx
 import React, { useEffect, useState, useCallback } from "react";
-import { View, Text, TouchableOpacity, ScrollView, Image, Platform, RefreshControl } from "react-native";
+import { View, Text, TouchableOpacity, Pressable, ScrollView, Image, Platform, RefreshControl } from "react-native";
 import { useAppDispatch, useAppSelector } from "../../../../store/hooks/hooks";
-import { fetchMyGroups, fetchGroupMembers } from "../../../../store/slices/groupsSlice";
+import { fetchMyGroups, fetchGroupMembers, deleteGroup } from "../../../../store/slices/groupsSlice";
 import { connectStyles as styles, colors } from "../../../../styles/connectStyles";
 import CreateGroupModal from "../../../connect/createGroupModal";
 import AddMemberModal from "../../../connect/addMemberModal";
+import DeleteConfirmModal from "../../../../components/DeleteConfirmModal";
 import { useUser } from "../../../userContext";
 import { useFocusEffect } from "@react-navigation/native";
 import { useRouter } from "expo-router";
 import useMatchmaking from "../../../../store/hooks/useMatchmaking";
-import { ArrowRight, Send,  } from "lucide-react-native";
+import { ArrowRight, Send, MinusCircle } from "lucide-react-native";
 import { User2 } from "lucide-react-native";
 
 export default function ConnectScreen() {
@@ -30,6 +31,7 @@ export default function ConnectScreen() {
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [showAddMemberModal, setShowAddMemberModal] = useState(false);
   const [addMemberGroup, setAddMemberGroup] = useState<any | null>(null);
+  const [groupToDelete, setGroupToDelete] = useState<{ id: string; name: string } | null>(null);
 
   const isAdmin = roles.includes("admin");
   const isPlacemakerPaid = roles.some((r) =>
@@ -71,20 +73,37 @@ export default function ConnectScreen() {
         }
       >
       <Text style={styles.topHeader}>Your Groups</Text>
+        {groups.length === 0 && (
+          <Text style={styles.emptyStateText}>
+            Join a group first to view chats
+          </Text>
+        )}
+
         {groups.map((g) => (
-          <TouchableOpacity
+          <Pressable
             key={g.id}
             style={styles.groupCard}
             onPress={() => {
               if (Platform.OS === "web") {
                 (document.activeElement as HTMLElement | null)?.blur();
               }
-            
+
               router.push(`/(placemaker)/(chat)/chat?groupId=${g.id}`);
             }}
           >
             <View style={styles.groupCardHeader}>
               <Text style={styles.groupCardTitle}>{g.name}</Text>
+
+              <View style={{ flexDirection: "row", alignItems: "center" }}>
+                {isAdmin && (
+                  <TouchableOpacity
+                    onPress={() => setGroupToDelete({ id: g.id, name: g.name })}
+                    hitSlop={8}
+                    style={{ marginRight: 8 }}
+                  >
+                    <MinusCircle size={22} color="#e05252" />
+                  </TouchableOpacity>
+                )}
 
               {(isAdmin || g.leader_id === userId) ? (
                 <TouchableOpacity
@@ -110,8 +129,9 @@ export default function ConnectScreen() {
                   />
                 </TouchableOpacity>
               )}
+              </View>
             </View>
-          </TouchableOpacity>
+          </Pressable>
         ))}
 
         {isPlacemakerPaid && (
@@ -207,20 +227,25 @@ export default function ConnectScreen() {
         />
       )}
 
+      <DeleteConfirmModal
+        visible={!!groupToDelete}
+        itemType="group"
+        onCancel={() => setGroupToDelete(null)}
+        onConfirm={async () => {
+          if (groupToDelete) await dispatch(deleteGroup(groupToDelete.id));
+          setGroupToDelete(null);
+        }}
+      />
+
       {showAddMemberModal && addMemberGroup && (
         <AddMemberModal
           visible={showAddMemberModal}
           onClose={() => {
             setShowAddMemberModal(false);
             setAddMemberGroup(null);
-            dispatch(fetchGroupMembers(addMemberGroup.id));
           }}
           groupId={addMemberGroup.id}
-          existingMemberIds={
-            (membersByGroupId[addMemberGroup.id] ?? []).map(
-              (m) => m.user_id
-            )
-          }
+          existingMembers={membersByGroupId[addMemberGroup.id] ?? []}
         />
       )}
     </View>

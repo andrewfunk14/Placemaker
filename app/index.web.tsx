@@ -494,11 +494,11 @@ const styles = StyleSheet.create({
     padding: 20, 
     borderTopWidth: 1, 
     borderTopColor: "#222", 
-    alignItems: "center" 
+    alignItems: "center", 
   },
   footerText: { 
     color: "#666", 
-    fontSize: 14 
+    fontSize: 15, 
   },
   safeAreaBottom: {
     position: "absolute",

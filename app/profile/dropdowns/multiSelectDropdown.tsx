@@ -7,9 +7,9 @@ import {
   FlatList,
   Dimensions,
   Pressable,
+  Modal,
 } from "react-native";
-import Modal from "react-native-modal";
-import { profileStyles as styles, colors } from "../../../styles/profileStyles";
+import { profileStyles as styles } from "../../../styles/profileStyles";
 import { ChevronDown } from "lucide-react-native";
 
 interface Props {
@@ -60,64 +60,70 @@ export default function ProfileMultiSelectDropdown({
       </TouchableOpacity>
 
       <Modal
-        isVisible={open}
-        onBackdropPress={() => setOpen(false)}
-        backdropColor={colors.modalBackdrop}
-        backdropOpacity={0.8}
-        animationIn="fadeIn"
-        animationOut="fadeOut"
-        useNativeDriver
-        style={styles.dropdownModal}
+        visible={open}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setOpen(false)}
       >
-        <View
-          style={[
-            styles.dropdownList,
-            { maxHeight: Math.min(height * 0.7, 420) },
-          ]}
+        <Pressable
+          style={{
+            flex: 1,
+            backgroundColor: "rgba(0,0,0,0.75)",
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+          onPress={() => setOpen(false)}
         >
-          <FlatList
-            data={options}
-            keyExtractor={(item) => item}
-            renderItem={({ item }) => {
-              const selected = value.includes(item);
-              return (
-                <Pressable
-                  onPress={() => toggle(item)}
-                  style={[
-                    styles.dropdownItem,
-                    selected && styles.dropdownItemSelected,
-                  ]}
-                >
-                  <Text
+          <View
+            style={[
+              styles.dropdownList,
+              { maxHeight: Math.min(height * 0.7, 420) },
+            ]}
+            onStartShouldSetResponder={() => true}
+          >
+            <FlatList
+              data={options}
+              keyExtractor={(item) => item}
+              renderItem={({ item }) => {
+                const selected = value.includes(item);
+                return (
+                  <Pressable
+                    onPress={() => toggle(item)}
                     style={[
-                      styles.dropdownItemText,
-                      selected && styles.dropdownItemTextSelected,
+                      styles.dropdownItem,
+                      selected && styles.dropdownItemSelected,
                     ]}
                   >
-                    {item}
-                  </Text>
-                </Pressable>
-              );
-            }}
-          />
+                    <Text
+                      style={[
+                        styles.dropdownItemText,
+                        selected && styles.dropdownItemTextSelected,
+                      ]}
+                    >
+                      {item}
+                    </Text>
+                  </Pressable>
+                );
+              }}
+            />
 
-          {/* Footer buttons */}
-          <View style={styles.dropdownFooter}>
-            <TouchableOpacity
-              onPress={handleClear}
-              style={[styles.dropdownFooterButton, styles.dropdownFooterClear]}
-            >
-              <Text style={styles.dropdownFooterClearText}>Clear</Text>
-            </TouchableOpacity>
+            <View style={styles.dropdownFooter}>
+              <TouchableOpacity
+                onPress={handleClear}
+                style={[styles.dropdownFooterButton, styles.dropdownFooterClear]}
+              >
+                <Text style={styles.dropdownFooterClearText}>Clear</Text>
+              </TouchableOpacity>
 
-            <TouchableOpacity
-              onPress={() => setOpen(false)}
-              style={[styles.dropdownFooterButton, styles.dropdownFooterDone]}
-            >
-              <Text style={styles.dropdownFooterDoneText}>Done</Text>
-            </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => setOpen(false)}
+                style={[styles.dropdownFooterButton, styles.dropdownFooterDone]}
+              >
+                <Text style={styles.dropdownFooterDoneText}>Done</Text>
+              </TouchableOpacity>
+            </View>
           </View>
-        </View>
+        </Pressable>
       </Modal>
     </View>
   );

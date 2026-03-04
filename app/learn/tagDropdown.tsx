@@ -7,8 +7,8 @@ import {
   FlatList,
   Dimensions,
   Pressable,
+  Modal,
 } from "react-native";
-import Modal from "react-native-modal";
 import { learnStyles as styles, colors } from "../../styles/learnStyles";
 import { ChevronDown } from "lucide-react-native";
 
@@ -69,90 +69,96 @@ export default function ResourceTagDropdown({
       </TouchableOpacity>
 
       <Modal
-        isVisible={open}
-        onBackdropPress={() => setOpen(false)}
-        backdropColor={colors.modalBackdrop}
-        backdropOpacity={0.8}
-        animationIn="fadeIn"
-        animationOut="fadeOut"
-        useNativeDriver
-        style={styles.dropdownModal}
+        visible={open}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setOpen(false)}
       >
-        <View
-          style={[
-            styles.dropdownList,
-            { maxHeight: Math.min(height * 0.7, 420) },
-          ]}
+        <Pressable
+          style={{
+            flex: 1,
+            backgroundColor: "rgba(0,0,0,0.75)",
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+          onPress={() => setOpen(false)}
         >
-          <FlatList
-            data={RESOURCE_TAGS}
-            keyExtractor={(item) => item}
-            renderItem={({ item }) => {
-              const selected = value.includes(item);
-              return (
-                <Pressable
-                  onPress={() => toggleTag(item)}
-                  style={[
-                    styles.dropdownItem,
-                    selected && styles.dropdownItemSelected,
-                  ]}
-                >
-                  <Text
+          <View
+            style={[
+              styles.dropdownList,
+              { maxHeight: Math.min(height * 0.7, 420) },
+            ]}
+            onStartShouldSetResponder={() => true}
+          >
+            <FlatList
+              data={RESOURCE_TAGS}
+              keyExtractor={(item) => item}
+              renderItem={({ item }) => {
+                const selected = value.includes(item);
+                return (
+                  <Pressable
+                    onPress={() => toggleTag(item)}
                     style={[
-                      styles.dropdownItemText,
-                      selected && styles.dropdownItemTextSelected,
+                      styles.dropdownItem,
+                      selected && styles.dropdownItemSelected,
                     ]}
                   >
-                    {item}
-                  </Text>
-                </Pressable>
-              );
-            }}
-          />
-
-          {/* Button row */}
-          <View
-            style={{
-              flexDirection: "row",
-              justifyContent: "space-between",
-              borderTopWidth: 1,
-              borderTopColor: "#333",
-              paddingVertical: 10,
-              paddingHorizontal: 16,
-            }}
-          >
-            <TouchableOpacity
-              onPress={handleClear}
-              style={{
-                flex: 1,
-                alignItems: "center",
-                justifyContent: "center",
-                marginRight: 8,
-                borderRadius: 10,
-                borderWidth: 1,
-                borderColor: "#555",
-                paddingVertical: 8,
+                    <Text
+                      style={[
+                        styles.dropdownItemText,
+                        selected && styles.dropdownItemTextSelected,
+                      ]}
+                    >
+                      {item}
+                    </Text>
+                  </Pressable>
+                );
               }}
-            >
-              <Text style={{ color: "#ccc", fontSize: 16, fontWeight: "500" }}>Clear</Text>
-            </TouchableOpacity>
+            />
 
-            <TouchableOpacity
-              onPress={() => setOpen(false)}
+            <View
               style={{
-                flex: 1,
-                alignItems: "center",
-                justifyContent: "center",
-                backgroundColor: colors.accent,
-                borderRadius: 10,
+                flexDirection: "row",
+                justifyContent: "space-between",
+                borderTopWidth: 1,
+                borderTopColor: "#333",
                 paddingVertical: 10,
-                marginLeft: 8,
+                paddingHorizontal: 16,
               }}
             >
-              <Text style={{ color: "#0d0d0d", fontSize: 16, fontWeight: "700" }}>Done</Text>
-            </TouchableOpacity>
+              <TouchableOpacity
+                onPress={handleClear}
+                style={{
+                  flex: 1,
+                  alignItems: "center",
+                  justifyContent: "center",
+                  marginRight: 8,
+                  borderRadius: 10,
+                  borderWidth: 1,
+                  borderColor: "#555",
+                  paddingVertical: 8,
+                }}
+              >
+                <Text style={{ color: "#ccc", fontSize: 16, fontWeight: "500" }}>Clear</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                onPress={() => setOpen(false)}
+                style={{
+                  flex: 1,
+                  alignItems: "center",
+                  justifyContent: "center",
+                  backgroundColor: colors.accent,
+                  borderRadius: 10,
+                  paddingVertical: 10,
+                  marginLeft: 8,
+                }}
+              >
+                <Text style={{ color: "#0d0d0d", fontSize: 16, fontWeight: "600" }}>Done</Text>
+              </TouchableOpacity>
+            </View>
           </View>
-        </View>
+        </Pressable>
       </Modal>
     </View>
   );

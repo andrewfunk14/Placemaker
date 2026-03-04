@@ -34,7 +34,6 @@ export default function ProfileScreen() {
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [editName, setEditName] = useState("");
   const [editType, setEditType] = useState<string | null>(null);
-  const [saving, setSaving] = useState(false);
 
   // load profile
   useEffect(() => {
@@ -143,7 +142,6 @@ export default function ProfileScreen() {
           authUser={authUser}
           name={editName}
           type={editType}
-          saving={saving}
           setName={setEditName}
           setType={setEditType}
           onClose={() => setEditModalOpen(false)}

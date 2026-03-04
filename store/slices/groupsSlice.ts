@@ -131,6 +131,40 @@ export const createGroup = createAsyncThunk(
   }
 );
 
+export const deleteGroup = createAsyncThunk(
+  "groups/deleteGroup",
+  async (groupId: string, { rejectWithValue }) => {
+    // 1. Fetch all image URLs from this group's messages
+    const { data: messages } = await supabase
+      .from("group_messages")
+      .select("image_url")
+      .eq("group_id", groupId)
+      .not("image_url", "is", null);
+
+    // 2. Delete storage files
+    if (messages?.length) {
+      const marker = "/object/public/chat-images/";
+      const paths = messages
+        .map((m) => {
+          const idx = m.image_url.indexOf(marker);
+          return idx !== -1 ? m.image_url.slice(idx + marker.length) : null;
+        })
+        .filter((p): p is string => p !== null);
+
+      if (paths.length) {
+        await supabase.storage.from("chat-images").remove(paths);
+      }
+    }
+
+    // 3. Delete messages, then the group
+    await supabase.from("group_messages").delete().eq("group_id", groupId);
+
+    const { error } = await supabase.from("groups").delete().eq("id", groupId);
+    if (error) return rejectWithValue(error.message);
+
+    return groupId;
+  }
+);
 
 export const inviteUserToGroup = createAsyncThunk(
   "groups/inviteUserToGroup",
@@ -161,6 +195,24 @@ export const inviteUserToGroup = createAsyncThunk(
 );
 
 
+export const removeGroupMember = createAsyncThunk(
+  "groups/removeGroupMember",
+  async (
+    { groupId, userId }: { groupId: string; userId: string },
+    { rejectWithValue }
+  ) => {
+    const { error } = await supabase
+      .from("group_members")
+      .delete()
+      .eq("group_id", groupId)
+      .eq("user_id", userId);
+
+    if (error) return rejectWithValue(error.message);
+
+    return { groupId, userId };
+  }
+);
+
 const groupsSlice = createSlice({
   name: "groups",
   initialState,
@@ -188,6 +240,11 @@ const groupsSlice = createSlice({
         s.groups = [a.payload, ...s.groups];
       })
 
+      .addCase(deleteGroup.fulfilled, (s, a) => {
+        s.groups = s.groups.filter((g) => g.id !== a.payload);
+        delete s.membersByGroupId[a.payload];
+      })
+
       .addCase(inviteUserToGroup.fulfilled, (s, a) => {
         const m = a.payload;
         if (!m) return;
@@ -201,7 +258,16 @@ const groupsSlice = createSlice({
 
       .addCase(inviteUserToGroup.rejected, (s, a) => {
         s.error = a.payload as string;
-      });      
+      })
+
+      .addCase(removeGroupMember.fulfilled, (s, a) => {
+        const { groupId, userId } = a.payload;
+        if (s.membersByGroupId[groupId]) {
+          s.membersByGroupId[groupId] = s.membersByGroupId[groupId].filter(
+            (m) => m.user_id !== userId
+          );
+        }
+      });
   },
 });
 

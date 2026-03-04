@@ -30,7 +30,6 @@ interface EditProfileModalProps {
   authUser: any;
   name: string;
   type: string | null;
-  saving: boolean;
   setName: (v: string) => void;
   setType: (v: string | null) => void;
   onClose: () => void;
@@ -43,7 +42,6 @@ export default function EditProfileModal({
   authUser,
   name,
   type,
-  saving,
   setName,
   setType,
   onClose,
@@ -51,6 +49,7 @@ export default function EditProfileModal({
   const dispatch = useAppDispatch();
 
   const [tempAvatarUri, setTempAvatarUri] = useState<string | null>(null);
+  const [isSaving, setIsSaving] = useState(false);
   
   const { roles } = useUser();
   const isPlacemaker = roles.includes("placemaker") || roles.includes("admin");
@@ -90,12 +89,13 @@ export default function EditProfileModal({
   // Save handler: upload avatar (if changed) and run onSave()
   const handleSave = async () => {
     if (!userId) return;
-  
+
+    setIsSaving(true);
     try {
       if (tempAvatarUri && tempAvatarUri !== profile?.avatar_url) {
         await dispatch(uploadAvatar({ userId, fileUri: tempAvatarUri })).unwrap();
       }
-  
+
       await dispatch(
         updateProfile({
           id: userId,
@@ -107,10 +107,12 @@ export default function EditProfileModal({
           markets,
         })
       ).unwrap();
-  
+
       onClose();
     } catch (err) {
       console.warn("Failed to save profile:", err);
+    } finally {
+      setIsSaving(false);
     }
   };  
 
@@ -175,11 +177,11 @@ export default function EditProfileModal({
 
             <TouchableOpacity
               onPress={handleSave}
-              style={[styles.button, styles.buttonPrimary]}
-              disabled={saving}
+              style={[styles.button, styles.buttonPrimary, isSaving && { opacity: 0.6 }]}
+              disabled={isSaving}
             >
               <Text style={styles.buttonText}>
-                {saving ? "Saving..." : "Save"}
+                {isSaving ? "Saving..." : "Save"}
               </Text>
             </TouchableOpacity>
           </View>

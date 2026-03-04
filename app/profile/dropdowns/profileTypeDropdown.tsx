@@ -6,9 +6,10 @@ import {
   TouchableOpacity,
   FlatList,
   Dimensions,
+  Pressable,
+  Modal,
 } from "react-native";
-import Modal from "react-native-modal";
-import { profileStyles as styles, colors } from "../../../styles/profileStyles";
+import { profileStyles as styles } from "../../../styles/profileStyles";
 import { ChevronDown } from "lucide-react-native";
 
 const TYPES = [
@@ -38,7 +39,6 @@ export default function ProfileTypeDropdown({
 
   return (
     <View style={styles.dropdownContainer}>
-
       <TouchableOpacity
         activeOpacity={0.7}
         style={styles.dropdownButton}
@@ -57,38 +57,47 @@ export default function ProfileTypeDropdown({
       </TouchableOpacity>
 
       <Modal
-        isVisible={open}
-        onBackdropPress={() => setOpen(false)}
-        backdropColor={colors.modalBackdrop}
-        backdropOpacity={0.8}
-        useNativeDriver
-        style={styles.dropdownModal}
+        visible={open}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setOpen(false)}
       >
-        <View
-          style={[
-            styles.dropdownList,
-            { maxHeight: Math.min(height * 0.7, 420) },
-          ]}
+        <Pressable
+          style={{
+            flex: 1,
+            backgroundColor: "rgba(0,0,0,0.75)",
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+          onPress={() => setOpen(false)}
         >
-          <FlatList
-            data={TYPES}
-            keyExtractor={(item) => item}
-            renderItem={({ item, index }) => (
-              <TouchableOpacity
-                onPress={() => {
-                  onSelect(item);
-                  setOpen(false);
-                }}
-                style={[
-                  styles.dropdownItem,
-                  index === TYPES.length - 1 && styles.dropdownItemLast,
-                ]}
-              >
-                <Text style={styles.dropdownItemText}>{item}</Text>
-              </TouchableOpacity>
-            )}
-          />
-        </View>
+          <View
+            style={[
+              styles.dropdownList,
+              { maxHeight: Math.min(height * 0.7, 420) },
+            ]}
+            onStartShouldSetResponder={() => true}
+          >
+            <FlatList
+              data={TYPES}
+              keyExtractor={(item) => item}
+              renderItem={({ item, index }) => (
+                <TouchableOpacity
+                  onPress={() => {
+                    onSelect(item);
+                    setOpen(false);
+                  }}
+                  style={[
+                    styles.dropdownItem,
+                    index === TYPES.length - 1 && styles.dropdownItemLast,
+                  ]}
+                >
+                  <Text style={styles.dropdownItemText}>{item}</Text>
+                </TouchableOpacity>
+              )}
+            />
+          </View>
+        </Pressable>
       </Modal>
     </View>
   );

@@ -63,6 +63,7 @@ const uniqueStyles = StyleSheet.create({
   },
   subtitle: {
     color: colors.accent,
+    letterSpacing: 0.5,
     fontSize: Platform.OS === "web" ? 24 : 20,
     fontWeight: "600",
     marginBottom: Platform.OS === "web" ? 12 : 0,
@@ -264,13 +265,13 @@ const uniqueStyles = StyleSheet.create({
     borderRadius: 10,
     paddingVertical: 10,
     paddingHorizontal: 16,
-    borderWidth: 2,
+    borderWidth: 1,
     alignItems: "center",
     justifyContent: "center",
   },
   buttonPrimary: {
     borderRadius: 10,
-    paddingVertical: 10,
+    paddingVertical: 12,
     paddingHorizontal: 16,
     backgroundColor: colors.accent,
   },
@@ -366,7 +367,7 @@ const uniqueStyles = StyleSheet.create({
   dropdownFooterDoneText: {
     color: colors.backgroundDark,
     fontSize: 16,
-    fontWeight: "700",
+    fontWeight: "600",
   },
   dropdownItemSelected: {
     backgroundColor: colors.translucentLight,

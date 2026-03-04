@@ -20,7 +20,7 @@ const uniqueStyles = StyleSheet.create({
     borderRadius: 12,
     borderWidth: 1,
     borderColor: colors.textPrimary,
-    marginBottom: 12,
+    marginBottom: 16,
     paddingHorizontal: 0,
     overflow: "hidden",
   },
@@ -107,10 +107,11 @@ const uniqueStyles = StyleSheet.create({
     marginBottom: 2,
   },
   matchTier: {
-    color: "#FFD21F",
+    color: colors.accent,
     fontSize: 16,
     fontWeight: "600",
     marginBottom: 2,
+    letterSpacing: 0.5,
   },
   matchSubtitle: {
     color: "#bbb",
@@ -214,13 +215,13 @@ const uniqueStyles = StyleSheet.create({
     borderRadius: 10,
     paddingVertical: 10,
     paddingHorizontal: 16,
-    borderWidth: 2,
+    borderWidth: 1,
     alignItems: "center",
     justifyContent: "center",
   },
   buttonPrimary: {
     borderRadius: 10,
-    paddingVertical: 10,
+    paddingVertical: 12,
     paddingHorizontal: 16,
     backgroundColor: colors.accent,
   },
@@ -247,7 +248,7 @@ const uniqueStyles = StyleSheet.create({
     flex: 1,
     height: 1,
     backgroundColor: "#333",
-    marginBottom: Platform.OS === "web" ? 0 : 8,
+    marginBottom: 8,
   },
   dayHeaderText: {
     marginHorizontal: 12,
@@ -257,7 +258,7 @@ const uniqueStyles = StyleSheet.create({
     backgroundColor: "#0f0f0f",
     paddingHorizontal: 12,
     paddingVertical: 8,
-    marginBottom: Platform.OS === "web" ? 0 : 8,
+    marginBottom: 8,
     borderRadius: 20,
     borderWidth: 1,
     borderColor: "#222",
@@ -320,6 +321,12 @@ const uniqueStyles = StyleSheet.create({
     paddingVertical: 8,
     justifyContent: "center",
     alignItems: "center",
+  },
+  emptyStateText: {
+    color: colors.placeholderText,
+    fontSize: 20,
+    textAlign: "center",
+    marginBottom: 12,
   },
 });
 
