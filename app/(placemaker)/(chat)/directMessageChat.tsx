@@ -10,6 +10,7 @@ import {
   KeyboardAvoidingView,
   Platform,
   Alert,
+  RefreshControl,
 } from "react-native";
 import ImageViewerModal from "../../../components/ImageViewerModal";
 import { Ionicons } from "@expo/vector-icons";
@@ -41,6 +42,7 @@ export default function DirectMessageChat({ partnerId }: { partnerId: string }) 
   const [myProfile, setMyProfile] = useState<Profile | null>(null);
   const [partnerProfile, setPartnerProfile] = useState<Profile | null>(null);
   const [viewingImage, setViewingImage] = useState<string | null>(null);
+  const [refreshing, setRefreshing] = useState(false);
 
   useEffect(() => {
     supabase.auth.getUser().then(({ data }) => {
@@ -172,6 +174,18 @@ export default function DirectMessageChat({ partnerId }: { partnerId: string }) 
         keyboardDismissMode={Platform.OS === "ios" ? "interactive" : "on-drag"}
         onContentSizeChange={scrollToBottom}
         contentContainerStyle={{ paddingVertical: 12, paddingHorizontal: 16 }}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={async () => {
+              if (!threadId) return;
+              setRefreshing(true);
+              await dispatch(fetchDMs(threadId));
+              setRefreshing(false);
+            }}
+            tintColor={colors.accent}
+          />
+        }
       >
         {messages.map((m, i) => {
           const mine = m.sender_id === myId;
@@ -292,7 +306,7 @@ export default function DirectMessageChat({ partnerId }: { partnerId: string }) 
       </ScrollView>
 
       <View style={{ borderTopWidth: 1, borderTopColor: "#222" }}>
-        {pendingImage && (
+        {/* {pendingImage && (
           <View style={{ paddingHorizontal: 16, paddingTop: 8 }}>
             <View style={{ position: "relative", alignSelf: "flex-start" }}>
               <Image
@@ -312,7 +326,7 @@ export default function DirectMessageChat({ partnerId }: { partnerId: string }) 
               </TouchableOpacity>
             </View>
           </View>
-        )}
+        )} */}
 
         <View style={styles.messageInputRow}>
           <TouchableOpacity
@@ -321,7 +335,7 @@ export default function DirectMessageChat({ partnerId }: { partnerId: string }) 
             style={{ justifyContent: "center", marginRight: 8 }}
             hitSlop={{ top: 6, bottom: 6, left: 6, right: 6 }}
           >
-            <Ionicons name="add-circle-outline" size={34} color={colors.textSecondary} />
+            {/* <Ionicons name="add-circle-outline" size={34} color={colors.textSecondary} /> */}
           </TouchableOpacity>
 
           <TextInput

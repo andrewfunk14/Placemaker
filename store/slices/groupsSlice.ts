@@ -35,7 +35,7 @@ const initialState: GroupsState = {
 
 export const fetchMyGroups = createAsyncThunk(
   "groups/fetchMyGroups",
-  async ({ roles }: { roles: string[] }) => {
+  async ({ roles, userId }: { roles: string[]; userId: string }) => {
     const isAdmin = roles.includes("admin");
 
     // ADMINS: direct groups query
@@ -49,35 +49,31 @@ export const fetchMyGroups = createAsyncThunk(
       return data ?? [];
     }
 
-    // MEMBERS + LEADERS: membership-first query
-    const { data, error } = await supabase
+    // Step 1: get the group IDs this user belongs to
+    const { data: memberRows, error: memberError } = await supabase
       .from("group_members")
-      .select(`
-        role,
-        groups (
-          id,
-          name,
-          created_by,
-          leader_id,
-          created_at,
-          updated_at
-        )
-      `)
-      .order("created_at");
+      .select("group_id")
+      .eq("user_id", userId);
 
-    if (error) throw error;
+    console.log("[fetchMyGroups] userId:", userId, "memberRows:", memberRows?.length, "memberError:", memberError?.message);
 
-    // Deduplicate groups by ID (critical)
-    const unique = new Map<string, Group>();
+    if (memberError) throw memberError;
+    if (!memberRows?.length) return [];
 
-    (data ?? []).forEach((row: any) => {
-      const g = row.groups;
-      if (g?.id) {
-        unique.set(g.id, g);
-      }
-    });
+    const groupIds = memberRows.map((r: any) => r.group_id);
 
-    return Array.from(unique.values());
+    // Step 2: fetch the actual group records
+    const { data: groupData, error: groupError } = await supabase
+      .from("groups")
+      .select("*")
+      .in("id", groupIds)
+      .order("name");
+
+    console.log("[fetchMyGroups] groupData:", groupData?.length, "groupError:", groupError?.message);
+
+    if (groupError) throw groupError;
+
+    return (groupData ?? []) as Group[];
   }
 );
 

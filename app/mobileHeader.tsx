@@ -31,6 +31,7 @@ const MobileHeader: React.FC<MobileHeaderProps> = ({
   const dispatch = useAppDispatch();
   const history = useAppSelector((state) => state.navigation.history);
   const [showMenu, setShowMenu] = useState(false);
+  const [avatarError, setAvatarError] = useState(false);
 
   const handleBack = () => {
     const prev = history[history.length - 2];
@@ -88,8 +89,8 @@ const MobileHeader: React.FC<MobileHeaderProps> = ({
             onPress={() => setShowMenu(!showMenu)}
             style={styles.profileButton}
           >
-            {profileImageUrl ? (
-              <Image source={{ uri: profileImageUrl }} style={styles.profileImage} />
+            {profileImageUrl && !avatarError ? (
+              <Image source={{ uri: profileImageUrl }} style={styles.profileImage} onError={() => setAvatarError(true)} />
             ) : (
               <Ionicons name="person-circle-outline" size={50} color="#f5f5f5" />
             )}

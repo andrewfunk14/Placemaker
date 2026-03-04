@@ -9,6 +9,7 @@ import {
   Dimensions,
   TextInput,
   Modal,
+  Alert,
 } from "react-native";
 import { supabase } from "../../lib/supabaseClient";
 import { useAppDispatch } from "../../store/hooks/hooks";
@@ -109,7 +110,7 @@ export default function AddMemberModal({
 
     setIsSaving(true);
     try {
-      await Promise.all([
+      const results = await Promise.all([
         ...toAdd.map((userId) =>
           dispatch(inviteUserToGroup({ groupId, userId, role: "member" }))
         ),
@@ -117,6 +118,12 @@ export default function AddMemberModal({
           dispatch(removeGroupMember({ groupId, userId }))
         ),
       ]);
+
+      const failed = results.filter((r) => (r as any).error);
+      if (failed.length) {
+        Alert.alert("Error", "Some members could not be updated. Check permissions and try again.");
+        return;
+      }
 
       await dispatch(fetchGroupMembers(groupId));
     } finally {

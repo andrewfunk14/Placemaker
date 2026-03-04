@@ -39,6 +39,7 @@ export default function AvatarManager({
 }: AvatarManagerProps) {
   const dispatch = useAppDispatch();
   const [avatarUploading, setAvatarUploading] = useState(false);
+  const [isCropping, setIsCropping] = useState(false);
   const [avatarError, setAvatarError] = useState(false);
   const [previewUri, setPreviewUri] = useState<string | null>(null);
   const [previewOpen, setPreviewOpen] = useState(false);
@@ -171,25 +172,28 @@ export default function AvatarManager({
                     const px = croppedPixelsRef.current;
                     if (!previewUri) return;
 
-                    const cropped = px
-                      ? await getCroppedDataUrlWeb(previewUri, px)
-                      : previewUri;
+                    setIsCropping(true);
+                    try {
+                      const cropped = px
+                        ? await getCroppedDataUrlWeb(previewUri, px)
+                        : previewUri;
 
-                    if (inModal && setTempUri) {
-                      // store locally inside modal
-                      setTempUri(cropped);
-                      setPreviewOpen(false);
-                      return;
+                      if (inModal && setTempUri) {
+                        setTempUri(cropped);
+                        setPreviewOpen(false);
+                        return;
+                      }
+
+                      await processAndUpload(cropped);
+                    } finally {
+                      setIsCropping(false);
                     }
-
-                    // otherwise upload directly (outside modal)
-                    await processAndUpload(cropped);
                   }}
                   style={[styles.button, styles.buttonPrimary]}
-                  disabled={avatarUploading}
+                  disabled={isCropping || avatarUploading}
                 >
                   <Text style={styles.buttonText}>
-                    {avatarUploading ? "Saving..." : "Save"}
+                    {isCropping || avatarUploading ? "Saving..." : "Save"}
                   </Text>
                 </TouchableOpacity>
               </View>

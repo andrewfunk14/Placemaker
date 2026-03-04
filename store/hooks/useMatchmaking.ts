@@ -17,53 +17,52 @@ export default function useMatchmaking(userId: string | null) {
   const [matches, setMatches] = useState<Profile[]>([]);
   const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
+  async function runMatchmaking() {
     if (!userId) return;
+    setLoading(true);
 
-    async function runMatchmaking() {
-      setLoading(true);
+    const { data: me, error: meError } = await supabase
+      .from("profiles")
+      .select("*")
+      .eq("id", userId)
+      .maybeSingle();
 
-      const { data: me, error: meError } = await supabase
-        .from("profiles")
-        .select("*")
-        .eq("id", userId)
-        .maybeSingle();
-
-      if (meError || !me) {
-        console.error("Failed to fetch self profile:", meError);
-        setLoading(false);
-        return;
-      }
-
-      const { data: others, error: othersError } = await supabase
-        .from("profiles")
-        .select("*")
-        .neq("id", userId);
-
-      if (othersError || !others) {
-        console.error("Failed to fetch other profiles:", othersError);
-        setLoading(false);
-        return;
-      }
-
-      // Compute match score for each candidate
-      const scored = others
-        .map((cand) => ({
-          ...cand,
-          matchScore: computeMatchScore(me, cand),
-        }))
-        .filter((c) => c.matchScore > 0)
-        .sort((a, b) => b.matchScore - a.matchScore)
-        .slice(0, 5);
-
-      setMatches(scored);
+    if (meError || !me) {
+      console.error("Failed to fetch self profile:", meError);
       setLoading(false);
+      return;
     }
 
+    const { data: others, error: othersError } = await supabase
+      .from("profiles")
+      .select("*")
+      .neq("id", userId);
+
+    if (othersError || !others) {
+      console.error("Failed to fetch other profiles:", othersError);
+      setLoading(false);
+      return;
+    }
+
+    // Compute match score for each candidate
+    const scored = others
+      .map((cand) => ({
+        ...cand,
+        matchScore: computeMatchScore(me, cand),
+      }))
+      .filter((c) => c.matchScore > 0)
+      .sort((a, b) => b.matchScore - a.matchScore)
+      .slice(0, 5);
+
+    setMatches(scored);
+    setLoading(false);
+  }
+
+  useEffect(() => {
     runMatchmaking();
   }, [userId]);
 
-  return { matches, loading };
+  return { matches, loading, refetch: runMatchmaking };
 }
 
 // SCORING ALGORITHM HERE

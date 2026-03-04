@@ -8,6 +8,7 @@ import CreateGroupModal from "../../../connect/createGroupModal";
 import AddMemberModal from "../../../connect/addMemberModal";
 import DeleteConfirmModal from "../../../../components/DeleteConfirmModal";
 import { useUser } from "../../../userContext";
+import { supabase } from "../../../../lib/supabaseClient";
 import { useFocusEffect } from "@react-navigation/native";
 import { useRouter } from "expo-router";
 import useMatchmaking from "../../../../store/hooks/useMatchmaking";
@@ -38,22 +39,47 @@ export default function ConnectScreen() {
     ["placemaker", "dealmaker", "changemaker", "policymaker"].includes(r)
   );
 
-  const { matches } = useMatchmaking(userId);
+  const { matches, refetch: refetchMatches } = useMatchmaking(userId);
   const [avatarError, setAvatarError] = useState(false);
 
   useEffect(() => {
-    if (userId) dispatch(fetchMyGroups({ roles }));
+    if (userId) dispatch(fetchMyGroups({ roles, userId }));
   }, [userId, roles]);
 
   useFocusEffect(
     useCallback(() => {
-      if (userId) dispatch(fetchMyGroups({ roles }));
+      if (userId) dispatch(fetchMyGroups({ roles, userId }));
     }, [userId, roles])
   );
 
   useEffect(() => {
     groups.forEach((g) => dispatch(fetchGroupMembers(g.id)));
   }, [groups]);
+
+  // Re-fetch groups when this user is added to a new group
+  useEffect(() => {
+    if (!userId) return;
+
+    const channel = supabase
+      .channel("my-group-memberships")
+      .on(
+        "postgres_changes",
+        {
+          event: "INSERT",
+          schema: "public",
+          table: "group_members",
+          filter: `user_id=eq.${userId}`,
+        },
+        () => {
+          dispatch(fetchMyGroups({ roles, userId }));
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [userId]);
 
   return (
     <View style={styles.container}>
@@ -65,7 +91,10 @@ export default function ConnectScreen() {
             onRefresh={async () => {
               if (!userId) return;
               setRefreshing(true);
-              await dispatch(fetchMyGroups({ roles }));
+              await Promise.all([
+                dispatch(fetchMyGroups({ roles, userId })),
+                refetchMatches(),
+              ]);
               setRefreshing(false);
             }}
             tintColor={colors.accent}
@@ -92,19 +121,20 @@ export default function ConnectScreen() {
             }}
           >
             <View style={styles.groupCardHeader}>
-              <Text style={styles.groupCardTitle}>{g.name}</Text>
-
-              <View style={{ flexDirection: "row", alignItems: "center" }}>
+              <View style={{ flexDirection: "row", alignItems: "center", flex: 1 }}>
                 {isAdmin && (
                   <TouchableOpacity
                     onPress={() => setGroupToDelete({ id: g.id, name: g.name })}
                     hitSlop={8}
                     style={{ marginRight: 8 }}
                   >
-                    <MinusCircle size={22} color="#e05252" />
+                    <MinusCircle size={28} color="#e05252" />
                   </TouchableOpacity>
                 )}
+                <Text style={styles.groupCardTitle}>{g.name}</Text>
+              </View>
 
+              <View style={{ flexDirection: "row", alignItems: "center" }}>
               {(isAdmin || g.leader_id === userId) ? (
                 <TouchableOpacity
                   style={styles.headerSmallFab}
@@ -137,7 +167,13 @@ export default function ConnectScreen() {
         {isPlacemakerPaid && (
           <View>
             <Text style={styles.sectionHeader}>Curated Connections</Text>
-            
+
+            {matches.length === 0 && (
+              <Text style={styles.emptyStateText}>
+                Finish setting up your profile to see recommended connections
+              </Text>
+            )}
+
             {matches.map((m) => (
               <TouchableOpacity
                 key={m.id}
@@ -222,7 +258,7 @@ export default function ConnectScreen() {
           visible={showCreateModal}
           onClose={() => {
             setShowCreateModal(false);
-            if (userId) dispatch(fetchMyGroups({ roles }));
+            if (userId) dispatch(fetchMyGroups({ roles, userId }));
           }}
         />
       )}
