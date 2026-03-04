@@ -64,7 +64,7 @@ const Signup = () => {
         password,
         options: {
           data: { name, roles: ["free"] },
-          emailRedirectTo: "http://localhost:8081/login",
+          emailRedirectTo: "https://joinplacemaker.com/login",
         },
       });
   
