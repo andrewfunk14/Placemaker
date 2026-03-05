@@ -58,8 +58,7 @@ export default function EventList({
         <RefreshControl
           refreshing={refreshing}
           onRefresh={onRefresh}
-          tintColor="#ffd21f"
-          colors={["#ffd21f"]}
+          // tintColor="#ffd21f"
         />
       }
     />

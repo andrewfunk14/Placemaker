@@ -1,5 +1,5 @@
 // (tabs)/(learn)/learn.tsx
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect, useMemo, useRef } from "react";
 import {
   View,
   Text,
@@ -7,7 +7,10 @@ import {
   TouchableOpacity,
   ScrollView,
   RefreshControl,
+  Pressable,
+  Platform,
 } from "react-native";
+import { Ionicons } from "@expo/vector-icons";
 import { learnStyles as styles, colors } from "../../../../styles/learnStyles";
 import { useAppDispatch, useAppSelector } from "../../../../store/hooks/hooks";
 import { fetchResources } from "../../../../store/slices/resourcesSlice";
@@ -26,6 +29,7 @@ export default function LearnScreen() {
   const user = useUser();
 
   const [search, setSearch] = useState("");
+  const searchRef = useRef<TextInput>(null);
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [showUpload, setShowUpload] = useState(false);
 
@@ -96,14 +100,31 @@ export default function LearnScreen() {
   return (
     <View style={styles.container}>
       <View style={styles.searchRow}>
-        <TextInput
-          style={styles.search}
-          placeholder="Search Resources"
-          placeholderTextColor={colors.placeholderText}
-          keyboardAppearance="dark"
-          value={search}
-          onChangeText={setSearch}
-        />
+        <Pressable
+          style={[styles.search, { flexDirection: "row", alignItems: "center" }]}
+          onPress={() => searchRef.current?.focus()}
+        >
+          <Ionicons name="search" size={18} color={colors.placeholderText} style={{ marginRight: 8 }} />
+          <TextInput
+            ref={searchRef}
+            value={search}
+            onChangeText={setSearch}
+            placeholder="Search Resources"
+            placeholderTextColor={colors.placeholderText}
+            selectionColor={colors.placeholderText}
+            keyboardAppearance="dark"
+            autoCapitalize="none"
+            style={[
+              { flex: 1, color: colors.textPrimary, fontSize: 16, alignSelf: "stretch" },
+              Platform.OS === "web" && { outlineStyle: "none" } as any,
+            ]}
+          />
+          {search.length > 0 && (
+            <Pressable onPress={() => setSearch("")} hitSlop={8}>
+              <Ionicons name="close" size={20} color={colors.placeholderText} />
+            </Pressable>
+          )}
+        </Pressable>
         {allTags.length > 0 && (
           <ScrollView
             horizontal

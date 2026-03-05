@@ -167,7 +167,7 @@ const ResetPassword = () => {
         style={{ flex: 1, pointerEvents: "auto" }}
       >
         <KeyboardAvoidingView
-          behavior={Platform.OS === "ios" ? "padding" : undefined}
+          behavior="padding"
           style={s.pageContainer}
         >
           <ScrollView

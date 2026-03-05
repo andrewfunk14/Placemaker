@@ -85,8 +85,7 @@ const uniqueStyles = StyleSheet.create({
   },
   profileDetailsSection: {
     marginTop: 12,
-    padding: 12,
-    backgroundColor: "rgba(255,255,255,0.03)",
+    padding: 8,
     borderRadius: 16,
   },
   profileDetailBlock: {

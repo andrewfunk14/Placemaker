@@ -231,7 +231,7 @@ export default function NewEventModal({ visible, onClose, event, currentUserId }
   };
 
   return (
-    <Modal visible={visible} animationType="fade" transparent onRequestClose={close}>
+    <Modal visible={visible} animationType="fade" transparent statusBarTranslucent onRequestClose={close}>
       <Pressable
         style={styles.backdrop}
         onPress={() => {

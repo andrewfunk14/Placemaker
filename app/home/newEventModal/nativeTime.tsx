@@ -9,6 +9,7 @@ import {
   StyleSheet,
 } from "react-native";
 import { Picker } from "@react-native-picker/picker";
+import DateTimePicker from "@react-native-community/datetimepicker";
 import { styles } from "../../../styles/homeStyles";
 
 const MINUTE_STEP = 5;
@@ -89,6 +90,44 @@ export default function NativeTime({
     setIosTempTime(new Date(2000, 0, 1, h, minute));
     setShowTimePicker(false);
   };
+
+  // Android: native time picker dialog
+  if (Platform.OS === "android") {
+    const androidValue = startTime
+      ? new Date(2000, 0, 1, startTime.h, startTime.m)
+      : new Date();
+
+    return (
+      <>
+        <TouchableOpacity
+          style={[styles.input, styles.center]}
+          onPress={() => setShowTimePicker(true)}
+          activeOpacity={0.8}
+        >
+          <Text style={[styles.inputText, { color: labelColor }]}>
+            {label}
+          </Text>
+        </TouchableOpacity>
+
+        {showTimePicker && (
+          <DateTimePicker
+            value={androidValue}
+            mode="time"
+            is24Hour={false}
+            display="default"
+            themeVariant="dark"
+            onChange={(event, date) => {
+              setShowTimePicker(false);
+              if (event.type === "set" && date) {
+                setStartTime({ h: date.getHours(), m: date.getMinutes() });
+                setIosTempTime(date);
+              }
+            }}
+          />
+        )}
+      </>
+    );
+  }
 
   return (
     <>

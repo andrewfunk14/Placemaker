@@ -1,5 +1,5 @@
 // connect/addMemberModal.tsx
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import {
   View,
   Text,
@@ -10,7 +10,9 @@ import {
   TextInput,
   Modal,
   Alert,
+  Platform,
 } from "react-native";
+import { Ionicons } from "@expo/vector-icons";
 import { supabase } from "../../lib/supabaseClient";
 import { useAppDispatch } from "../../store/hooks/hooks";
 import {
@@ -52,6 +54,7 @@ export default function AddMemberModal({
   const [filtered, setFiltered] = useState<UserRow[]>([]);
   const [selected, setSelected] = useState<string[]>([]);
   const [search, setSearch] = useState("");
+  const searchRef = useRef<TextInput>(null);
   const [isSaving, setIsSaving] = useState(false);
   const { height } = Dimensions.get("window");
 
@@ -143,6 +146,7 @@ export default function AddMemberModal({
     <Modal
       visible={open}
       transparent
+      statusBarTranslucent
       animationType="fade"
       onRequestClose={() => {}}
     >
@@ -165,30 +169,32 @@ export default function AddMemberModal({
             { maxHeight: Math.min(height * 0.75, 560) },
           ]}
         >
-          <View
-            style={{
-              paddingHorizontal: 12,
-              paddingTop: 12,
-              paddingBottom: 4,
-            }}
-          >
-            <TextInput
-              placeholder="Search Users"
-              placeholderTextColor="#999"
-              value={search}
-              onChangeText={setSearch}
-              style={{
-                backgroundColor: "#1c1c1e",
-                color: "#f5f5f5",
-                paddingHorizontal: 14,
-                paddingVertical: 12,
-                marginBottom: 8,
-                borderRadius: 8,
-                fontSize: 16,
-                borderWidth: 1,
-                borderColor: "#f5f5f5",
-              }}
-            />
+          <View style={[styles.searchRow, { paddingTop: 12 }]}>
+            <Pressable
+              style={[styles.search, { flexDirection: "row", alignItems: "center" }]}
+              onPress={() => searchRef.current?.focus()}
+            >
+              <Ionicons name="search" size={18} color={colors.placeholderText} style={{ marginRight: 8 }} />
+              <TextInput
+                ref={searchRef}
+                value={search}
+                onChangeText={setSearch}
+                placeholder="Search Users"
+                placeholderTextColor={colors.placeholderText}
+                selectionColor={colors.placeholderText}
+                keyboardAppearance="dark"
+                autoCapitalize="none"
+                style={[
+                  { flex: 1, color: colors.textPrimary, fontSize: 16, alignSelf: "stretch" },
+                  Platform.OS === "web" && { outlineStyle: "none" } as any,
+                ]}
+              />
+              {search.length > 0 && (
+                <Pressable onPress={() => setSearch("")} hitSlop={8}>
+                  <Ionicons name="close" size={20} color={colors.placeholderText} />
+                </Pressable>
+              )}
+            </Pressable>
           </View>
 
           <FlatList

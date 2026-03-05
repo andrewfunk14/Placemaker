@@ -132,7 +132,7 @@ export default function PostProjectModal({
   const locationRef = useRef<TextInput>(null);
 
   return (
-    <Modal visible={visible} animationType="fade" transparent onRequestClose={handleClose}>
+    <Modal visible={visible} animationType="fade" transparent statusBarTranslucent onRequestClose={handleClose}>
       <Pressable
         style={[
           styles.modalBackdrop,
@@ -224,6 +224,7 @@ export default function PostProjectModal({
               value={description}
               onChangeText={setDescription}
               multiline
+              textAlignVertical="top"
             />
   
             {/* Files */}

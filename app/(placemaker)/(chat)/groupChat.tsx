@@ -14,6 +14,7 @@ import {
 } from "react-native";
 import ImageViewerModal from "../../../components/ImageViewerModal";
 import { Ionicons } from "@expo/vector-icons";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { connectStyles as styles, colors } from "../../../styles/connectStyles";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks/hooks";
 import {
@@ -33,6 +34,7 @@ interface GroupChatProps {
 
 export default function GroupChat({ groupId }: GroupChatProps) {
   const dispatch = useAppDispatch();
+  const insets = useSafeAreaInsets();
 
   const scrollRef = useRef<ScrollView>(null);
   const [text, setText] = useState("");
@@ -196,8 +198,8 @@ export default function GroupChat({ groupId }: GroupChatProps) {
     <>
     <KeyboardAvoidingView
       style={{ flex: 1 }}
-      behavior={Platform.OS === "ios" ? "padding" : "height"}
-      keyboardVerticalOffset={Platform.OS === "ios" ? 88 : 0}
+      behavior="padding"
+      keyboardVerticalOffset={Platform.OS === "ios" ? 88 : insets.bottom}
     >
       <ScrollView
         ref={scrollRef}
@@ -211,6 +213,12 @@ export default function GroupChat({ groupId }: GroupChatProps) {
           paddingHorizontal: 16,
         }}
       >
+        {messages.length === 0 && (
+          <View style={{ flex: 1, justifyContent: "center", alignItems: "center", paddingVertical: 40 }}>
+            <Text style={styles.emptyStateText}>Send the first message to start the conversation</Text>
+          </View>
+        )}
+
         {messages.map((m, i) => {
           const name = m.profiles?.name ?? "Unknown";
           const avatar = m.profiles?.avatar_url ?? null;

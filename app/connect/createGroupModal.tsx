@@ -1,18 +1,19 @@
 // connect/createGroupModal.tsx
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo, useRef } from "react";
 import {
   Modal,
   View,
   Text,
   TextInput,
   TouchableOpacity,
-  ScrollView,
+  Pressable,
+  Platform,
 } from "react-native";
+import { Ionicons } from "@expo/vector-icons";
 import { connectStyles as styles, colors } from "../../styles/connectStyles";
 import { useAppDispatch } from "../../store/hooks/hooks";
 import { createGroup } from "../../store/slices/groupsSlice";
 import { supabase } from "../../lib/supabaseClient";
-import { ChevronDown, ChevronUp } from "lucide-react-native";
 
 interface SimpleUser {
   id: string;
@@ -34,8 +35,9 @@ export default function CreateGroupModal({
   const [name, setName] = useState("");
   const [leaderId, setLeaderId] = useState<string | null>(null);
   const [users, setUsers] = useState<SimpleUser[]>([]);
-  const [showDropdown, setShowDropdown] = useState(false);
+  const [leaderSearch, setLeaderSearch] = useState("");
   const [isCreating, setIsCreating] = useState(false);
+  const leaderSearchRef = useRef<TextInput>(null);
 
   const paidRolesLc = [
     "placemaker",
@@ -92,13 +94,28 @@ export default function CreateGroupModal({
     if (!visible) {
       setName("");
       setLeaderId(null);
-      setShowDropdown(false);
+      setLeaderSearch("");
     }
   }, [visible]);
 
+  const selectedLeaderName = leaderId
+    ? users.find((u) => u.id === leaderId)?.name
+    : null;
+
+  const suggestions = useMemo(() => {
+    if (leaderId || !leaderSearch.trim()) return [];
+    const q = leaderSearch.toLowerCase();
+    return users.filter((u) => u.name.toLowerCase().includes(q)).slice(0, 5);
+  }, [users, leaderSearch, leaderId]);
+
+  const handleLeaderChange = (text: string) => {
+    if (leaderId) setLeaderId(null);
+    setLeaderSearch(text);
+  };
+
   const handleSelectLeader = (user: SimpleUser) => {
     setLeaderId(user.id);
-    setShowDropdown(false);
+    setLeaderSearch("");
   };
 
   const handleCreate = async () => {
@@ -115,11 +132,10 @@ export default function CreateGroupModal({
     }
   };
 
-  const selectedLeaderName =
-    leaderId && users.find((u) => u.id === leaderId)?.name;
+  const showSuggestions = suggestions.length > 0;
 
   return (
-    <Modal visible={visible} transparent animationType="fade">
+    <Modal visible={visible} transparent statusBarTranslucent animationType="fade">
       <View style={styles.modalBackdrop}>
         <View style={styles.modalCard}>
           <Text style={styles.modalTitle}>Create Group</Text>
@@ -132,48 +148,59 @@ export default function CreateGroupModal({
             style={styles.input}
           />
 
-          <View style={styles.dropdownContainer}>
-            <TouchableOpacity
-              style={styles.dropdownButton}
-              onPress={() => setShowDropdown((s) => !s)}
-            >
-              <Text
-                style={[
-                  styles.dropdownValue,
-                  !selectedLeaderName && styles.dropdownPlaceholder,
-                ]}
-              >
-                {selectedLeaderName || "Select Group Leader"}
-              </Text>
-
-              {showDropdown ? (
-                <ChevronUp size={20} color={colors.placeholderText} />
-              ) : (
-                <ChevronDown size={20} color={colors.placeholderText} />
-              )}
-            </TouchableOpacity>
-
-            {showDropdown && (
-              <View
-                style={styles.dropdownPanel}
-              >
-                <ScrollView
-                  style={styles.dropdownList}
-                  keyboardShouldPersistTaps="handled"
-                >
-                  {users.map((u) => (
-                    <TouchableOpacity
-                      key={u.id}
-                      style={styles.userRow}
-                      onPress={() => handleSelectLeader(u)}
-                    >
-                      <Text style={styles.userName}>{u.name}</Text>
-                    </TouchableOpacity>
-                  ))}
-                </ScrollView>
-              </View>
+          <Pressable
+            style={[
+              styles.input,
+              { flexDirection: "row", alignItems: "center" },
+              showSuggestions && { marginBottom: 0, borderBottomLeftRadius: 0, borderBottomRightRadius: 0 },
+            ]}
+            onPress={() => leaderSearchRef.current?.focus()}
+          >
+            <Ionicons name="search" size={18} color={colors.placeholderText} style={{ marginRight: 8 }} />
+            <TextInput
+              ref={leaderSearchRef}
+              value={selectedLeaderName ?? leaderSearch}
+              onChangeText={handleLeaderChange}
+              placeholder="Select Group Leader"
+              placeholderTextColor={colors.placeholderText}
+              keyboardAppearance="dark"
+              autoCapitalize="none"
+              style={[
+                { flex: 1, color: colors.textPrimary, fontSize: 18, alignSelf: "stretch" },
+                Platform.OS === "web" && { outlineStyle: "none" } as any,
+              ]}
+            />
+            {(selectedLeaderName || leaderSearch.length > 0) && (
+              <Pressable onPress={() => { setLeaderId(null); setLeaderSearch(""); }} hitSlop={8}>
+                <Ionicons name="close" size={20} color={colors.placeholderText} />
+              </Pressable>
             )}
-          </View>
+          </Pressable>
+
+          {showSuggestions && (
+            <View
+              style={{
+                borderWidth: 1,
+                borderTopWidth: 0,
+                borderColor: "gray",
+                borderBottomLeftRadius: 8,
+                borderBottomRightRadius: 8,
+                backgroundColor: colors.backgroundMid,
+                marginBottom: 16,
+                overflow: "hidden",
+              }}
+            >
+              {suggestions.map((u) => (
+                <TouchableOpacity
+                  key={u.id}
+                  style={styles.userRow}
+                  onPress={() => handleSelectLeader(u)}
+                >
+                  <Text style={styles.userName}>{u.name}</Text>
+                </TouchableOpacity>
+              ))}
+            </View>
+          )}
 
           <View style={styles.buttonRow}>
             <TouchableOpacity

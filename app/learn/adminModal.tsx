@@ -106,7 +106,7 @@ export default function AdminModal({
   if (!visible) return null;
 
   return (
-    <Modal visible={visible} animationType="fade" transparent onRequestClose={handleCancel}>
+    <Modal visible={visible} animationType="fade" transparent statusBarTranslucent onRequestClose={handleCancel}>
       <Pressable style={styles.modalBackdrop} onPress={handleCancel} />
       <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : undefined}

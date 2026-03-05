@@ -25,7 +25,12 @@
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#000000"
       },
-      "edgeToEdgeEnabled": true
+      "edgeToEdgeEnabled": true,
+      "softwareKeyboardLayoutMode": "resize",
+      "navigationBar": {
+        "backgroundColor": "#0d0d0d",
+        "barStyle": "light-content"
+      }
     },
     "web": {
       "favicon": "./assets/icon.png",
@@ -34,7 +39,8 @@
     },
     "plugins": [
       "expo-router",
-      "expo-web-browser"
+      "expo-web-browser",
+      "./plugins/withDarkDialogNavBar"
     ],
     "extra": {
       "router": {

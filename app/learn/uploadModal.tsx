@@ -187,7 +187,7 @@ export default function UploadModal({
   if (!visible) return null;
 
   return (
-    <Modal animationType="fade" transparent onRequestClose={handleCancel}>
+    <Modal animationType="fade" transparent statusBarTranslucent onRequestClose={handleCancel}>
       <Pressable
         style={[
           styles.modalBackdrop,
@@ -231,6 +231,7 @@ export default function UploadModal({
               value={description}
               onChangeText={setDescription}
               multiline
+              textAlignVertical="top"
             />
 
             <FileUpload

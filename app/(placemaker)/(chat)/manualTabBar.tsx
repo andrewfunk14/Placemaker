@@ -52,8 +52,9 @@ export default function ManualTabBar() {
       style={{
         flexDirection: "row",
         backgroundColor: "#0d0d0d",
+        height: Platform.OS === "web" ? 0 : 60 + insets.bottom,
         paddingTop: 8,
-        paddingBottom: Platform.OS === "ios" ? insets.bottom : 8,
+        paddingBottom: Platform.OS === "web" ? 0 : insets.bottom,        
         borderTopWidth: 0,
       }}
     >
@@ -66,7 +67,7 @@ export default function ManualTabBar() {
             flex: 1,
             justifyContent: "center",
             alignItems: "center",
-            opacity: 1, // ✅ never dim / outline
+            opacity: 1,
           })}
         >
           <Ionicons

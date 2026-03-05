@@ -9,6 +9,7 @@ import WebAutofillFix from "../styles/webAutofillFix";
 import "../global.css";
 
 export default function RootLayout() {
+
   return (
     <Provider store={store}>
       <UserProvider>

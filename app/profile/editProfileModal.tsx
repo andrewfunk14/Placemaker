@@ -117,7 +117,7 @@ export default function EditProfileModal({
   };  
 
   return (
-    <Modal visible={visible} animationType="fade" transparent onRequestClose={handleCancel}>
+    <Modal visible={visible} animationType="fade" transparent statusBarTranslucent onRequestClose={handleCancel}>
       {/* Backdrop click to close */}
       <Pressable style={styles.modalBackdrop} onPress={handleCancel} />
 

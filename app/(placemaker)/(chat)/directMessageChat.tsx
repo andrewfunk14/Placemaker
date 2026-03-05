@@ -8,12 +8,14 @@ import {
   TouchableOpacity,
   Image,
   KeyboardAvoidingView,
+  Keyboard,
   Platform,
   Alert,
   RefreshControl,
 } from "react-native";
 import ImageViewerModal from "../../../components/ImageViewerModal";
 import { Ionicons } from "@expo/vector-icons";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks/hooks";
 import { connectStyles as styles, colors } from "../../../styles/connectStyles";
 import { supabase } from "../../../lib/supabaseClient";
@@ -32,6 +34,7 @@ interface Profile {
 
 export default function DirectMessageChat({ partnerId }: { partnerId: string }) {
   const dispatch = useAppDispatch();
+  const insets = useSafeAreaInsets();
   const scrollRef = useRef<ScrollView>(null);
 
   const [text, setText] = useState("");
@@ -120,6 +123,11 @@ export default function DirectMessageChat({ partnerId }: { partnerId: string }) 
 
   useEffect(scrollToBottom, [messages]);
 
+  useEffect(() => {
+    const showSub = Keyboard.addListener("keyboardDidShow", scrollToBottom);
+    return () => showSub.remove();
+  }, []);
+
   const handlePickImage = async () => {
     try {
       setUploading(true);
@@ -164,8 +172,8 @@ export default function DirectMessageChat({ partnerId }: { partnerId: string }) 
     <>
     <KeyboardAvoidingView
       style={{ flex: 1 }}
-      behavior={Platform.OS === "ios" ? "padding" : undefined}
-      keyboardVerticalOffset={Platform.OS === "ios" ? 88 : 0}
+      behavior="padding"
+      keyboardVerticalOffset={Platform.OS === "ios" ? 88 : insets.bottom}
     >
       <ScrollView
         ref={scrollRef}
@@ -187,6 +195,12 @@ export default function DirectMessageChat({ partnerId }: { partnerId: string }) 
           />
         }
       >
+        {messages.length === 0 && (
+          <View style={{ flex: 1, justifyContent: "center", alignItems: "center", paddingVertical: 40 }}>
+            <Text style={styles.emptyStateText}>Send the first message to start the conversation</Text>
+          </View>
+        )}
+
         {messages.map((m, i) => {
           const mine = m.sender_id === myId;
           const profile = mine ? myProfile : partnerProfile;

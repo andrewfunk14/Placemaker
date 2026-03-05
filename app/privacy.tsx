@@ -320,7 +320,7 @@ const styles = StyleSheet.create({
   },
   link: {
     color: "#2e78b7",
-    padding: 12,
+    padding: 4,
   },
   contactInfo: {
     backgroundColor: "#1a1a1a",

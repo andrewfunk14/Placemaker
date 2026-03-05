@@ -1,5 +1,5 @@
 // app/(placemaker)/build.tsx
-import React, { useEffect, useState, useMemo } from "react";
+import React, { useEffect, useState, useMemo, useRef } from "react";
 import {
   View,
   Text,
@@ -9,7 +9,9 @@ import {
   useWindowDimensions,
   ScrollView,
   RefreshControl,
+  Pressable,
 } from "react-native";
+import { Ionicons } from "@expo/vector-icons";
 import { useAppDispatch, useAppSelector } from "../../../../store/hooks/hooks";
 import {
   fetchProjects,
@@ -37,6 +39,7 @@ export default function BuildScreen() {
   // const isPlacemaker = Array.isArray(roles) && roles.includes("placemaker");
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [search, setSearch] = useState("");
+  const searchRef = useRef<TextInput>(null);
 
   useEffect(() => {
     dispatch(fetchProjects());
@@ -85,14 +88,31 @@ export default function BuildScreen() {
   return (
     <View style={styles.container}>
       <View style={styles.searchRow}>
-        <TextInput
-          style={styles.search}
-          placeholder="Search Projects"
-          placeholderTextColor="#a0a0a0"
-          keyboardAppearance="dark"
-          value={search}
-          onChangeText={setSearch}
-        />
+        <Pressable
+          style={[styles.search, { flexDirection: "row", alignItems: "center" }]}
+          onPress={() => searchRef.current?.focus()}
+        >
+          <Ionicons name="search" size={18} color={colors.placeholderText} style={{ marginRight: 8 }} />
+          <TextInput
+            ref={searchRef}
+            value={search}
+            onChangeText={setSearch}
+            placeholder="Search Projects"
+            placeholderTextColor={colors.placeholderText}
+            selectionColor={colors.placeholderText}
+            keyboardAppearance="dark"
+            autoCapitalize="none"
+            style={[
+              { flex: 1, color: colors.textPrimary, fontSize: 16, alignSelf: "stretch" },
+              Platform.OS === "web" && { outlineStyle: "none" } as any,
+            ]}
+          />
+          {search.length > 0 && (
+            <Pressable onPress={() => setSearch("")} hitSlop={8}>
+              <Ionicons name="close" size={20} color={colors.placeholderText} />
+            </Pressable>
+          )}
+        </Pressable>
       </View>
 
       <ScrollView

@@ -1,18 +1,21 @@
 // (placemaker)/(tabs)/home.tsx
-import React, { useEffect, useState, useMemo, useCallback } from "react";
+import React, { useEffect, useState, useMemo, useCallback, useRef } from "react";
 import {
   View,
   Text,
   TouchableOpacity,
   TextInput,
+  Pressable,
+  Platform,
   Alert,
 } from "react-native";
+import { Ionicons } from "@expo/vector-icons";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks/hooks";
 import { fetchEvents, deleteEvent, EventRow } from "../../../store/slices/eventsSlice";
 import { useUser } from "../../userContext";
 import NewEventModal from "../../home/newEventModal/newEventModal";
 import DeleteConfirmModal from "../../../components/DeleteConfirmModal";
-import { styles } from "../../../styles/homeStyles";
+import { styles, colors } from "../../../styles/homeStyles";
 import EventList from "../../home/eventList";
 import { startsInLabel, formatEventDate, formatEventTime } from "../../../utils/time"
 
@@ -26,6 +29,7 @@ export default function Home() {
   const [toDelete, setToDelete] = useState<EventRow | null>(null);
   const [refreshing, setRefreshing] = useState(false);
   const [query, setQuery] = useState("");
+  const searchRef = useRef<TextInput>(null);
 
   const myId = userId ?? null;
   const isPlacemakerCreator =
@@ -79,16 +83,31 @@ export default function Home() {
   return (
     <View style={styles.container}>
       <View style={styles.searchRow}>
-        <TextInput
-          value={query}
-          onChangeText={setQuery}
-          placeholder="Search Events"
-          placeholderTextColor="#a0a0a0"
-          selectionColor="#a0a0a0"
-          keyboardAppearance="dark"
-          autoCapitalize="none"
-          style={styles.search}
-        />
+        <Pressable
+          style={[styles.search, { flexDirection: "row", alignItems: "center" }]}
+          onPress={() => searchRef.current?.focus()}
+        >
+          <Ionicons name="search" size={18} color={colors.placeholderText} style={{ marginRight: 8 }} />
+          <TextInput
+            ref={searchRef}
+            value={query}
+            onChangeText={setQuery}
+            placeholder="Search Events"
+            placeholderTextColor={colors.placeholderText}
+            selectionColor={colors.placeholderText}
+            keyboardAppearance="dark"
+            autoCapitalize="none"
+            style={[
+              { flex: 1, color: colors.textPrimary, fontSize: 16, alignSelf: "stretch" },
+              Platform.OS === "web" && { outlineStyle: "none" } as any,
+            ]}
+          />
+          {query.length > 0 && (
+            <Pressable onPress={() => setQuery("")} hitSlop={8}>
+              <Ionicons name="close" size={20} color={colors.placeholderText} />
+            </Pressable>
+          )}
+        </Pressable>
       </View>
       <View style={styles.content}>
         <EventList

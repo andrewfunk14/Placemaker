@@ -2,9 +2,12 @@
 import { Tabs } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import { Platform, View } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import MobileHeader from "../../mobileHeader";
 
 export default function TabsLayout() {
+  const insets = useSafeAreaInsets();
+
   return (
     <View style={{ flex: 1 }}>
       {Platform.OS !== "web" && <MobileHeader />}
@@ -16,8 +19,8 @@ export default function TabsLayout() {
           tabBarStyle: {
             backgroundColor: "#0d0d0d",
             borderTopColor: "#0d0d0d",
-            height: Platform.OS === "web" ? 0 : 88,
-            paddingBottom: Platform.OS === "web" ? 0 : 12,
+            height: Platform.OS === "web" ? 0 : 60 + insets.bottom,
+            paddingBottom: Platform.OS === "web" ? 0 : insets.bottom,
             paddingTop: Platform.OS === "web" ? 0 : 4,
             display: Platform.OS === "web" ? "none" : "flex",
           },

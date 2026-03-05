@@ -27,7 +27,7 @@ const uniqueStyles = StyleSheet.create({
     alignSelf: "flex-start",
     backgroundColor: colors.badgeBg,
     color: colors.accent,
-    fontSize: 24,
+    fontSize: Platform.OS === "android" ? 22 : 24,
     fontWeight: "600",
     paddingVertical: Platform.OS === "web" ? 12 : 10,
     paddingHorizontal: 12,
@@ -127,6 +127,7 @@ const uniqueStyles = StyleSheet.create({
   // EVENT MODAL
   backdrop: {
     ...StyleSheet.absoluteFillObject,
+    backgroundColor: colors.modalBackdrop,
     zIndex: 1,
   },
   eventModalCard: {
