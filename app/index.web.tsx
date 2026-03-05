@@ -300,6 +300,17 @@ export default function LandingPage() {
 
         <View style={styles.footer}>
           <Text style={styles.footerText}>© {new Date().getFullYear()} Placemaker. All rights reserved.</Text>
+          <TouchableOpacity
+            onPress={() => {
+              if (Platform.OS === "web") {
+                window.open("/privacy", "_blank");
+              } else {
+                router.push("/privacy");
+              }
+            }}
+          >
+            <Text style={styles.footerLink}>Privacy Policy</Text>
+          </TouchableOpacity>
         </View>
       </ScrollView>
 
@@ -496,9 +507,14 @@ const styles = StyleSheet.create({
     borderTopColor: "#222", 
     alignItems: "center", 
   },
-  footerText: { 
-    color: "#666", 
-    fontSize: 15, 
+  footerText: {
+    color: "#666",
+    fontSize: 15,
+  },
+  footerLink: {
+    color: "#ffd21f",
+    fontSize: 15,
+    marginTop: 12,
   },
   safeAreaBottom: {
     position: "absolute",
