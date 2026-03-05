@@ -308,18 +308,19 @@ const styles = StyleSheet.create({
     paddingTop: 20,
   },
   pageTitle: {
-    fontSize: isMobile ? 32 : 44,
+    fontSize: isMobile ? 32 : 38,
     fontWeight: "bold",
     color: "#f5f5f5",
     marginBottom: 8,
   },
   lastUpdated: {
-    fontSize: 14,
+    fontSize: 16,
     color: "#666",
     marginBottom: 40,
   },
   link: {
     color: "#2e78b7",
+    padding: 12,
   },
   contactInfo: {
     backgroundColor: "#1a1a1a",
