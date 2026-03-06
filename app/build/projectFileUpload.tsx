@@ -8,17 +8,16 @@ import {
   ScrollView,
   Alert,
   Platform,
-  Linking,
 } from "react-native";
 import * as DocumentPicker from "expo-document-picker";
 import * as FileSystem from "expo-file-system/legacy";
-import * as WebBrowser from "expo-web-browser";
 import { decode } from "base64-arraybuffer";
 import { supabase } from "../../lib/supabaseClient";
 import { PlusCircle, MinusCircle } from "lucide-react-native";
 import { buildStyles as styles, colors } from "../../styles/buildStyles";
 import { useUser } from "../../app/userContext";
 import { pickImageCompat } from "../../utils/imagePickerCompat";
+import ImageViewerModal from "../../components/ImageViewerModal";
 
 const PROJECT_BUCKET = "projects";
 
@@ -35,6 +34,7 @@ export default function ProjectFileUpload({
 }: ProjectFileUploadProps) {
   const [files, setFiles] = useState<string[]>(initialFiles);
   const [uploading, setUploading] = useState(false);
+  const [viewingImage, setViewingImage] = useState<string | null>(null);
   const { userId } = useUser();
 
   if (!userId) {
@@ -44,19 +44,6 @@ export default function ProjectFileUpload({
   useEffect(() => {
     setFiles(initialFiles);
   }, [initialFiles]);
-
-  const openFile = async (url: string) => {
-    try {
-      if (Platform.OS === "web") {
-        window.open(url, "_blank");
-      } else {
-        const supported = await Linking.canOpenURL(url);
-        if (supported) await WebBrowser.openBrowserAsync(url);
-      }
-    } catch {
-      Alert.alert("Error", "Failed to open image.");
-    }
-  };
 
   const isAllowedImageAsset = (name?: string, mimeType?: string) => {
     const okMime = !!mimeType && mimeType.startsWith("image/");
@@ -77,7 +64,12 @@ export default function ProjectFileUpload({
       ? extFromName
       : "jpg";
 
-    const fileName = `${Date.now()}_${Math.random().toString(16).slice(2)}.${safeExt}`;
+    const baseName = asset.name?.split("/").pop() ?? "";
+    const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}/i.test(baseName);
+    const isNumericOrTimestamp = /^\d{7,}/.test(baseName.split(".")[0]);
+    const humanName =
+      baseName && !isUuid && !isNumericOrTimestamp ? baseName : `image.${safeExt}`;
+    const fileName = `${Date.now()}_${humanName}`;
     const filePath = `uploads/${userId}/${fileName}`;
     const contentType =
       asset.mimeType || `image/${safeExt === "jpg" ? "jpeg" : safeExt}`;
@@ -223,7 +215,7 @@ export default function ProjectFileUpload({
           {files.map((url, i) => (
             <TouchableOpacity
               key={i}
-              onPress={() => openFile(url)}
+              onPress={() => setViewingImage(url)}
               activeOpacity={0.8}
               style={styles.filePreviewCard}
             >
@@ -247,6 +239,7 @@ export default function ProjectFileUpload({
           ))}
         </ScrollView>
       )}
+      <ImageViewerModal uri={viewingImage} onClose={() => setViewingImage(null)} />
     </View>
   );
 }

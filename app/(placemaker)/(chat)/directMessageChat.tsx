@@ -336,7 +336,7 @@ export default function DirectMessageChat({ partnerId }: { partnerId: string }) 
                 style={{ position: "absolute", top: -8, right: -8 }}
                 hitSlop={{ top: 6, bottom: 6, left: 6, right: 6 }}
               >
-                <Ionicons name="close-circle" size={22} color="#f5f5f5" />
+                <Ionicons name="close-circle" size={22} color="#e04345" />
               </TouchableOpacity>
             </View>
           </View>
