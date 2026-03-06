@@ -15,7 +15,7 @@
     },
     "ios": {
       "bundleIdentifier": "com.joinplacemaker.app",
-      "supportsTablet": true,
+      "supportsTablet": false,
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false
       }
