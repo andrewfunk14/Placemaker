@@ -15,7 +15,6 @@ import {
 } from "react-native";
 import ImageViewerModal from "../../../components/ImageViewerModal";
 import { Ionicons } from "@expo/vector-icons";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks/hooks";
 import { connectStyles as styles, colors } from "../../../styles/connectStyles";
 import { supabase } from "../../../lib/supabaseClient";
@@ -34,7 +33,6 @@ interface Profile {
 
 export default function DirectMessageChat({ partnerId }: { partnerId: string }) {
   const dispatch = useAppDispatch();
-  const insets = useSafeAreaInsets();
   const scrollRef = useRef<ScrollView>(null);
 
   const [text, setText] = useState("");
@@ -124,7 +122,9 @@ export default function DirectMessageChat({ partnerId }: { partnerId: string }) 
   useEffect(scrollToBottom, [messages]);
 
   useEffect(() => {
-    const showSub = Keyboard.addListener("keyboardDidShow", scrollToBottom);
+    const showSub = Keyboard.addListener("keyboardDidShow", () => {
+      setTimeout(scrollToBottom, 100);
+    });
     return () => showSub.remove();
   }, []);
 
@@ -172,8 +172,8 @@ export default function DirectMessageChat({ partnerId }: { partnerId: string }) 
     <>
     <KeyboardAvoidingView
       style={{ flex: 1 }}
-      behavior="padding"
-      keyboardVerticalOffset={Platform.OS === "ios" ? 88 : insets.bottom}
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+      keyboardVerticalOffset={88}
     >
       <ScrollView
         ref={scrollRef}
@@ -319,7 +319,7 @@ export default function DirectMessageChat({ partnerId }: { partnerId: string }) 
         })}
       </ScrollView>
 
-      <View style={{ borderTopWidth: 1, borderTopColor: "#222" }}>
+      <View style={{ borderTopWidth: 1, borderTopColor: "#222", paddingBottom: Platform.OS === "android" ? 8 : 0 }}>
         {/* {pendingImage && (
           <View style={{ paddingHorizontal: 16, paddingTop: 8 }}>
             <View style={{ position: "relative", alignSelf: "flex-start" }}>

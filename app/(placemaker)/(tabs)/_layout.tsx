@@ -19,6 +19,7 @@ export default function TabsLayout() {
           tabBarStyle: {
             backgroundColor: "#0d0d0d",
             borderTopColor: "#0d0d0d",
+            elevation: 0,
             height: Platform.OS === "web" ? 0 : 60 + insets.bottom,
             paddingBottom: Platform.OS === "web" ? 0 : insets.bottom,
             paddingTop: Platform.OS === "web" ? 0 : 4,

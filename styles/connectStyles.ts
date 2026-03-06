@@ -264,7 +264,7 @@ const uniqueStyles = StyleSheet.create({
   messageInputRow: {
     flexDirection: "row",
     marginTop: 12,
-    marginBottom: Platform.OS === "ios" ? 28 : 40,
+    marginBottom: Platform.OS === "web" ? 40 : 28,
     paddingHorizontal: 12,
   },
   messageInput: {

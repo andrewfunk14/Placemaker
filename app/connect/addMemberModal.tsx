@@ -11,6 +11,7 @@ import {
   Modal,
   Alert,
   Platform,
+  KeyboardAvoidingView,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { supabase } from "../../lib/supabaseClient";
@@ -161,8 +162,9 @@ export default function AddMemberModal({
         }}
       />
       {/* Centering wrapper — box-none so empty-area taps reach the backdrop */}
-      <View
+      <KeyboardAvoidingView
         style={{ flex: 1, justifyContent: "flex-start", paddingTop: cardTopPad, alignItems: "center" }}
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
         pointerEvents="box-none"
       >
         <View
@@ -299,7 +301,7 @@ export default function AddMemberModal({
             </TouchableOpacity>
           </View>
         </View>
-      </View>
+      </KeyboardAvoidingView>
     </Modal>
   );
 }

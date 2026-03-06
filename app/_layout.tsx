@@ -13,7 +13,7 @@ export default function RootLayout() {
     <Provider store={store}>
       <UserProvider>
         <WebAutofillFix />
-        <Stack 
+        <Stack
           screenOptions={{
             headerShown: false,
             contentStyle: Platform.OS === 'web' ? { backgroundColor: 'transparent' } : {}

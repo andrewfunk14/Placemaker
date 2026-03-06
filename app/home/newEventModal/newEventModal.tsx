@@ -241,7 +241,7 @@ export default function NewEventModal({ visible, onClose, event, currentUserId }
       />        
       <WebStyles />
         <KeyboardAvoidingView
-          behavior={Platform.OS === "ios" ? "padding" : undefined}
+          behavior={Platform.OS === "ios" ? "padding" : "height"}
           style={styles.eventModalCardWrap}
         >
           <ScrollView

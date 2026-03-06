@@ -14,11 +14,12 @@ function withDarkStyles(config) {
     if (!styles.resources.style) styles.resources.style = [];
 
     // 1. Add a DarkDialogTheme style
+    // windowSoftInputMode on the dialog theme makes all RN Modals (which are Dialogs)
+    // pan their window up when the keyboard opens — same as the main Activity.
     const darkDialogTheme = {
       $: { name: "DarkDialogTheme", parent: "Theme.AppCompat.Dialog" },
       item: [
-        { $: { name: "android:navigationBarColor" }, _: "#0d0d0d" },
-        { $: { name: "android:windowLightNavigationBar" }, _: "false" },
+        { $: { name: "android:windowSoftInputMode" }, _: "adjustPan" },
       ],
     };
 
@@ -37,14 +38,14 @@ function withDarkStyles(config) {
     );
     if (appTheme) {
       if (!appTheme.item) appTheme.item = [];
-      const THEME_ITEMS = ["android:dialogTheme", "android:windowBackground", "android:windowLightNavigationBar"];
+      const THEME_ITEMS = ["android:dialogTheme", "android:windowBackground", "android:colorBackground"];
       appTheme.item = appTheme.item.filter(
         (item) => item.$ && !THEME_ITEMS.includes(item.$.name)
       );
       appTheme.item.push(
         { $: { name: "android:dialogTheme" }, _: "@style/DarkDialogTheme" },
         { $: { name: "android:windowBackground" }, _: "#0d0d0d" },
-        { $: { name: "android:windowLightNavigationBar" }, _: "false" }
+        { $: { name: "android:colorBackground" }, _: "#0d0d0d" }
       );
     }
 
@@ -61,9 +62,9 @@ function withAdjustNothing(config) {
         (a) => a.$?.["android:name"] === ".MainActivity"
       );
       if (mainActivity) {
-        // adjustNothing: Android won't auto-shift the window for the keyboard.
-        // KeyboardAvoidingView handles avoidance manually per-modal/screen.
-        mainActivity.$["android:windowSoftInputMode"] = "adjustNothing";
+        // adjustPan: Android pans the window up natively when the keyboard opens,
+        // keeping the focused input visible without needing KeyboardAvoidingView logic.
+        mainActivity.$["android:windowSoftInputMode"] = "adjustPan";
       }
     }
     return config;
