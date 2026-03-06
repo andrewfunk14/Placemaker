@@ -57,6 +57,8 @@ export default function AddMemberModal({
   const searchRef = useRef<TextInput>(null);
   const [isSaving, setIsSaving] = useState(false);
   const { height } = Dimensions.get("window");
+  const cardMaxHeight = Math.min(height * 0.75, 560);
+  const cardTopPad = Math.max(0, (height - cardMaxHeight) / 2);
 
   const existingMemberIds = existingMembers.map((m) => m.user_id);
 
@@ -160,13 +162,13 @@ export default function AddMemberModal({
       />
       {/* Centering wrapper — box-none so empty-area taps reach the backdrop */}
       <View
-        style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
+        style={{ flex: 1, justifyContent: "flex-start", paddingTop: cardTopPad, alignItems: "center" }}
         pointerEvents="box-none"
       >
         <View
           style={[
             styles.dropdownList,
-            { maxHeight: Math.min(height * 0.75, 560) },
+            { maxHeight: cardMaxHeight },
           ]}
         >
           <View style={[styles.searchRow, { paddingTop: 12 }]}>

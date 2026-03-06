@@ -74,17 +74,20 @@ export default function ResourceTierDropdown({
             <FlatList
               data={TIER_OPTIONS}
               keyExtractor={(item) => item.value}
-              renderItem={({ item }) => (
-                <TouchableOpacity
-                  onPress={() => {
-                    onSelect(item.value as "free" | "paid");
-                    setOpen(false);
-                  }}
-                  style={styles.dropdownItem}
-                >
-                  <Text style={styles.dropdownItemText}>{item.label}</Text>
-                </TouchableOpacity>
-              )}
+              renderItem={({ item }) => {
+                const selected = item.value === value;
+                return (
+                  <TouchableOpacity
+                    onPress={() => {
+                      onSelect(item.value as "free" | "paid");
+                      setOpen(false);
+                    }}
+                    style={[styles.dropdownItem, selected && styles.dropdownItemSelected]}
+                  >
+                    <Text style={[styles.dropdownItemText, selected && styles.dropdownItemTextSelected]}>{item.label}</Text>
+                  </TouchableOpacity>
+                );
+              }}
             />
           </View>
         </Pressable>

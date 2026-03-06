@@ -81,20 +81,24 @@ export default function ProfileTypeDropdown({
             <FlatList
               data={TYPES}
               keyExtractor={(item) => item}
-              renderItem={({ item, index }) => (
-                <TouchableOpacity
-                  onPress={() => {
-                    onSelect(item);
-                    setOpen(false);
-                  }}
-                  style={[
-                    styles.dropdownItem,
-                    index === TYPES.length - 1 && styles.dropdownItemLast,
-                  ]}
-                >
-                  <Text style={styles.dropdownItemText}>{item}</Text>
-                </TouchableOpacity>
-              )}
+              renderItem={({ item, index }) => {
+                const selected = item === value;
+                return (
+                  <TouchableOpacity
+                    onPress={() => {
+                      onSelect(item);
+                      setOpen(false);
+                    }}
+                    style={[
+                      styles.dropdownItem,
+                      index === TYPES.length - 1 && styles.dropdownItemLast,
+                      selected && styles.dropdownItemSelected,
+                    ]}
+                  >
+                    <Text style={[styles.dropdownItemText, selected && styles.dropdownItemTextSelected]}>{item}</Text>
+                  </TouchableOpacity>
+                );
+              }}
             />
           </View>
         </Pressable>

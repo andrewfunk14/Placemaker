@@ -42,8 +42,8 @@ export default function ChatScreen() {
       {/* Custom header */}
       <View
         style={{
-          backgroundColor: Platform.OS === "ios" ? "#0d0d0d" : "#1a1a1a",
-          paddingTop: Platform.OS === "ios" ? insets.top : 12,
+          backgroundColor: Platform.OS === "web" ? "#1a1a1a" : "#0d0d0d",
+          paddingTop: Platform.OS === "web" ? 12 : insets.top,
           paddingBottom: 12,
           paddingHorizontal: 12,
           flexDirection: "row",

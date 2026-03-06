@@ -1,13 +1,12 @@
 // plugins/withDarkDialogNavBar.js
-const { withAndroidStyles } = require("@expo/config-plugins");
+const { withAndroidStyles, withAndroidManifest } = require("@expo/config-plugins");
 
 /**
- * Adds a dark navigation bar to all Android Dialog windows (including React Native Modal).
- * React Native's Modal creates a Dialog with its own window, which doesn't inherit
- * the Activity's edge-to-edge nav bar settings. This plugin injects a dialog theme
- * into styles.xml so all Dialogs use a dark nav bar.
+ * 1. Dark nav bar for all Android Dialog windows (including React Native Modal).
+ * 2. Sets adjustNothing on MainActivity so Android never auto-shifts the window
+ *    when the keyboard opens — KeyboardAvoidingView handles it per-screen instead.
  */
-module.exports = function withDarkDialogNavBar(config) {
+function withDarkStyles(config) {
   return withAndroidStyles(config, (config) => {
     const styles = config.modResults;
 
@@ -32,21 +31,45 @@ module.exports = function withDarkDialogNavBar(config) {
       styles.resources.style.push(darkDialogTheme);
     }
 
-    // 2. Add android:dialogTheme to AppTheme
+    // 2. Add android:dialogTheme and dark window background to AppTheme
     const appTheme = styles.resources.style.find(
       (s) => s.$ && s.$.name === "AppTheme"
     );
     if (appTheme) {
       if (!appTheme.item) appTheme.item = [];
+      const THEME_ITEMS = ["android:dialogTheme", "android:windowBackground", "android:windowLightNavigationBar"];
       appTheme.item = appTheme.item.filter(
-        (item) => item.$ && item.$.name !== "android:dialogTheme"
+        (item) => item.$ && !THEME_ITEMS.includes(item.$.name)
       );
-      appTheme.item.push({
-        $: { name: "android:dialogTheme" },
-        _: "@style/DarkDialogTheme",
-      });
+      appTheme.item.push(
+        { $: { name: "android:dialogTheme" }, _: "@style/DarkDialogTheme" },
+        { $: { name: "android:windowBackground" }, _: "#0d0d0d" },
+        { $: { name: "android:windowLightNavigationBar" }, _: "false" }
+      );
     }
 
     return config;
   });
+}
+
+function withAdjustNothing(config) {
+  return withAndroidManifest(config, (config) => {
+    const manifest = config.modResults;
+    const application = manifest.manifest.application?.[0];
+    if (application?.activity) {
+      const mainActivity = application.activity.find(
+        (a) => a.$?.["android:name"] === ".MainActivity"
+      );
+      if (mainActivity) {
+        // adjustNothing: Android won't auto-shift the window for the keyboard.
+        // KeyboardAvoidingView handles avoidance manually per-modal/screen.
+        mainActivity.$["android:windowSoftInputMode"] = "adjustNothing";
+      }
+    }
+    return config;
+  });
+}
+
+module.exports = function withDarkDialogNavBar(config) {
+  return withAdjustNothing(withDarkStyles(config));
 };

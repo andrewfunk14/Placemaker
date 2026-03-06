@@ -8,6 +8,7 @@ import {
   TouchableOpacity,
   Pressable,
   Platform,
+  KeyboardAvoidingView,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { connectStyles as styles, colors } from "../../styles/connectStyles";
@@ -136,7 +137,11 @@ export default function CreateGroupModal({
 
   return (
     <Modal visible={visible} transparent statusBarTranslucent animationType="fade">
-      <View style={styles.modalBackdrop}>
+      <KeyboardAvoidingView
+        style={{ flex: 1 }}
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+      >
+        <View style={styles.modalBackdrop}>
         <View style={styles.modalCard}>
           <Text style={styles.modalTitle}>Create Group</Text>
 
@@ -224,6 +229,7 @@ export default function CreateGroupModal({
           </View>
         </View>
       </View>
+      </KeyboardAvoidingView>
     </Modal>
   );
 }

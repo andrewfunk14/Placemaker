@@ -122,7 +122,7 @@ export default function EditProfileModal({
       <Pressable style={styles.modalBackdrop} onPress={handleCancel} />
 
         <KeyboardAvoidingView
-            behavior={Platform.OS === "ios" ? "padding" : undefined}
+            behavior={Platform.OS === "ios" ? "padding" : "height"}
             style={styles.modalCardWrap}
         >
         <ScrollView
