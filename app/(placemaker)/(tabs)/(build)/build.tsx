@@ -77,13 +77,21 @@ export default function BuildScreen() {
     });
   }, [projects, search]);
 
-  // Web-only responsive grid sizing
-  const gridItemStyle = useMemo(() => {
-    if (Platform.OS !== "web") return null;
-    if (width >= 1200) return styles.gridItem3;
-    if (width >= 820) return styles.gridItem2;
-    return styles.gridItem1;
+  // Web-only responsive column count
+  const numColumns = useMemo(() => {
+    if (Platform.OS !== "web") return 1;
+    if (width >= 1200) return 3;
+    if (width >= 820) return 2;
+    return 1;
   }, [width]);
+
+  // Distribute projects into columns for masonry-style layout on web
+  const webColumns = useMemo<Project[][] | null>(() => {
+    if (Platform.OS !== "web" || numColumns <= 1) return null;
+    const cols: Project[][] = Array.from({ length: numColumns }, () => []);
+    filteredProjects.forEach((p, i) => cols[i % numColumns].push(p));
+    return cols;
+  }, [filteredProjects, numColumns]);
 
   return (
     <View style={styles.container}>
@@ -117,10 +125,11 @@ export default function BuildScreen() {
 
       <ScrollView
         style={{ flex: 1 }}
-        contentContainerStyle={[
-          Platform.OS === "web" ? styles.webGrid : styles.mobileList,
-          { paddingBottom: 100 },
-        ]}
+        contentContainerStyle={
+          webColumns
+            ? { paddingHorizontal: 24, paddingBottom: 100 }
+            : [styles.mobileList, { paddingBottom: 100 }]
+        }
         keyboardShouldPersistTaps="handled"
         showsVerticalScrollIndicator
         refreshControl={
@@ -133,12 +142,26 @@ export default function BuildScreen() {
       >
         {filteredProjects.length === 0 ? (
           <Text style={[styles.empty, { width: "100%" }]}>No Projects Found</Text>
+        ) : webColumns ? (
+          <View style={{ flexDirection: "row", gap: 16 }}>
+            {webColumns.map((col, ci) => (
+              <View key={ci} style={{ flex: 1, gap: 12 }}>
+                {col.map((project) => (
+                  <ProjectCard
+                    key={project.id}
+                    project={project}
+                    currentUserId={userId}
+                    isAdmin={isAdmin}
+                  />
+                ))}
+              </View>
+            ))}
+          </View>
         ) : (
           filteredProjects.map((project) => (
             <ProjectCard
               key={project.id}
               project={project}
-              gridItemStyle={gridItemStyle}
               currentUserId={userId}
               isAdmin={isAdmin}
             />

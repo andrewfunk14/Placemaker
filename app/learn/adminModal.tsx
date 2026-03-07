@@ -157,16 +157,14 @@ export default function AdminModal({
                     key={i}
                     onPress={() => /\.(png|jpe?g|gif|webp)$/i.test(url) ? setViewingImage(url) : downloadFile(url)}
                     activeOpacity={0.8}
-                    style={styles.adminPreviewCard}
+                    style={styles.filePreviewCard}
                   >
                     {/\.(png|jpe?g|gif|webp)$/i.test(url) ? (
-                      <Image source={{ uri: url }} style={styles.modalPreviewImage} />
+                      <Image source={{ uri: url }} style={styles.modalPreviewImage} resizeMode="cover" />
                     ) : (
-                      <FileText
-                        size={32}
-                        color={colors.link}
-                        style={styles.filePreviewIcon}
-                      />
+                      <View style={styles.filePreviewIconBox}>
+                        <FileText size={40} color={colors.link} />
+                      </View>
                     )}
                     <Text numberOfLines={1} style={styles.filePreviewName}>
                       {decodeURIComponent(url.split("/").pop() ?? "File").replace(

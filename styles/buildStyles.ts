@@ -6,27 +6,7 @@ export { colors };
 
 const uniqueStyles = StyleSheet.create({
   // build.tsx
-  webGrid: {
-    paddingHorizontal: 16,
-    flexDirection: "row",
-    flexWrap: "wrap",
-    alignItems: "flex-start",
-  },
-  gridItem1: {
-    flexBasis: "100%",
-    maxWidth: "100%",
-    paddingHorizontal: 8,
-  },
-  gridItem2: {
-    flexBasis: "50%",
-    maxWidth: "50%",
-    paddingHorizontal: 8,
-  },
-  gridItem3: {
-    flexBasis: "33.3333%",
-    maxWidth: "33.3333%",
-    paddingHorizontal: 8,
-  },
+  
   mobileList: {
     paddingHorizontal: 16,
     gap: 12,
@@ -124,12 +104,10 @@ const uniqueStyles = StyleSheet.create({
     borderWidth: 1,
     borderColor: colors.translucentBorder,
     backgroundColor: colors.backgroundDark,
-    aspectRatio: 4 / 5,
   },
   projectMediaImage: {
     width: "100%",
     height: "100%",
-    resizeMode: "cover",
   },
   projectCaption: {
     marginTop: 8,

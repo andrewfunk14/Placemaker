@@ -1,6 +1,42 @@
 // build/projectCard.tsx
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { View, Text, Image, Platform, Alert } from "react-native";
+
+function DynamicProjectImage({ uri }: { uri: string }) {
+  const [ratio, setRatio] = useState(4 / 5);
+
+  useEffect(() => {
+    if (Platform.OS !== "web") return;
+    const img = new (window as any).Image();
+    img.onload = () => {
+      if (img.naturalWidth && img.naturalHeight) {
+        const natural = img.naturalWidth / img.naturalHeight;
+        setRatio(Math.max(9 / 16, Math.min(16 / 9, natural)));
+      }
+    };
+    img.src = uri;
+  }, [uri]);
+
+  return (
+    <View style={[styles.projectMedia, { aspectRatio: ratio }]}>
+      <Image
+        source={{ uri }}
+        style={styles.projectMediaImage}
+        resizeMode="cover"
+        resizeMethod={Platform.OS === "android" ? "resize" : "auto"}
+        onLoad={(e) => {
+          if (Platform.OS === "web") return;
+          const src = e.nativeEvent.source;
+          if (src?.width && src?.height) {
+            const natural = src.width / src.height;
+            // Clamp between 9:16 (tall portrait) and 16:9 (wide landscape)
+            setRatio(Math.max(9 / 16, Math.min(16 / 9, natural)));
+          }
+        }}
+      />
+    </View>
+  );
+}
 import { Project, ProjectStatus } from "../../store/slices/projectsSlice";
 import { buildStyles as styles, colors } from "../../styles/buildStyles";
 import { User2 } from "lucide-react-native";
@@ -78,8 +114,8 @@ export default function ProjectCard({
     }
   };
 
-  const Wrapper = Platform.OS === "web" ? View : React.Fragment;
-  const wrapperProps = Platform.OS === "web" ? { style: gridItemStyle } : {};
+  const Wrapper = (Platform.OS === "web" && gridItemStyle != null) ? View : React.Fragment;
+  const wrapperProps = (Platform.OS === "web" && gridItemStyle != null) ? { style: gridItemStyle } : {};
 
   return (
     <Wrapper {...(wrapperProps as any)}>
@@ -148,14 +184,7 @@ export default function ProjectCard({
           </Text>
         ) : null}
 
-        {firstFile ? (
-          <View style={styles.projectMedia}>
-            <Image
-              source={{ uri: firstFile }}
-              style={styles.projectMediaImage}
-            />
-          </View>
-        ) : null}
+        {firstFile ? <DynamicProjectImage uri={firstFile} /> : null}
 
         <PostProjectModal
           visible={showEdit}
