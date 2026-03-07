@@ -4,9 +4,22 @@ import * as DocumentPicker from "expo-document-picker";
 import { decode } from "base64-arraybuffer";
 import { Platform } from "react-native";
 import { supabase } from "../lib/supabaseClient";
-import { pickImageCompat } from "./imagePickerCompat";
+import { pickImageCompat, convertToJpegIfNeeded, isHeicMime, isHeicUri } from "./imagePickerCompat";
 
 const CHAT_BUCKET = "chat-images";
+
+export async function uploadFromUri(localUri: string): Promise<string> {
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) throw new Error("Not authenticated");
+  return await _upload({
+    uri: localUri,
+    name: "image.jpg",
+    mimeType: "image/jpeg",
+    userId: user.id,
+  });
+}
 
 export async function uploadChatImage(): Promise<string | null> {
   const {
@@ -21,12 +34,14 @@ export async function uploadChatImage(): Promise<string | null> {
     const asset = (result as any)?.assets?.[0];
     if (!asset?.uri) return null;
 
-    return await _upload({
-      uri: asset.uri,
-      name: asset.fileName ?? "image.jpg",
-      mimeType: asset.mimeType ?? "image/jpeg",
-      userId: user.id,
-    });
+    const needsConvert = isHeicMime(asset.mimeType) || isHeicUri(asset.uri);
+    const uri = needsConvert
+      ? await convertToJpegIfNeeded(asset.uri, asset.mimeType)
+      : asset.uri;
+    const mimeType = needsConvert ? "image/jpeg" : asset.mimeType ?? "image/jpeg";
+    const name = needsConvert ? "image.jpg" : asset.fileName ?? "image.jpg";
+
+    return await _upload({ uri, name, mimeType, userId: user.id });
   } else {
     const result = await DocumentPicker.getDocumentAsync({
       type: "image/*",
@@ -62,14 +77,17 @@ async function _upload({
     mimeType?.split("/")[1]?.toLowerCase() ||
     "jpg";
 
-  const safeExt = ["jpg", "jpeg", "png", "webp", "gif"].includes(ext)
-    ? ext
-    : "jpg";
+  const heicMap: Record<string, string> = { heic: "jpg", heif: "jpg" };
+  const safeExt =
+    heicMap[ext] ??
+    (["jpg", "jpeg", "png", "webp", "gif"].includes(ext) ? ext : "jpg");
 
   const fileName = `${Date.now()}_${Math.random().toString(16).slice(2)}.${safeExt}`;
   const filePath = `${userId}/${fileName}`;
   const contentType =
-    mimeType || `image/${safeExt === "jpg" ? "jpeg" : safeExt}`;
+    safeExt === "jpg" || safeExt === "jpeg"
+      ? "image/jpeg"
+      : mimeType || `image/${safeExt}`;
 
   let uploadData: Blob | ArrayBuffer;
 

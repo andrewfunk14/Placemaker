@@ -10,10 +10,8 @@ import {
   KeyboardAvoidingView,
   Keyboard,
   Platform,
-  Alert,
   RefreshControl,
 } from "react-native";
-import ImageViewerModal from "../../../components/ImageViewerModal";
 import { Ionicons } from "@expo/vector-icons";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks/hooks";
 import { connectStyles as styles, colors } from "../../../styles/connectStyles";
@@ -23,8 +21,31 @@ import {
   sendDM,
   makeSelectDMsByThread,
 } from "../../../store/slices/dmSlice";
-import { uploadChatImage, deleteChatImage } from "../../../utils/uploadChatImage";
 import { User2 } from "lucide-react-native";
+
+function DynamicChatImage({ uri, maxWidth, onPress, style }: {
+  uri: string;
+  maxWidth: number;
+  onPress: () => void;
+  style?: object;
+}) {
+  const [height, setHeight] = useState(maxWidth * 0.75);
+  return (
+    <TouchableOpacity onPress={onPress} activeOpacity={0.85}>
+      <Image
+        source={{ uri }}
+        style={[{ width: maxWidth, height, borderRadius: 8 }, style]}
+        resizeMode="cover"
+        onLoad={(e) => {
+          const src = e.nativeEvent.source;
+          if (src?.width && src?.height) {
+            setHeight(Math.min((maxWidth * src.height) / src.width, 320));
+          }
+        }}
+      />
+    </TouchableOpacity>
+  );
+}
 
 interface Profile {
   name: string;
@@ -38,8 +59,6 @@ export default function DirectMessageChat({ partnerId }: { partnerId: string }) 
   const [text, setText] = useState("");
   const [myId, setMyId] = useState<string | null>(null);
   const [threadId, setThreadId] = useState<string | null>(null);
-  const [pendingImage, setPendingImage] = useState<string | null>(null);
-  const [uploading, setUploading] = useState(false);
   const [myProfile, setMyProfile] = useState<Profile | null>(null);
   const [partnerProfile, setPartnerProfile] = useState<Profile | null>(null);
   const [viewingImage, setViewingImage] = useState<string | null>(null);
@@ -128,20 +147,8 @@ export default function DirectMessageChat({ partnerId }: { partnerId: string }) 
     return () => showSub.remove();
   }, []);
 
-  const handlePickImage = async () => {
-    try {
-      setUploading(true);
-      const url = await uploadChatImage();
-      if (url) setPendingImage(url);
-    } catch (err: any) {
-      Alert.alert("Upload Error", err.message ?? "Failed to upload image.");
-    } finally {
-      setUploading(false);
-    }
-  };
-
   const handleSend = () => {
-    if (!text.trim() && !pendingImage) return;
+    if (!text.trim()) return;
 
     dispatch(
       sendDM({
@@ -149,11 +156,9 @@ export default function DirectMessageChat({ partnerId }: { partnerId: string }) 
         senderId: myId,
         receiverId: partnerId,
         content: text.trim(),
-        imageUrl: pendingImage ?? undefined,
       })
     );
     setText("");
-    setPendingImage(null);
   };
 
   const formatTime = (iso: string) =>
@@ -166,7 +171,7 @@ export default function DirectMessageChat({ partnerId }: { partnerId: string }) 
       day: "numeric",
     });
 
-  const canSend = (text.trim().length > 0 || !!pendingImage) && !uploading;
+  const canSend = text.trim().length > 0;
 
   return (
     <>
@@ -228,22 +233,12 @@ export default function DirectMessageChat({ partnerId }: { partnerId: string }) 
               {isContinuation ? (
                 <View style={{ paddingLeft: 56, marginBottom: 2, marginTop: 1 }}>
                   {m.image_url && (
-                    <TouchableOpacity
+                    <DynamicChatImage
+                      uri={m.image_url}
+                      maxWidth={220}
                       onPress={() => setViewingImage(m.image_url!)}
-                      activeOpacity={0.85}
-                    >
-                      <Image
-                        source={{ uri: m.image_url }}
-                        style={{
-                          width: 200,
-                          height: 150,
-                          borderRadius: 8,
-                          marginBottom: m.content ? 4 : 0,
-                          marginTop: 2,
-                        }}
-                        resizeMode="cover"
-                      />
-                    </TouchableOpacity>
+                      style={{ marginBottom: m.content ? 4 : 0, marginTop: 2 }}
+                    />
                   )}
                   {!!m.content && (
                     <Text style={styles.slackMessageText}>{m.content}</Text>
@@ -290,22 +285,12 @@ export default function DirectMessageChat({ partnerId }: { partnerId: string }) 
                     </View>
 
                     {m.image_url && (
-                      <TouchableOpacity
+                      <DynamicChatImage
+                        uri={m.image_url}
+                        maxWidth={220}
                         onPress={() => setViewingImage(m.image_url!)}
-                        activeOpacity={0.85}
-                      >
-                        <Image
-                          source={{ uri: m.image_url }}
-                          style={{
-                            width: 200,
-                            height: 150,
-                            borderRadius: 8,
-                            marginBottom: m.content ? 4 : 0,
-                            marginTop: 2,
-                          }}
-                          resizeMode="cover"
-                        />
-                      </TouchableOpacity>
+                        style={{ marginBottom: m.content ? 4 : 0, marginTop: 2 }}
+                      />
                     )}
 
                     {!!m.content && (
@@ -320,38 +305,7 @@ export default function DirectMessageChat({ partnerId }: { partnerId: string }) 
       </ScrollView>
 
       <View style={{ borderTopWidth: 1, borderTopColor: "#222", paddingBottom: Platform.OS === "android" ? 8 : 0 }}>
-        {/* {pendingImage && (
-          <View style={{ paddingHorizontal: 16, paddingTop: 8 }}>
-            <View style={{ position: "relative", alignSelf: "flex-start" }}>
-              <Image
-                source={{ uri: pendingImage }}
-                style={{ width: 80, height: 80, borderRadius: 8 }}
-                resizeMode="cover"
-              />
-              <TouchableOpacity
-                onPress={() => {
-                  deleteChatImage(pendingImage!);
-                  setPendingImage(null);
-                }}
-                style={{ position: "absolute", top: -8, right: -8 }}
-                hitSlop={{ top: 6, bottom: 6, left: 6, right: 6 }}
-              >
-                <Ionicons name="close-circle" size={22} color="#e04345" />
-              </TouchableOpacity>
-            </View>
-          </View>
-        )} */}
-
         <View style={styles.messageInputRow}>
-          <TouchableOpacity
-            onPress={handlePickImage}
-            disabled={uploading}
-            style={{ justifyContent: "center", marginRight: 8 }}
-            hitSlop={{ top: 6, bottom: 6, left: 6, right: 6 }}
-          >
-            {/* <Ionicons name="add-circle-outline" size={34} color={colors.textSecondary} /> */}
-          </TouchableOpacity>
-
           <TextInput
             value={text}
             onChangeText={setText}
@@ -394,11 +348,6 @@ export default function DirectMessageChat({ partnerId }: { partnerId: string }) 
         </View>
       </View>
     </KeyboardAvoidingView>
-
-      <ImageViewerModal
-        uri={viewingImage}
-        onClose={() => setViewingImage(null)}
-      />
     </>
   );
 }

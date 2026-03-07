@@ -16,8 +16,9 @@ import { supabase } from "../../lib/supabaseClient";
 import { PlusCircle, MinusCircle } from "lucide-react-native";
 import { buildStyles as styles, colors } from "../../styles/buildStyles";
 import { useUser } from "../../app/userContext";
-import { pickImageCompat } from "../../utils/imagePickerCompat";
+import { pickImageCompat, convertToJpegIfNeeded, isHeicUri } from "../../utils/imagePickerCompat";
 import ImageViewerModal from "../../components/ImageViewerModal";
+import ImageCropModal from "../../components/ImageCropModal";
 
 const PROJECT_BUCKET = "projects";
 
@@ -35,6 +36,11 @@ export default function ProjectFileUpload({
   const [files, setFiles] = useState<string[]>(initialFiles);
   const [uploading, setUploading] = useState(false);
   const [viewingImage, setViewingImage] = useState<string | null>(null);
+  const [rawPickedAsset, setRawPickedAsset] = useState<{
+    uri: string;
+    width?: number;
+    height?: number;
+  } | null>(null);
   const { userId } = useUser();
 
   if (!userId) {
@@ -46,8 +52,14 @@ export default function ProjectFileUpload({
   }, [initialFiles]);
 
   const isAllowedImageAsset = (name?: string, mimeType?: string) => {
+    if (Platform.OS === "web") {
+      // HEIC cannot be decoded by most web browsers
+      const heicMime = !!mimeType && /image\/(heic|heif)/i.test(mimeType);
+      const heicExt = !!name && /\.(heic|heif)$/i.test(name);
+      if (heicMime || heicExt) return false;
+    }
     const okMime = !!mimeType && mimeType.startsWith("image/");
-    const okExt = !!name && /\.(png|jpe?g|gif|webp)$/i.test(name);
+    const okExt = !!name && /\.(png|jpe?g|gif|webp|heic|heif)$/i.test(name);
     return okMime || okExt;
   };
 
@@ -60,9 +72,10 @@ export default function ProjectFileUpload({
       asset.name?.split(".").pop()?.toLowerCase() ||
       (asset.mimeType?.split("/")[1]?.toLowerCase() ?? "jpg");
 
-    const safeExt = ["jpg", "jpeg", "png", "webp", "gif"].includes(extFromName)
-      ? extFromName
-      : "jpg";
+    const heicMap: Record<string, string> = { heic: "jpg", heif: "jpg" };
+    const safeExt =
+      heicMap[extFromName] ??
+      (["jpg", "jpeg", "png", "webp", "gif"].includes(extFromName) ? extFromName : "jpg");
 
     const baseName = asset.name?.split("/").pop() ?? "";
     const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}/i.test(baseName);
@@ -103,26 +116,9 @@ export default function ProjectFileUpload({
       if (Platform.OS !== "web") {
         const result = await pickImageCompat();
         if ((result as any)?.canceled) return;
-
         const asset = (result as any)?.assets?.[0];
         if (!asset?.uri) return;
-
-        setUploading(true);
-
-        try {
-          const publicUrl = await uploadOneImage({
-            uri: asset.uri,
-            name: asset.fileName ?? "image.jpg",
-            mimeType: asset.mimeType ?? "image/jpeg",
-          });
-
-          const updated = [publicUrl, ...files];
-          setFiles(updated);
-          onChange(updated);
-        } finally {
-          setUploading(false);
-        }
-
+        setRawPickedAsset({ uri: asset.uri, width: asset.width, height: asset.height });
         return;
       }
 
@@ -138,7 +134,7 @@ export default function ProjectFileUpload({
       );
 
       if (selected.length === 0) {
-        Alert.alert("Images only", "Please select image files (PNG/JPG/WEBP/GIF).");
+        Alert.alert("Images only", "Please select image files (PNG/JPG/WEBP/GIF). HEIC is not supported on web — upload from iOS or Android instead.");
         return;
       }
 
@@ -164,6 +160,24 @@ export default function ProjectFileUpload({
     } catch (err: any) {
       console.error("Upload error:", err);
       Alert.alert("Upload Error", err.message ?? "Failed to upload image(s).");
+      setUploading(false);
+    }
+  }
+
+  async function handleCropComplete(croppedUri: string) {
+    setRawPickedAsset(null);
+    setUploading(true);
+    try {
+      const safeUri = isHeicUri(croppedUri)
+        ? await convertToJpegIfNeeded(croppedUri)
+        : croppedUri;
+      const publicUrl = await uploadOneImage({ uri: safeUri, name: "image.jpg", mimeType: "image/jpeg" });
+      const updated = [publicUrl, ...files];
+      setFiles(updated);
+      onChange(updated);
+    } catch (err: any) {
+      Alert.alert("Upload Error", err.message ?? "Failed to upload image.");
+    } finally {
       setUploading(false);
     }
   }
@@ -216,21 +230,25 @@ export default function ProjectFileUpload({
             <TouchableOpacity
               key={i}
               onPress={() => setViewingImage(url)}
-              activeOpacity={0.8}
+              activeOpacity={0.85}
               style={styles.filePreviewCard}
             >
-              <Image source={{ uri: url }} style={styles.modalPreviewImage} />
+              <Image
+                source={{ uri: url }}
+                style={styles.modalPreviewImage}
+                resizeMode="cover"
+              />
               <Text numberOfLines={1} style={styles.filePreviewName}>
                 {decodeURIComponent(url.split("/").pop() ?? "Image").replace(
                   /^\d+_/,
                   ""
                 )}
               </Text>
-
               {editable && (
                 <TouchableOpacity
                   onPress={() => handleRemove(url)}
-                  hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+                  style={styles.filePreviewRemove}
+                  hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
                 >
                   <MinusCircle size={28} color={colors.danger} />
                 </TouchableOpacity>
@@ -240,6 +258,16 @@ export default function ProjectFileUpload({
         </ScrollView>
       )}
       <ImageViewerModal uri={viewingImage} onClose={() => setViewingImage(null)} />
+      {rawPickedAsset && (
+        <ImageCropModal
+          imageUri={rawPickedAsset.uri}
+          imageWidth={rawPickedAsset.width}
+          imageHeight={rawPickedAsset.height}
+          visible={true}
+          onCancel={() => setRawPickedAsset(null)}
+          onCrop={handleCropComplete}
+        />
+      )}
     </View>
   );
 }

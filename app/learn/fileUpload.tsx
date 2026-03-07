@@ -12,6 +12,7 @@ import {
 import * as DocumentPicker from "expo-document-picker";
 import * as ImagePicker from "expo-image-picker";
 import * as FileSystem from "expo-file-system/legacy";
+import { convertToJpegIfNeeded, isHeicMime, isHeicUri } from "../../utils/imagePickerCompat";
 import { decode } from "base64-arraybuffer";
 import { supabase } from "../../lib/supabaseClient";
 import { PlusCircle, FileText, MinusCircle } from "lucide-react-native";
@@ -40,7 +41,10 @@ export default function FileUploadUnified({
     setFiles(initialFiles);
   }, [initialFiles]);
 
-  const isImage = (url: string) => /\.(png|jpe?g|gif|webp)$/i.test(url);
+  const isImage = (url: string) =>
+    Platform.OS !== "web"
+      ? /\.(png|jpe?g|gif|webp|heic|heif)$/i.test(url)
+      : /\.(png|jpe?g|gif|webp)$/i.test(url);
 
   async function uploadToSupabase(assets: { uri: string; name: string; mimeType?: string | null }[]) {
     const uploaded: string[] = [];
@@ -87,16 +91,24 @@ export default function FileUploadUnified({
       if (result.canceled) return;
 
       setUploading(true);
-      const assets = result.assets.map((a, i) => {
-        const ext = a.mimeType?.split("/")[1]?.replace("jpeg", "jpg") ?? "jpg";
-        const baseName = (a.fileName ?? "").split("/").pop() ?? "";
-        const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}/i.test(baseName);
-        const isNumericOrTimestamp = /^\d{7,}/.test(baseName.split(".")[0]);
-        const name = baseName && !isUuid && !isNumericOrTimestamp
-          ? baseName
-          : `IMG_${String(i + 1).padStart(4, "0")}.${ext}`;
-        return { uri: a.uri, name, mimeType: a.mimeType ?? "image/jpeg" };
-      });
+      const assets = await Promise.all(
+        result.assets.map(async (a, i) => {
+          const needsConvert = isHeicMime(a.mimeType) || isHeicUri(a.uri);
+          const uri = needsConvert
+            ? await convertToJpegIfNeeded(a.uri, a.mimeType)
+            : a.uri;
+          const mimeType = needsConvert ? "image/jpeg" : a.mimeType ?? "image/jpeg";
+          const ext = mimeType.split("/")[1]?.replace("jpeg", "jpg") ?? "jpg";
+          const baseName = (a.fileName ?? "").split("/").pop() ?? "";
+          const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}/i.test(baseName);
+          const isNumericOrTimestamp = /^\d{7,}/.test(baseName.split(".")[0]);
+          const name =
+            baseName && !isUuid && !isNumericOrTimestamp
+              ? baseName
+              : `IMG_${String(i + 1).padStart(4, "0")}.${ext}`;
+          return { uri, name, mimeType };
+        })
+      );
       const uploaded = await uploadToSupabase(assets);
       const updated = [...uploaded, ...files];
       setFiles(updated);
@@ -181,22 +193,28 @@ export default function FileUploadUnified({
             <TouchableOpacity
               key={i}
               onPress={() => isImage(url) ? setViewingImage(url) : downloadFile(url)}
-              activeOpacity={0.8}
+              activeOpacity={0.85}
               style={styles.filePreviewCard}
             >
               {isImage(url) ? (
-                <Image source={{ uri: url }} style={styles.modalPreviewImage} />
+                <Image
+                  source={{ uri: url }}
+                  style={styles.modalPreviewImage}
+                  resizeMode="cover"
+                />
               ) : (
-                <FileText size={32} color={colors.link} style={styles.filePreviewIcon} />
+                <View style={styles.filePreviewIconBox}>
+                  <FileText size={40} color={colors.link} />
+                </View>
               )}
               <Text numberOfLines={1} style={styles.filePreviewName}>
                 {decodeURIComponent(url.split("/").pop() ?? "File").replace(/^\d+_/, "")}
               </Text>
-
               {editable && (
                 <TouchableOpacity
                   onPress={() => handleRemove(url)}
-                  hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+                  style={styles.filePreviewRemove}
+                  hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
                 >
                   <MinusCircle size={28} color={colors.danger} />
                 </TouchableOpacity>

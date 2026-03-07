@@ -24,8 +24,33 @@ import {
   selectMessagesByGroupId,
 } from "../../../store/slices/groupMessagesSlice";
 import { supabase } from "../../../lib/supabaseClient";
-import { uploadChatImage, deleteChatImage } from "../../../utils/uploadChatImage";
-import { User2 } from "lucide-react-native";
+import { uploadFromUri, deleteChatImage } from "../../../utils/uploadChatImage";
+import { pickImageCompat, convertToJpegIfNeeded } from "../../../utils/imagePickerCompat";
+import { User2, MinusCircle } from "lucide-react-native";
+
+function DynamicChatImage({ uri, maxWidth, onPress, style }: {
+  uri: string;
+  maxWidth: number;
+  onPress: () => void;
+  style?: object;
+}) {
+  const [height, setHeight] = useState(maxWidth * 0.75);
+  return (
+    <TouchableOpacity onPress={onPress} activeOpacity={0.85}>
+      <Image
+        source={{ uri }}
+        style={[{ width: maxWidth, height, borderRadius: 8 }, style]}
+        resizeMode="cover"
+        onLoad={(e) => {
+          const src = e.nativeEvent.source;
+          if (src?.width && src?.height) {
+            setHeight(Math.min((maxWidth * src.height) / src.width, 320));
+          }
+        }}
+      />
+    </TouchableOpacity>
+  );
+}
 
 interface GroupChatProps {
   groupId: string;
@@ -101,10 +126,15 @@ export default function GroupChat({ groupId }: GroupChatProps) {
   }, [groupId]);
 
   const handlePickImage = async () => {
+    const result = await pickImageCompat();
+    if ((result as any)?.canceled) return;
+    const asset = (result as any)?.assets?.[0];
+    if (!asset?.uri) return;
+    setUploading(true);
     try {
-      setUploading(true);
-      const url = await uploadChatImage();
-      if (url) setPendingImage(url);
+      const safeUri = await convertToJpegIfNeeded(asset.uri, asset.mimeType);
+      const url = await uploadFromUri(safeUri);
+      setPendingImage(url);
     } catch (err: any) {
       Alert.alert("Upload Error", err.message ?? "Failed to upload image.");
     } finally {
@@ -245,20 +275,11 @@ export default function GroupChat({ groupId }: GroupChatProps) {
                 // Continuation — indented to align with text above, no avatar/name
                 <View style={{ paddingLeft: 56, marginBottom: 2, marginTop: 1 }}>
                   {m.image_url && (
-                    <TouchableOpacity
+                    <DynamicChatImage
+                      uri={m.image_url}
+                      maxWidth={240}
                       onPress={() => setViewingImage(m.image_url!)}
-                      activeOpacity={0.85}
-                    >
-                      <Image
-                        source={{ uri: m.image_url }}
-                        style={{
-                          width: 220,
-                          height: 165,
-                          borderRadius: 8,
-                        }}
-                        resizeMode="cover"
-                      />
-                    </TouchableOpacity>
+                    />
                   )}
                   {!!m.content && (
                     <Text style={styles.slackMessageText}>{m.content}</Text>
@@ -304,22 +325,12 @@ export default function GroupChat({ groupId }: GroupChatProps) {
                     </View>
 
                     {m.image_url && (
-                      <TouchableOpacity
+                      <DynamicChatImage
+                        uri={m.image_url}
+                        maxWidth={240}
                         onPress={() => setViewingImage(m.image_url!)}
-                        activeOpacity={0.85}
-                      >
-                        <Image
-                          source={{ uri: m.image_url }}
-                          style={{
-                            width: 220,
-                            height: 165,
-                            borderRadius: 8,
-                            marginBottom: m.content ? 4 : 0,
-                            marginTop: 2,
-                          }}
-                          resizeMode="cover"
-                        />
-                      </TouchableOpacity>
+                        style={{ marginBottom: m.content ? 4 : 0, marginTop: 2 }}
+                      />
                     )}
 
                     {!!m.content && (
@@ -339,7 +350,7 @@ export default function GroupChat({ groupId }: GroupChatProps) {
             <View style={{ position: "relative", alignSelf: "flex-start" }}>
               <Image
                 source={{ uri: pendingImage }}
-                style={{ width: 80, height: 80, borderRadius: 8 }}
+                style={{ width: 120, height: 80, borderRadius: 8 }}
                 resizeMode="cover"
               />
               <TouchableOpacity
@@ -347,10 +358,10 @@ export default function GroupChat({ groupId }: GroupChatProps) {
                   deleteChatImage(pendingImage!);
                   setPendingImage(null);
                 }}
-                style={{ position: "absolute", top: -8, right: -8 }}
+                style={{ width: 28, height: 28, borderRadius: '50%', backgroundColor: "#0d0d0d", position: "absolute", top: -8, right: -8 }}
                 hitSlop={{ top: 6, bottom: 6, left: 6, right: 6 }}
               >
-                <Ionicons name="close-circle" size={22} color="#e04345" />
+                <MinusCircle size={28} color={colors.danger}/>
               </TouchableOpacity>
             </View>
           </View>
