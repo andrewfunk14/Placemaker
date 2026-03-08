@@ -232,16 +232,19 @@ export default function DirectMessageChat({ partnerId }: { partnerId: string }) 
 
               {isContinuation ? (
                 <View style={{ paddingLeft: 56, marginBottom: 8, marginTop: 1 }}>
+                  <Text style={[styles.messageTimestamp, { marginTop: 0 }]}>
+                    {formatTime(m.created_at)}
+                  </Text>
+                  {!!m.content && (
+                    <Text style={[styles.slackMessageText, m.image_url ? { marginBottom: 4 } : {}]}>{m.content}</Text>
+                  )}
                   {m.image_url && (
                     <DynamicChatImage
                       uri={m.image_url}
                       maxWidth={220}
                       onPress={() => setViewingImage(m.image_url!)}
-                      style={{ marginBottom: m.content ? 4 : 0, marginTop: 2 }}
+                      style={{ marginTop: 2 }}
                     />
-                  )}
-                  {!!m.content && (
-                    <Text style={styles.slackMessageText}>{m.content}</Text>
                   )}
                 </View>
               ) : (
@@ -284,17 +287,17 @@ export default function DirectMessageChat({ partnerId }: { partnerId: string }) 
                       </Text>
                     </View>
 
+                    {!!m.content && (
+                      <Text style={[styles.slackMessageText, m.image_url ? { marginBottom: 4 } : {}]}>{m.content}</Text>
+                    )}
+
                     {m.image_url && (
                       <DynamicChatImage
                         uri={m.image_url}
                         maxWidth={220}
                         onPress={() => setViewingImage(m.image_url!)}
-                        style={{ marginBottom: m.content ? 4 : 0, marginTop: 2 }}
+                        style={{ marginTop: 2 }}
                       />
-                    )}
-
-                    {!!m.content && (
-                      <Text style={styles.slackMessageText}>{m.content}</Text>
                     )}
                   </View>
                 </View>

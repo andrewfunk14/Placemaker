@@ -259,7 +259,8 @@ const uniqueStyles = StyleSheet.create({
   messageTimestamp: {
     color: colors.placeholderText,
     fontSize: 13,
-    alignSelf: 'center',
+    marginBottom: 2,
+    // alignSelf: 'center',
   },
   messageInputRow: {
     flexDirection: "row",

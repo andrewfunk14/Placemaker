@@ -274,15 +274,18 @@ export default function GroupChat({ groupId }: GroupChatProps) {
               {isContinuation ? (
                 // Continuation — indented to align with text above, no avatar/name
                 <View style={{ paddingLeft: 56, marginBottom: 8, marginTop: 1 }}>
+                  <Text style={styles.messageTimestamp}>
+                    {formatTime(m.created_at)}
+                  </Text>
+                  {!!m.content && (
+                    <Text style={[styles.slackMessageText, m.image_url ? { marginBottom: 4 } : {}]}>{m.content}</Text>
+                  )}
                   {m.image_url && (
                     <DynamicChatImage
                       uri={m.image_url}
                       maxWidth={240}
                       onPress={() => setViewingImage(m.image_url!)}
                     />
-                  )}
-                  {!!m.content && (
-                    <Text style={styles.slackMessageText}>{m.content}</Text>
                   )}
                 </View>
               ) : (
@@ -324,17 +327,17 @@ export default function GroupChat({ groupId }: GroupChatProps) {
                       </Text>
                     </View>
 
+                    {!!m.content && (
+                      <Text style={[styles.slackMessageText, m.image_url ? { marginBottom: 4 } : {}]}>{m.content}</Text>
+                    )}
+
                     {m.image_url && (
                       <DynamicChatImage
                         uri={m.image_url}
                         maxWidth={240}
                         onPress={() => setViewingImage(m.image_url!)}
-                        style={{ marginBottom: m.content ? 4 : 0, marginTop: 2 }}
+                        style={{ marginTop: 2 }}
                       />
-                    )}
-
-                    {!!m.content && (
-                      <Text style={styles.slackMessageText}>{m.content}</Text>
                     )}
                   </View>
                 </View>
