@@ -25,6 +25,7 @@ const ResetPassword = () => {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
+  const [tokenHash, setTokenHash] = useState<string | null>(null);
   const [accessToken, setAccessToken] = useState<string | null>(null);
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
   const passwordRef = useRef<TextInput>(null);
@@ -35,39 +36,44 @@ const ResetPassword = () => {
     const extractToken = async () => {
       try {
         let url = '';
-  
+
         if (Platform.OS === 'web') {
           url = typeof window !== 'undefined' ? window.location.href : '';
         } else {
           url = (await Linking.getInitialURL()) || '';
         }
-  
+
         if (!url) return;
-  
+
         const searchParams = new URLSearchParams(new URL(url).search);
         const hashParams = new URLSearchParams(new URL(url).hash.substring(1));
-  
+
+        // PKCE flow (Supabase v2 default): token_hash + type=recovery
+        const hash = searchParams.get('token_hash') || hashParams.get('token_hash');
+        const type = searchParams.get('type') || hashParams.get('type');
+        if (hash && type === 'recovery') {
+          setTokenHash(hash);
+          return;
+        }
+
+        // Legacy implicit flow: access_token in URL
         const token = searchParams.get('access_token') || hashParams.get('access_token');
-  
         if (token) {
-          console.log("Extracted Access Token:", token);
           setAccessToken(token);
-        } 
+        }
       } catch (error) {
         console.error("Error extracting token:", error);
       }
     };
-  
-    extractToken();  
+
+    extractToken();
 
     const checkUser = async () => {
       try {
         const { data: user, error } = await supabase.auth.getUser();
         if (error || !user?.user) {
-          console.log("User is NOT authenticated.");
           setIsAuthenticated(false);
         } else {
-          console.log("User is authenticated.");
           setIsAuthenticated(true);
         }
       } catch (err) {
@@ -94,36 +100,45 @@ const ResetPassword = () => {
       return;
     }
   
-    if (!isAuthenticated && !accessToken) {
+    if (!isAuthenticated && !tokenHash && !accessToken) {
       setErrorMessage('Invalid or expired reset link');
       return;
     }
-  
+
     setIsLoading(true);
     setErrorMessage('');
-      
+
     try {
       let error;
 
       if (isAuthenticated) {
-        console.log("Authenticated user - resetting password.");
+        ({ error } = await supabase.auth.updateUser({
+          password: newPassword,
+        }));
+      } else if (tokenHash) {
+        // PKCE flow (Supabase v2 default)
+        const { error: verifyError } = await supabase.auth.verifyOtp({
+          token_hash: tokenHash,
+          type: 'recovery',
+        });
+
+        if (verifyError) {
+          throw new Error("Session expired or invalid reset link");
+        }
+
         ({ error } = await supabase.auth.updateUser({
           password: newPassword,
         }));
       } else if (accessToken) {
-        console.log("Unauthenticated user - using access token.");
-
-        const { data, error: sessionError } = await supabase.auth.setSession({
+        // Legacy implicit flow
+        const { error: sessionError } = await supabase.auth.setSession({
           access_token: accessToken,
           refresh_token: '',
         });
 
         if (sessionError) {
-          console.error("Error setting session:", sessionError.message);
           throw new Error("Session expired or invalid reset link");
         }
-
-        console.log("Session set successfully. Proceeding with password reset.");
 
         ({ error } = await supabase.auth.updateUser({
           password: newPassword,
