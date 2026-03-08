@@ -116,7 +116,10 @@ export default function EventCard({
         )}
       </View>
 
-      <Text style={[styles.cardTitle, { flexWrap: "wrap", marginBottom: 4 }]}>{item.title}</Text>
+      <Text style={[styles.cardTitle, { flexWrap: "wrap", marginBottom: 2 }]}>{item.title}</Text>
+      {item.creator_profile?.name ? (
+        <Text style={[styles.cardMeta, { marginBottom: 4 }]}>{item.creator_profile.name}</Text>
+      ) : null}
 
       <View
         style={{

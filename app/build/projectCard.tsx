@@ -136,6 +136,9 @@ export default function ProjectCard({
 
             <View style={styles.projectHeaderText}>
               <Text style={styles.projectTitle}>{project.title}</Text>
+              {project.creator?.name ? (
+                <Text style={styles.creatorName}>{project.creator.name}</Text>
+              ) : null}
               {project.location ? (
                 <Text style={styles.projectLocation}>{project.location}</Text>
               ) : null}

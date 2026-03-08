@@ -116,6 +116,11 @@ export default function ResourceCard({ resource, user }: ResourceCardProps) {
           <Text style={styles.cardTitle} numberOfLines={2}>
             {resource.title}
           </Text>
+          {typeof resource.uploaded_by === "object" && resource.uploaded_by?.name ? (
+            <Text style={{ fontSize: 18, color: colors.textSecondary, marginTop: 2 }}>
+              {resource.uploaded_by.name}
+            </Text>
+          ) : null}
         </View>
 
         {showEllipsis && (

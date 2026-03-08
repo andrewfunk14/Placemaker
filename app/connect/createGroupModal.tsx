@@ -166,7 +166,7 @@ export default function CreateGroupModal({
               ref={leaderSearchRef}
               value={selectedLeaderName ?? leaderSearch}
               onChangeText={handleLeaderChange}
-              placeholder="Select Group Leader"
+              placeholder="Group Leader"
               placeholderTextColor={colors.placeholderText}
               keyboardAppearance="dark"
               autoCapitalize="none"

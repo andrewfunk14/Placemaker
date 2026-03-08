@@ -39,7 +39,7 @@ const uniqueStyles = StyleSheet.create({
   },
   cardTitle: {
     color: colors.textPrimary,
-    fontSize: Platform.OS === "web" ? 30 : 28,
+    fontSize: Platform.OS === "web" ? 28 : 24,
     fontWeight: "600",
     marginBottom: 4,
   },
@@ -49,15 +49,15 @@ const uniqueStyles = StyleSheet.create({
   },
   cardTime: {
     color: colors.accent,
-    fontSize: 22,
+    fontSize: Platform.OS === "web" ? 24 : 20,
   },
   cardDot: {
     color: colors.accent,
-    fontSize: 20,
+    fontSize: 24,
   },
   cardMeta: {
     color: colors.textSecondary,
-    fontSize: 22,
+    fontSize: Platform.OS === "web" ? 24 : 20,
   },
   cardDesc: {
     color: colors.textPrimary,

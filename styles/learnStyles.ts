@@ -46,7 +46,7 @@ const uniqueStyles = StyleSheet.create({
     opacity: 0.5,
   },
   cardTitle: {
-    fontSize: Platform.OS === "web" ? 30 : 24,
+    fontSize: Platform.OS === "web" ? 24 : 20,
     fontWeight: "600",
     color: colors.textPrimary,
   },
@@ -77,11 +77,11 @@ const uniqueStyles = StyleSheet.create({
   },
   cardDescription: {
     color: colors.textPrimary,
-    fontSize: Platform.OS === "web" ? 18 : 16,
+    fontSize: Platform.OS === "web" ? 20 : 18,
     lineHeight: 20,
     opacity: 0.95,
     marginTop: 6,
-    marginBottom: 4,
+    marginBottom: 8,
   },
   cardFileItem: {
     flexDirection: "row",

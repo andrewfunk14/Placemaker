@@ -132,9 +132,8 @@ export default function PrivacyPolicy() {
           <Section title="6. Data Retention">
             <Body>
               We retain your personal information for as long as your account is active or as
-              needed to provide services. If you delete your account, we will delete or anonymize
-              your personal data within 90 days, except where we are required to retain it for
-              legal or compliance purposes.
+              needed to provide services. If you delete your account, we will delete
+              your personal data immediately.
             </Body>
             <Body>
               Message content in group chats and direct messages may be retained as part of
@@ -148,9 +147,6 @@ export default function PrivacyPolicy() {
               "Access: Request a copy of the personal data we hold about you",
               "Correction: Update or correct inaccurate information in your profile settings",
               "Deletion: Request deletion of your account and associated personal data",
-              "Portability: Request your data in a portable format",
-              "Opt-out: Unsubscribe from marketing emails at any time using the unsubscribe link",
-              "Restriction: Request that we limit how we process your data in certain circumstances",
             ]} />
           </Section>
 

@@ -231,7 +231,7 @@ export default function DirectMessageChat({ partnerId }: { partnerId: string }) 
               )}
 
               {isContinuation ? (
-                <View style={{ paddingLeft: 56, marginBottom: 2, marginTop: 1 }}>
+                <View style={{ paddingLeft: 56, marginBottom: 8, marginTop: 1 }}>
                   {m.image_url && (
                     <DynamicChatImage
                       uri={m.image_url}

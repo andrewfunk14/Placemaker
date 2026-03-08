@@ -6,7 +6,6 @@ export { colors };
 
 const uniqueStyles = StyleSheet.create({
   // build.tsx
-  
   mobileList: {
     paddingHorizontal: 16,
     gap: 12,
@@ -36,9 +35,9 @@ const uniqueStyles = StyleSheet.create({
     flex: 1,
   },
   projectAvatar: {
-    width: 50,
-    height: 50,
-    borderRadius: 25,
+    width: 60,
+    height: 60,
+    borderRadius: 30,
     backgroundColor: colors.translucentLight,
     borderWidth: 1,
     borderColor: colors.translucentBorder,
@@ -48,9 +47,9 @@ const uniqueStyles = StyleSheet.create({
     overflow: "hidden",
   },
   projectAvatarImage: {
-    width: 50,
-    height: 50,
-    borderRadius: 25,
+    width: 60,
+    height: 60,
+    borderRadius: 30,
     resizeMode: "cover",
   },
   projectHeaderText: {
@@ -60,12 +59,16 @@ const uniqueStyles = StyleSheet.create({
     fontSize: 18,
     fontWeight: "600",
     color: colors.textPrimary,
-    marginBottom: 4,
+  },
+  creatorName: {
+    fontSize: 16,
+    fontWeight: "500",
+    color: colors.textSecondary,
   },
   projectLocation: {
     fontSize: 16,
     fontWeight: "500",
-    color: colors.textSecondary,
+    color: colors.accent,
   },
   statusRow: {
     flexDirection: "row",
@@ -93,7 +96,7 @@ const uniqueStyles = StyleSheet.create({
     color: colors.textSecondary,
   },
   projectMetaInline: {
-    fontSize: 16,
+    fontSize: 15,
     color: colors.textSecondary,
   },
   projectMedia: {
@@ -112,7 +115,7 @@ const uniqueStyles = StyleSheet.create({
   projectCaption: {
     marginTop: 8,
     paddingHorizontal: 4,
-    fontSize: 16,
+    fontSize: 18,
     color: colors.textPrimary,
     lineHeight: 22,
   },
