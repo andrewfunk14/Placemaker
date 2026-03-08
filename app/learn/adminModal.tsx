@@ -1,5 +1,5 @@
 // learn/adminModal.tsx
-import React, { useMemo, useState } from "react";
+import React, { useMemo, useState, useEffect } from "react";
 import {
   Modal,
   View,
@@ -57,6 +57,17 @@ export default function AdminModal({
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [viewingImage, setViewingImage] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (visible) {
+      setTitle(resource.title ?? "");
+      setDescription(resource.description ?? "");
+      setTags(resource.tags ?? []);
+      setTier(resource.tier_access ?? null);
+      setUploadedUrls(initialFiles);
+      setErrorMessage(null);
+    }
+  }, [visible]);
 
   const handleCancel = () => {
     setTitle(resource.title ?? "");

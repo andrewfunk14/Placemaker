@@ -16,9 +16,15 @@ import { Ionicons } from "@expo/vector-icons";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks/hooks";
 import { connectStyles as styles, colors } from "../../../styles/connectStyles";
 import { supabase } from "../../../lib/supabaseClient";
+import CardActionMenu from "../../../components/CardActionMenu";
+import DeleteConfirmModal from "../../../components/DeleteConfirmModal";
 import {
   fetchDMs,
   sendDM,
+  editDM,
+  deleteDM,
+  dmUpdated,
+  dmDeleted,
   makeSelectDMsByThread,
 } from "../../../store/slices/dmSlice";
 import { User2 } from "lucide-react-native";
@@ -31,7 +37,7 @@ function DynamicChatImage({ uri, maxWidth, onPress, style }: {
 }) {
   const [height, setHeight] = useState(maxWidth * 0.75);
   return (
-    <TouchableOpacity onPress={onPress} activeOpacity={0.85}>
+    <TouchableOpacity onPress={onPress} activeOpacity={0.85} style={{ alignSelf: "flex-start" }}>
       <Image
         source={{ uri }}
         style={[{ width: maxWidth, height, borderRadius: 8 }, style]}
@@ -55,6 +61,8 @@ interface Profile {
 export default function DirectMessageChat({ partnerId }: { partnerId: string }) {
   const dispatch = useAppDispatch();
   const scrollRef = useRef<ScrollView>(null);
+  const inputRef = useRef<TextInput>(null);
+  const suppressScrollRef = useRef(false);
 
   const [text, setText] = useState("");
   const [myId, setMyId] = useState<string | null>(null);
@@ -63,6 +71,12 @@ export default function DirectMessageChat({ partnerId }: { partnerId: string }) 
   const [partnerProfile, setPartnerProfile] = useState<Profile | null>(null);
   const [viewingImage, setViewingImage] = useState<string | null>(null);
   const [refreshing, setRefreshing] = useState(false);
+  const [editingMessageId, setEditingMessageId] = useState<string | null>(null);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [pendingDeleteMsg, setPendingDeleteMsg] = useState<any>(null);
+
+  const authUser = useAppSelector((state: any) => state.auth.user);
+  const isAdmin = authUser?.roles?.includes("admin") ?? false;
 
   useEffect(() => {
     supabase.auth.getUser().then(({ data }) => {
@@ -125,6 +139,30 @@ export default function DirectMessageChat({ partnerId }: { partnerId: string }) 
           dispatch(fetchDMs(threadId));
         }
       )
+      .on(
+        "postgres_changes",
+        {
+          event: "UPDATE",
+          schema: "public",
+          table: "direct_messages",
+          filter: `thread_id=eq.${threadId}`,
+        },
+        (payload) => {
+          dispatch(dmUpdated(payload.new as any));
+        }
+      )
+      .on(
+        "postgres_changes",
+        {
+          event: "DELETE",
+          schema: "public",
+          table: "direct_messages",
+          filter: `thread_id=eq.${threadId}`,
+        },
+        (payload) => {
+          if (threadId) dispatch(dmDeleted({ threadId, messageId: payload.old.id }));
+        }
+      )
       .subscribe();
 
     return () => {
@@ -138,16 +176,55 @@ export default function DirectMessageChat({ partnerId }: { partnerId: string }) 
     });
   };
 
-  useEffect(scrollToBottom, [messages]);
+  useEffect(() => {
+    if (suppressScrollRef.current) {
+      suppressScrollRef.current = false;
+      return;
+    }
+    if (!editingMessageId) scrollToBottom();
+  }, [messages]);
 
   useEffect(() => {
     const showSub = Keyboard.addListener("keyboardDidShow", () => {
-      setTimeout(scrollToBottom, 100);
+      if (!editingMessageId) setTimeout(scrollToBottom, 100);
     });
     return () => showSub.remove();
-  }, []);
+  }, [editingMessageId]);
+
+  const handleStartEdit = (msg: any) => {
+    setEditingMessageId(msg.id);
+    setText(msg.content);
+    setTimeout(() => inputRef.current?.focus(), 100);
+  };
+
+  const handleCancelEdit = () => {
+    setEditingMessageId(null);
+    setText("");
+  };
+
+  const handleDeleteMessage = (msg: any) => {
+    setPendingDeleteMsg(msg);
+    setShowDeleteConfirm(true);
+  };
+
+  const confirmDelete = async () => {
+    if (!pendingDeleteMsg || !threadId) return;
+    suppressScrollRef.current = true;
+    dispatch(deleteDM({ messageId: pendingDeleteMsg.id, threadId, imageUrl: pendingDeleteMsg.image_url }));
+    setShowDeleteConfirm(false);
+    setPendingDeleteMsg(null);
+  };
 
   const handleSend = () => {
+    if (editingMessageId) {
+      if (!text.trim() || !threadId) return;
+      suppressScrollRef.current = true;
+      dispatch(editDM({ messageId: editingMessageId, threadId, content: text.trim() }));
+      setEditingMessageId(null);
+      setText("");
+      return;
+    }
+
     if (!text.trim()) return;
 
     dispatch(
@@ -171,7 +248,7 @@ export default function DirectMessageChat({ partnerId }: { partnerId: string }) 
       day: "numeric",
     });
 
-  const canSend = text.trim().length > 0;
+  const canSend = editingMessageId ? text.trim().length > 0 : text.trim().length > 0;
 
   return (
     <>
@@ -185,7 +262,7 @@ export default function DirectMessageChat({ partnerId }: { partnerId: string }) 
         style={styles.messagesList}
         keyboardShouldPersistTaps="handled"
         keyboardDismissMode={Platform.OS === "ios" ? "interactive" : "on-drag"}
-        onContentSizeChange={scrollToBottom}
+        onContentSizeChange={editingMessageId ? undefined : scrollToBottom}
         contentContainerStyle={{ paddingVertical: 12, paddingHorizontal: 16 }}
         refreshControl={
           <RefreshControl
@@ -220,6 +297,8 @@ export default function DirectMessageChat({ partnerId }: { partnerId: string }) 
           const isContinuation =
             !showHeader && prevMsg?.sender_id === m.sender_id;
 
+          const canActOnMessage = myId && m.sender_id === myId;
+
           return (
             <View key={m.id}>
               {showHeader && (
@@ -232,9 +311,21 @@ export default function DirectMessageChat({ partnerId }: { partnerId: string }) 
 
               {isContinuation ? (
                 <View style={{ paddingLeft: 56, marginBottom: 8, marginTop: 1 }}>
-                  <Text style={[styles.messageTimestamp, { marginTop: 0 }]}>
-                    {formatTime(m.created_at)}
-                  </Text>
+                  <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}>
+                    <Text style={[styles.messageTimestamp, { marginTop: 0 }]}>
+                      {formatTime(m.created_at)}
+                    </Text>
+                    {canActOnMessage && (
+                      <CardActionMenu
+                        iconName="ellipsis-horizontal"
+                        iconSize={20}
+                        items={[
+                          { label: "Edit", icon: "create-outline", onPress: () => handleStartEdit(m) },
+                          { label: "Delete", icon: "trash-outline", onPress: () => handleDeleteMessage(m), danger: true },
+                        ]}
+                      />
+                    )}
+                  </View>
                   {!!m.content && (
                     <Text style={[styles.slackMessageText, m.image_url ? { marginBottom: 4 } : {}]}>{m.content}</Text>
                   )}
@@ -272,19 +363,25 @@ export default function DirectMessageChat({ partnerId }: { partnerId: string }) 
                     <View
                       style={{
                         flexDirection: "row",
-                        alignItems: "baseline",
+                        alignItems: "center",
                         gap: 8,
                         marginBottom: 4,
                       }}
                     >
-                      <Text
-                        style={styles.messageSender}
-                      >
-                        {name}
-                      </Text>
+                      <Text style={styles.messageSender}>{name}</Text>
                       <Text style={[styles.messageTimestamp, { marginTop: 0 }]}>
                         {formatTime(m.created_at)}
                       </Text>
+                      {canActOnMessage && (
+                        <CardActionMenu
+                          iconName="ellipsis-horizontal"
+                          iconSize={20}
+                          items={[
+                            { label: "Edit", icon: "create-outline", onPress: () => handleStartEdit(m) },
+                            { label: "Delete", icon: "trash-outline", onPress: () => handleDeleteMessage(m), danger: true },
+                          ]}
+                        />
+                      )}
                     </View>
 
                     {!!m.content && (
@@ -308,11 +405,35 @@ export default function DirectMessageChat({ partnerId }: { partnerId: string }) 
       </ScrollView>
 
       <View style={{ borderTopWidth: 1, borderTopColor: "#222", paddingBottom: Platform.OS === "android" ? 8 : 0 }}>
+        {editingMessageId && (
+          <View
+            style={{
+              flexDirection: "row",
+              alignItems: "center",
+              justifyContent: "space-between",
+              paddingHorizontal: 16,
+              paddingTop: 8,
+              paddingBottom: 4,
+            }}
+          >
+            <Text style={{ color: colors.accent, fontSize: 18, fontWeight: "500" }}>
+              Editing
+            </Text>
+            <TouchableOpacity
+              onPress={handleCancelEdit}
+              hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+            >
+              <Ionicons name="close" size={24} color={colors.danger} />
+            </TouchableOpacity>
+          </View>
+        )}
+
         <View style={styles.messageInputRow}>
           <TextInput
+            ref={inputRef}
             value={text}
             onChangeText={setText}
-            placeholder="Message…"
+            placeholder={editingMessageId ? "Edit message…" : "Message…"}
             placeholderTextColor={colors.placeholderText}
             keyboardAppearance="dark"
             multiline
@@ -346,11 +467,22 @@ export default function DirectMessageChat({ partnerId }: { partnerId: string }) 
             onPress={handleSend}
             disabled={!canSend}
           >
-            <Ionicons name="send" size={24} color={colors.accent} />
+            <Ionicons
+              name={editingMessageId ? "checkmark" : "send"}
+              size={24}
+              color={colors.accent}
+            />
           </TouchableOpacity>
         </View>
       </View>
     </KeyboardAvoidingView>
+
+      <DeleteConfirmModal
+        visible={showDeleteConfirm}
+        onCancel={() => { setShowDeleteConfirm(false); setPendingDeleteMsg(null); }}
+        onConfirm={confirmDelete}
+        itemType="message"
+      />
     </>
   );
 }

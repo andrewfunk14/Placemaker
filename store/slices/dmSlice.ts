@@ -1,6 +1,7 @@
 // store/slices/dmSlice.ts
-import { createSlice, createAsyncThunk, createSelector } from "@reduxjs/toolkit";
+import { createSlice, createAsyncThunk, createSelector, PayloadAction } from "@reduxjs/toolkit";
 import { supabase } from "../../lib/supabaseClient";
+import { deleteChatImage } from "../../utils/uploadChatImage";
 import { RootState } from "../store";
 
 export interface DirectMessage {
@@ -53,16 +54,72 @@ export const sendDM = createAsyncThunk(
   }
 );
 
+export const editDM = createAsyncThunk(
+  "dm/edit",
+  async (
+    { messageId, threadId, content }: { messageId: string; threadId: string; content: string },
+    { rejectWithValue }
+  ) => {
+    const { data, error } = await supabase
+      .from("direct_messages")
+      .update({ content })
+      .eq("id", messageId)
+      .select("*")
+      .single();
+
+    if (error || !data) return rejectWithValue(error?.message ?? "Failed to edit message");
+    return { threadId, message: data as DirectMessage };
+  }
+);
+
+export const deleteDM = createAsyncThunk(
+  "dm/delete",
+  async (
+    { messageId, threadId, imageUrl }: { messageId: string; threadId: string; imageUrl?: string | null },
+    { rejectWithValue }
+  ) => {
+    const { error } = await supabase
+      .from("direct_messages")
+      .delete()
+      .eq("id", messageId);
+
+    if (error) return rejectWithValue(error.message);
+    if (imageUrl) await deleteChatImage(imageUrl);
+    return { threadId, messageId };
+  }
+);
+
 const dmSlice = createSlice({
   name: "dm",
   initialState,
-  reducers: {},
+  reducers: {
+    dmUpdated: (state, action: PayloadAction<DirectMessage>) => {
+      const msg = action.payload;
+      const arr = state.messagesByThread[msg.thread_id];
+      if (arr) {
+        const idx = arr.findIndex((m) => m.id === msg.id);
+        if (idx !== -1) arr[idx] = msg;
+      }
+    },
+
+    dmDeleted: (
+      state,
+      action: PayloadAction<{ threadId: string; messageId: string }>
+    ) => {
+      const { threadId, messageId } = action.payload;
+      if (state.messagesByThread[threadId]) {
+        state.messagesByThread[threadId] = state.messagesByThread[threadId].filter(
+          (m) => m.id !== messageId
+        );
+      }
+    },
+  },
   extraReducers: (builder) => {
     builder.addCase(fetchDMs.fulfilled, (state, action) => {
         const { threadId, messages } = action.payload;
-      
+
         const prev = state.messagesByThread[threadId];
-      
+
         if (
           prev &&
           prev.length === messages.length &&
@@ -70,21 +127,41 @@ const dmSlice = createSlice({
         ) {
           return;
         }
-      
+
         state.messagesByThread[threadId] = messages;
-      });      
+      });
 
       builder.addCase(sendDM.fulfilled, (state, action) => {
         const msg = action.payload;
-      
+
         const arr =
           state.messagesByThread[msg.thread_id] ??
           (state.messagesByThread[msg.thread_id] = []);
-      
+
         arr.push(msg);
-      });      
+      });
+
+      builder.addCase(editDM.fulfilled, (state, action) => {
+        const { threadId, message } = action.payload;
+        const arr = state.messagesByThread[threadId];
+        if (arr) {
+          const idx = arr.findIndex((m) => m.id === message.id);
+          if (idx !== -1) arr[idx] = message;
+        }
+      });
+
+      builder.addCase(deleteDM.fulfilled, (state, action) => {
+        const { threadId, messageId } = action.payload;
+        if (state.messagesByThread[threadId]) {
+          state.messagesByThread[threadId] = state.messagesByThread[threadId].filter(
+            (m) => m.id !== messageId
+          );
+        }
+      });
   },
 });
+
+export const { dmUpdated, dmDeleted } = dmSlice.actions;
 
 export const makeSelectDMsByThread = (threadId: string) =>
   createSelector(

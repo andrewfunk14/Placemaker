@@ -48,7 +48,10 @@ export default function ConnectScreen() {
 
   useFocusEffect(
     useCallback(() => {
-      if (userId) dispatch(fetchMyGroups({ roles, userId }));
+      if (userId) {
+        dispatch(fetchMyGroups({ roles, userId }));
+        refetchMatches();
+      }
     }, [userId, roles])
   );
 

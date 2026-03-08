@@ -13,13 +13,19 @@ import {
   Alert,
 } from "react-native";
 import ImageViewerModal from "../../../components/ImageViewerModal";
+import CardActionMenu from "../../../components/CardActionMenu";
+import DeleteConfirmModal from "../../../components/DeleteConfirmModal";
 import { Ionicons } from "@expo/vector-icons";
 import { connectStyles as styles, colors } from "../../../styles/connectStyles";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks/hooks";
 import {
   fetchGroupMessages,
   sendGroupMessage,
+  editGroupMessage,
+  deleteGroupMessage,
   messageReceived,
+  messageUpdated,
+  messageDeleted,
   GroupMessage,
   selectMessagesByGroupId,
 } from "../../../store/slices/groupMessagesSlice";
@@ -36,7 +42,7 @@ function DynamicChatImage({ uri, maxWidth, onPress, style }: {
 }) {
   const [height, setHeight] = useState(maxWidth * 0.75);
   return (
-    <TouchableOpacity onPress={onPress} activeOpacity={0.85}>
+    <TouchableOpacity onPress={onPress} activeOpacity={0.85} style={{ alignSelf: "flex-start" }}>
       <Image
         source={{ uri }}
         style={[{ width: maxWidth, height, borderRadius: 8 }, style]}
@@ -59,12 +65,27 @@ interface GroupChatProps {
 export default function GroupChat({ groupId }: GroupChatProps) {
   const dispatch = useAppDispatch();
   const scrollRef = useRef<ScrollView>(null);
+  const inputRef = useRef<TextInput>(null);
+  const suppressScrollRef = useRef(false);
   const [text, setText] = useState("");
   const [pendingImage, setPendingImage] = useState<string | null>(null);
   const [uploading, setUploading] = useState(false);
   const [viewingImage, setViewingImage] = useState<string | null>(null);
+  const [editingMessageId, setEditingMessageId] = useState<string | null>(null);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [pendingDeleteMsg, setPendingDeleteMsg] = useState<GroupMessage | null>(null);
+
+  const [myId, setMyId] = useState<string | null>(null);
 
   const messages = useAppSelector(selectMessagesByGroupId(groupId));
+  const authUser = useAppSelector((state: any) => state.auth.user);
+  const isAdmin = authUser?.roles?.includes("admin") ?? false;
+
+  useEffect(() => {
+    supabase.auth.getUser().then(({ data }) => {
+      setMyId(data.user?.id ?? null);
+    });
+  }, []);
 
   const scrollToBottom = () => {
     requestAnimationFrame(() => {
@@ -77,15 +98,19 @@ export default function GroupChat({ groupId }: GroupChatProps) {
   }, [groupId]);
 
   useEffect(() => {
-    setTimeout(scrollToBottom, 50);
+    if (suppressScrollRef.current) {
+      suppressScrollRef.current = false;
+      return;
+    }
+    if (!editingMessageId) setTimeout(scrollToBottom, 50);
   }, [messages]);
 
   useEffect(() => {
     const showSub = Keyboard.addListener("keyboardDidShow", () => {
-      setTimeout(scrollToBottom, 100);
+      if (!editingMessageId) setTimeout(scrollToBottom, 100);
     });
     return () => showSub.remove();
-  }, []);
+  }, [editingMessageId]);
 
   useEffect(() => {
     const channel = supabase
@@ -118,6 +143,30 @@ export default function GroupChat({ groupId }: GroupChatProps) {
           );
         }
       )
+      .on(
+        "postgres_changes",
+        {
+          event: "UPDATE",
+          table: "group_messages",
+          schema: "public",
+          filter: `group_id=eq.${groupId}`,
+        },
+        (payload) => {
+          dispatch(messageUpdated(payload.new as GroupMessage));
+        }
+      )
+      .on(
+        "postgres_changes",
+        {
+          event: "DELETE",
+          table: "group_messages",
+          schema: "public",
+          filter: `group_id=eq.${groupId}`,
+        },
+        (payload) => {
+          dispatch(messageDeleted({ groupId, messageId: payload.old.id }));
+        }
+      )
       .subscribe();
 
     return () => {
@@ -142,7 +191,39 @@ export default function GroupChat({ groupId }: GroupChatProps) {
     }
   };
 
+  const handleStartEdit = (msg: GroupMessage) => {
+    setEditingMessageId(msg.id);
+    setText(msg.content);
+    setTimeout(() => inputRef.current?.focus(), 100);
+  };
+
+  const handleCancelEdit = () => {
+    setEditingMessageId(null);
+    setText("");
+  };
+
+  const handleDeleteMessage = (msg: GroupMessage) => {
+    setPendingDeleteMsg(msg);
+    setShowDeleteConfirm(true);
+  };
+
+  const confirmDelete = async () => {
+    if (!pendingDeleteMsg) return;
+    suppressScrollRef.current = true;
+    dispatch(deleteGroupMessage({ messageId: pendingDeleteMsg.id, groupId, imageUrl: pendingDeleteMsg.image_url }));
+    setShowDeleteConfirm(false);
+    setPendingDeleteMsg(null);
+  };
+
   const handleSend = () => {
+    if (editingMessageId) {
+      if (!text.trim()) return;
+      suppressScrollRef.current = true;
+      dispatch(editGroupMessage({ messageId: editingMessageId, groupId, content: text.trim() }));
+      setEditingMessageId(null);
+      setText("");
+      return;
+    }
     if (!text.trim() && !pendingImage) return;
     dispatch(
       sendGroupMessage({
@@ -168,60 +249,9 @@ export default function GroupChat({ groupId }: GroupChatProps) {
       day: "numeric",
     });
 
-  const canSend = (text.trim().length > 0 || !!pendingImage) && !uploading;
-
-      <View style={styles.messageInputRow}>
-        <TouchableOpacity
-          onPress={handlePickImage}
-          disabled={uploading}
-          style={{ justifyContent: "center", marginRight: 8 }}
-          hitSlop={{ top: 6, bottom: 6, left: 6, right: 6 }}
-        >
-          <Ionicons name="add-circle-outline" size={32} color={colors.textSecondary} />
-        </TouchableOpacity>
-
-        <TextInput
-          value={text}
-          onChangeText={setText}
-          placeholder="Message…"
-          placeholderTextColor={colors.placeholderText}
-          keyboardAppearance="dark"
-          multiline
-          style={[
-            styles.messageInput,
-            {
-              minHeight: 40,
-              maxHeight: 130,
-              color: "#f5f5f5",
-              borderWidth: 1,
-              borderColor: colors.translucentBorder,
-              borderRadius: 8,
-              paddingHorizontal: 12,
-              paddingTop: Platform.OS === "ios" ? 10 : 8,
-            },
-          ]}
-          onKeyPress={(e) => {
-            if (Platform.OS === "web") {
-              const shift = (e as any).shiftKey;
-              if (e.nativeEvent.key === "Enter" && !shift) {
-                e.preventDefault?.();
-                handleSend();
-              }
-            }
-          }}
-        />
-
-        <TouchableOpacity
-          style={[
-            styles.sendButton,
-            { paddingHorizontal: 12, opacity: canSend ? 1 : 0.35 },
-          ]}
-          onPress={handleSend}
-          disabled={!canSend}
-        >
-          <Ionicons name="send" size={18} color={colors.accent} />
-        </TouchableOpacity>
-      </View>
+  const canSend = editingMessageId
+    ? text.trim().length > 0
+    : (text.trim().length > 0 || !!pendingImage) && !uploading;
 
   return (
     <>
@@ -235,7 +265,7 @@ export default function GroupChat({ groupId }: GroupChatProps) {
         style={styles.messagesList}
         keyboardShouldPersistTaps="handled"
         keyboardDismissMode={Platform.OS === "ios" ? "interactive" : "on-drag"}
-        onContentSizeChange={scrollToBottom}
+        onContentSizeChange={editingMessageId ? undefined : scrollToBottom}
         contentContainerStyle={{
           paddingBottom: 12,
           paddingTop: 12,
@@ -261,6 +291,8 @@ export default function GroupChat({ groupId }: GroupChatProps) {
           const isContinuation =
             !showDayHeader && prevMsg?.user_id === m.user_id;
 
+          const canActOnMessage = myId && m.user_id === myId;
+
           return (
             <View key={m.id}>
               {showDayHeader && (
@@ -274,9 +306,21 @@ export default function GroupChat({ groupId }: GroupChatProps) {
               {isContinuation ? (
                 // Continuation — indented to align with text above, no avatar/name
                 <View style={{ paddingLeft: 56, marginBottom: 8, marginTop: 1 }}>
-                  <Text style={styles.messageTimestamp}>
-                    {formatTime(m.created_at)}
-                  </Text>
+                  <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}>
+                    <Text style={styles.messageTimestamp}>
+                      {formatTime(m.created_at)}
+                    </Text>
+                    {canActOnMessage && (
+                      <CardActionMenu
+                        iconName="ellipsis-horizontal"
+                        iconSize={20}
+                        items={[
+                          { label: "Edit", icon: "create-outline", onPress: () => handleStartEdit(m) },
+                          { label: "Delete", icon: "trash-outline", onPress: () => handleDeleteMessage(m), danger: true },
+                        ]}
+                      />
+                    )}
+                  </View>
                   {!!m.content && (
                     <Text style={[styles.slackMessageText, m.image_url ? { marginBottom: 4 } : {}]}>{m.content}</Text>
                   )}
@@ -312,19 +356,25 @@ export default function GroupChat({ groupId }: GroupChatProps) {
                     <View
                       style={{
                         flexDirection: "row",
-                        alignItems: "baseline",
+                        alignItems: "center",
                         gap: 8,
                         marginBottom: 4,
                       }}
                     >
-                      <Text
-                        style={styles.messageSender}
-                      >
-                        {name}
-                      </Text>
+                      <Text style={styles.messageSender}>{name}</Text>
                       <Text style={styles.messageTimestamp}>
                         {formatTime(m.created_at)}
                       </Text>
+                      {canActOnMessage && (
+                        <CardActionMenu
+                          iconName="ellipsis-horizontal"
+                          iconSize={20}
+                          items={[
+                            { label: "Edit", icon: "create-outline", onPress: () => handleStartEdit(m) },
+                            { label: "Delete", icon: "trash-outline", onPress: () => handleDeleteMessage(m), danger: true },
+                          ]}
+                        />
+                      )}
                     </View>
 
                     {!!m.content && (
@@ -348,7 +398,30 @@ export default function GroupChat({ groupId }: GroupChatProps) {
       </ScrollView>
 
       <View style={{ borderTopWidth: 1, borderTopColor: "#222", paddingBottom: Platform.OS === "android" ? 8 : 0 }}>
-        {pendingImage && (
+        {editingMessageId && (
+          <View
+            style={{
+              flexDirection: "row",
+              alignItems: "center",
+              justifyContent: "space-between",
+              paddingHorizontal: 16,
+              paddingTop: 8,
+              paddingBottom: 4,
+            }}
+          >
+            <Text style={{ color: colors.accent, fontSize: 18, fontWeight: "500" }}>
+              Editing
+            </Text>
+            <TouchableOpacity
+              onPress={handleCancelEdit}
+              hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+            >
+              <Ionicons name="close" size={24} color={colors.danger} />
+            </TouchableOpacity>
+          </View>
+        )}
+
+        {pendingImage && !editingMessageId && (
           <View style={{ paddingHorizontal: 16, paddingTop: 8 }}>
             <View style={{ position: "relative", alignSelf: "flex-start" }}>
               <Image
@@ -371,19 +444,22 @@ export default function GroupChat({ groupId }: GroupChatProps) {
         )}
 
         <View style={styles.messageInputRow}>
-          <TouchableOpacity
-            onPress={handlePickImage}
-            disabled={uploading}
-            style={{ justifyContent: "center", marginRight: 8 }}
-            hitSlop={{ top: 6, bottom: 6, left: 6, right: 6 }}
-          >
-            <Ionicons name="add-circle-outline" size={34} color={colors.textSecondary} />
-          </TouchableOpacity>
+          {!editingMessageId && (
+            <TouchableOpacity
+              onPress={handlePickImage}
+              disabled={uploading}
+              style={{ justifyContent: "center", marginRight: 8 }}
+              hitSlop={{ top: 6, bottom: 6, left: 6, right: 6 }}
+            >
+              <Ionicons name="add-circle-outline" size={34} color={colors.textSecondary} />
+            </TouchableOpacity>
+          )}
 
           <TextInput
+            ref={inputRef}
             value={text}
             onChangeText={setText}
-            placeholder="Message…"
+            placeholder={editingMessageId ? "Edit message…" : "Message…"}
             placeholderTextColor={colors.placeholderText}
             keyboardAppearance="dark"
             multiline
@@ -418,7 +494,11 @@ export default function GroupChat({ groupId }: GroupChatProps) {
             onPress={handleSend}
             disabled={!canSend}
           >
-            <Ionicons name="send" size={24} color={colors.accent} />
+            <Ionicons
+              name={editingMessageId ? "checkmark" : "send"}
+              size={24}
+              color={colors.accent}
+            />
           </TouchableOpacity>
         </View>
       </View>
@@ -427,6 +507,13 @@ export default function GroupChat({ groupId }: GroupChatProps) {
       <ImageViewerModal
         uri={viewingImage}
         onClose={() => setViewingImage(null)}
+      />
+
+      <DeleteConfirmModal
+        visible={showDeleteConfirm}
+        onCancel={() => { setShowDeleteConfirm(false); setPendingDeleteMsg(null); }}
+        onConfirm={confirmDelete}
+        itemType="message"
       />
     </>
   );

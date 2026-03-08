@@ -1,6 +1,7 @@
 // store/slices/groupMessagesSlice.ts
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { supabase } from "../../lib/supabaseClient";
+import { deleteChatImage } from "../../utils/uploadChatImage";
 import { createSelector } from "@reduxjs/toolkit";
 import { RootState } from "../store";
 
@@ -97,6 +98,41 @@ export const sendGroupMessage = createAsyncThunk(
   }
 );
 
+export const editGroupMessage = createAsyncThunk(
+  "groupMessages/edit",
+  async (
+    { messageId, groupId, content }: { messageId: string; groupId: string; content: string },
+    { rejectWithValue }
+  ) => {
+    const { data, error } = await supabase
+      .from("group_messages")
+      .update({ content })
+      .eq("id", messageId)
+      .select("*")
+      .single();
+
+    if (error || !data) return rejectWithValue(error?.message ?? "Failed to edit message");
+    return { groupId, message: data as GroupMessage };
+  }
+);
+
+export const deleteGroupMessage = createAsyncThunk(
+  "groupMessages/delete",
+  async (
+    { messageId, groupId, imageUrl }: { messageId: string; groupId: string; imageUrl?: string | null },
+    { rejectWithValue }
+  ) => {
+    const { error } = await supabase
+      .from("group_messages")
+      .delete()
+      .eq("id", messageId);
+
+    if (error) return rejectWithValue(error.message);
+    if (imageUrl) await deleteChatImage(imageUrl);
+    return { groupId, messageId };
+  }
+);
+
 const groupMessagesSlice = createSlice({
   name: "groupMessages",
   initialState,
@@ -112,6 +148,27 @@ const groupMessagesSlice = createSlice({
 
       const exists = arr.some((m) => m.id === msg.id);
       if (!exists) arr.push(msg);
+    },
+
+    messageUpdated: (state, action: PayloadAction<GroupMessage>) => {
+      const msg = action.payload;
+      const arr = state.messagesByGroupId[msg.group_id];
+      if (arr) {
+        const idx = arr.findIndex((m) => m.id === msg.id);
+        if (idx !== -1) arr[idx] = { ...arr[idx], ...msg };
+      }
+    },
+
+    messageDeleted: (
+      state,
+      action: PayloadAction<{ groupId: string; messageId: string }>
+    ) => {
+      const { groupId, messageId } = action.payload;
+      if (state.messagesByGroupId[groupId]) {
+        state.messagesByGroupId[groupId] = state.messagesByGroupId[groupId].filter(
+          (m) => m.id !== messageId
+        );
+      }
     },
   },
   extraReducers: (builder) => {
@@ -138,6 +195,24 @@ const groupMessagesSlice = createSlice({
         arr.push(msg);
       })
 
+      .addCase(editGroupMessage.fulfilled, (state, action) => {
+        const { groupId, message } = action.payload;
+        const arr = state.messagesByGroupId[groupId];
+        if (arr) {
+          const idx = arr.findIndex((m) => m.id === message.id);
+          if (idx !== -1) arr[idx] = { ...arr[idx], ...message };
+        }
+      })
+
+      .addCase(deleteGroupMessage.fulfilled, (state, action) => {
+        const { groupId, messageId } = action.payload;
+        if (state.messagesByGroupId[groupId]) {
+          state.messagesByGroupId[groupId] = state.messagesByGroupId[groupId].filter(
+            (m) => m.id !== messageId
+          );
+        }
+      })
+
       .addCase(fetchGroupMessages.rejected, (state, action) => {
         state.error = action.payload as string;
       })
@@ -148,7 +223,7 @@ const groupMessagesSlice = createSlice({
   },
 });
 
-export const { clearGroupMessagesState, messageReceived } =
+export const { clearGroupMessagesState, messageReceived, messageUpdated, messageDeleted } =
   groupMessagesSlice.actions;
 
 export default groupMessagesSlice.reducer;

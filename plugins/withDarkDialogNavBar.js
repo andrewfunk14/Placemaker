@@ -20,6 +20,8 @@ function withDarkStyles(config) {
       $: { name: "DarkDialogTheme", parent: "Theme.AppCompat.Dialog" },
       item: [
         { $: { name: "android:windowSoftInputMode" }, _: "adjustPan" },
+        { $: { name: "android:colorBackground" }, _: "#0d0d0d" },
+        { $: { name: "android:navigationBarColor" }, _: "#0d0d0d" },
       ],
     };
 

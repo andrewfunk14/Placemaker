@@ -242,10 +242,9 @@ export const globalStyles = StyleSheet.create({
     zIndex: 200,
     elevation: 200,
     backgroundColor: colors.backgroundDark,
-    borderRadius: 10,
+    borderRadius: 12,
     borderWidth: 1,
     borderColor: colors.translucentBorder,
-    minWidth: 130,
     overflow: "hidden",
   },
   cardActionMenuItem: {

@@ -31,6 +31,8 @@ export default function ProfileScreen() {
     return hasOtherRoles ? unique.filter((r) => r !== "free") : ["free"];
   }, [authUser?.roles, ctxRoles]);
 
+  const isPlacemaker = displayRoles.includes("placemaker" as UserRole);
+
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [editName, setEditName] = useState("");
   const [editType, setEditType] = useState<string | null>(null);
@@ -100,7 +102,8 @@ export default function ProfileScreen() {
               </View>
             )}
             </View>
-            {profile &&
+            {isPlacemaker &&
+            profile &&
             (profile.expertise?.length ||
               profile.needs?.length ||
               profile.asset_types?.length ||

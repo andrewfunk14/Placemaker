@@ -133,7 +133,7 @@ export default function ImageViewerModal({ uri, onClose }: ImageViewerModalProps
             onPress={onClose}
             hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
           >
-            <Ionicons name="close" size={28} color="#ff4d4f" />
+            <Ionicons name="close" size={40} color="#0d0d0d" />
           </TouchableOpacity>
         </SafeAreaView>
       </GestureHandlerRootView>
@@ -157,10 +157,21 @@ const styles = StyleSheet.create({
   },
   closeButton: {
     position: "absolute",
-    top: Platform.OS === "ios" ? 56 : 40,
-    right: 20,
-    backgroundColor: "rgba(0,0,0,0.5)",
-    borderRadius: 9999,
-    padding: 6,
+    top: Platform.select({
+      ios: 60,
+      android: 20,
+      web: 40,
+    }),
+    right: Platform.select({
+      ios: 20,
+      android: 20,
+      web: 80,
+    }),
+    backgroundColor: "#ff4d4f",
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    alignItems: "center",
+    justifyContent: "center",
   },
 });
