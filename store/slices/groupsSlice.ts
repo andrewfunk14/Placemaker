@@ -55,7 +55,7 @@ export const fetchMyGroups = createAsyncThunk(
       .select("group_id")
       .eq("user_id", userId);
 
-    console.log("[fetchMyGroups] userId:", userId, "memberRows:", memberRows?.length, "memberError:", memberError?.message);
+    // console.log("[fetchMyGroups] userId:", userId, "memberRows:", memberRows?.length, "memberError:", memberError?.message);
 
     if (memberError) throw memberError;
     if (!memberRows?.length) return [];
@@ -69,7 +69,7 @@ export const fetchMyGroups = createAsyncThunk(
       .in("id", groupIds)
       .order("name");
 
-    console.log("[fetchMyGroups] groupData:", groupData?.length, "groupError:", groupError?.message);
+    // console.log("[fetchMyGroups] groupData:", groupData?.length, "groupError:", groupError?.message);
 
     if (groupError) throw groupError;
 
