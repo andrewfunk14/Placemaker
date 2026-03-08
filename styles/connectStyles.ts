@@ -9,12 +9,11 @@ const uniqueStyles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.backgroundMid,
-    paddingHorizontal: webPad,
     paddingTop: Platform.OS === "web" ? 12 : 8,
-    paddingBottom: 8,
   },
   groupsListScroll: {
     flex: 1,
+    paddingHorizontal: webPad,
   },
   groupCard: {
     borderRadius: 12,
